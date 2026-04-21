@@ -1,3 +1,35 @@
+# 2.11.5 (2026-04-21)
+
+## Added
+
+- Support for Foundry VTT v13 and v14 (`compatibility.minimum` 13, `verified`/`maximum` 14).
+- Svelte 5 migration for UI components.
+- Support for Drag Ruler integration on v13.
+- DataModel and document subtype updates aligned with modern Foundry APIs.
+- Turn marker support for combat, with a configurable fallback marker.
+- `fvttrc.yml` added to `.gitignore` so local Foundry CLI config can live in-repo without committing it.
+
+## Changed
+
+- Build pipeline migrated from Gulp to Vite; packs and distribution builds go through `npm run build`.
+- Styles reorganized (layers, themes, mixins); sheet headers, HUDs, chat/roll cards, journals, and settings forms updated for v13+ appearance and fewer conflicts with core UI.
+- Combat tracker and tours updated for v13 APIs.
+- Manifest and package links in `system.json` now point at this fork’s GitHub repository and release assets.
+- Release workflow reads `src/system.json`, verifies tags against the manifest version, and uses `contents: write` for publishing releases.
+
+## Fixed
+
+- Broad pass on Foundry deprecation warnings (including attack/damage flow, partial preloading, AccDiff HUD, LCP manager, template targeting, and related UI).
+- Migration feedback and hangs addressed; imports and hooks cleaned up for current Foundry patterns.
+- NPC feature import error; tag add/remove no longer breaking tag display; various HUD preload and positioning issues.
+- Chat message background overrides; text editor and journal light-mode styling; LCP import button height; LCP import no longer uses a long-running progress notification for the blocking flow.
+
+## Removed
+
+- Gulp and the `marked` dependency from the toolchain where superseded.
+- Legacy Combat Carousel integration styles.
+- Deprecated automation helpers where replaced by current APIs.
+
 # 2.11.2 (2026-04-03)
 
 ## Bug Fixes
