@@ -1,4 +1,4 @@
-import type { HelperOptions } from "handlebars";
+import Handlebars, { type HelperOptions } from "handlebars";
 import type { ActionType } from "../action";
 import { actionIcon } from "../action/action-tracker";
 import type { LancerActor, LancerMECH, LancerNPC, LancerPILOT } from "../actor/lancer-actor";
@@ -10,6 +10,13 @@ import { ref_params, simple_ref_slot } from "./refs";
 
 // ---------------------------------------
 // Some simple stat editing thingies
+
+/** Optional `tooltip` hash from Handlebars for `data-tooltip` on wrappers. */
+function hashTooltipAttr(options: HelperOptions): string {
+  const raw = options.hash?.tooltip;
+  if (raw == null || raw === "") return "";
+  return ` data-tooltip="${Handlebars.escapeExpression(String(raw))}"`;
+}
 
 interface ButtonOverrides {
   icon?: string;
@@ -120,7 +127,7 @@ export function stat_view_card(
     }
   }
   return `
-    <div class="stat-card card clipped">
+    <div class="stat-card card clipped"${hashTooltipAttr(options)}>
       <div class="lancer-header lancer-primary ">
         ${inc_if(`<i class="${icon} i--4 i--light header-icon"> </i>`, icon)}
         <span class="major">${title}</span>
@@ -143,7 +150,7 @@ export function stat_rollable_card(title: string, icon: string, data_path: strin
 export function compact_stat_view(icon: string, data_path: string, options: HelperOptions): string {
   let data_val = resolveHelperDotpath(options, data_path);
   return `
-    <div class="compact-stat">
+    <div class="compact-stat"${hashTooltipAttr(options)}>
         <i class="${icon} i--4 i--dark"></i>
         <span class="lancer-stat minor">${data_val}</span>
     </div>
@@ -160,7 +167,7 @@ export function compact_stat_edit(icon: string, data_path: string, max_path: str
     <span class="lancer-stat minor">${max_val}</span>`;
   }
   return `
-        <div class="compact-stat">
+        <div class="compact-stat"${hashTooltipAttr(options)}>
           <i class="${icon} i--4 i--dark"></i>
           ${std_num_input(data_path, extendHelper(options, { classes: "lancer-stat minor" }))}
           ${max_html}
@@ -194,7 +201,7 @@ export function clicker_stat_card(
       attackButton = _basicFlowButton(uuid, "BasicAttack", { icon: "cci cci-weapon" });
     }
   }
-  return `<div class="card clipped stat-container">
+  return `<div class="card clipped stat-container"${hashTooltipAttr(options)}>
       <div class="lancer-header lancer-primary ">
         <i class="${icon} i--4 i--light header-icon"> </i>
         <span class="major">${title}</span>

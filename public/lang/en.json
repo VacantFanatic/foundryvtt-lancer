@@ -159,6 +159,22 @@
       "abilities": {
         "skills": "SKILL TRIGGERS",
         "talents": "TALENTS"
+      },
+      "stat-tooltip": {
+        "hp": "Hit Points — damage you can take before being downed out of your mech.",
+        "overshield": "Overshield — temporary HP from effects; lost first when you take damage.",
+        "armor": "Armor — reduces incoming pilot-scale damage by this amount.",
+        "evasion": "Evasion — difficulty to hit you with attacks that target Evasion.",
+        "edef": "Electronic Defense — difficulty to hit you with tech attacks and electronic effects.",
+        "speed": "Speed — how many spaces you move per move action on foot.",
+        "save": "Save — bonus to your pilot saves.",
+        "sensor_range": "Sensor Range — how far you can reliably detect and target with pilot-scale sensors.",
+        "license_level": "License Level — highest license rank used to unlock mech gear and frames.",
+        "grit": "Grit — resource spent to fuel grit-powered abilities and rolls.",
+        "hull": "Hull — trigger for bracing, melee, lifting, and physical endurance checks.",
+        "agi": "Agility — trigger for dodging, initiative, acrobatics, and finesse checks.",
+        "sys": "Systems — trigger for hacking, tech skill, and systems-focused checks.",
+        "eng": "Engineering — trigger for repairs, jury-rigging, and technical problem-solving checks."
       }
     },
     "chat-card": {
