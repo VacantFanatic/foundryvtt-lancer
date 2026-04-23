@@ -1,3 +1,9 @@
+# 2.11.6 (2026-04-23)
+
+## Added
+
+- Pilot sheet: mouseover tooltips (`data-tooltip`) for header combat stats, license level, grit, and Hull/Agility/Systems/Engineering trigger stats (localized in English).
+
 # 2.11.5 (2026-04-21)
 
 ## Added

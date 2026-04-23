@@ -24,14 +24,14 @@
     </div>
     {{{ ref-portrait-img actor.img "img" actor }}}
     <div class="header-details pilot-stats flexrow">
-      {{{compact-stat-edit "mdi mdi-heart-outline" "system.hp.value" "system.hp.max" }}}
-      {{{compact-stat-edit "mdi mdi-shield-star-outline" "system.overshield.value" "" }}}
-      {{{compact-stat-view "mdi mdi-shield-outline" "system.armor" }}}
-      {{{compact-stat-view "cci cci-evasion" "system.evasion" }}}
-      {{{compact-stat-view "cci cci-edef" "system.edef" }}}
-      {{{compact-stat-view "mdi mdi-arrow-right-bold-hexagon-outline" "system.speed" }}}
-      {{{compact-stat-view "cci cci-save" "system.save" }}}
-      {{{compact-stat-view "cci cci-sensor" "system.sensor_range" }}}
+      {{{compact-stat-edit "mdi mdi-heart-outline" "system.hp.value" "system.hp.max" tooltip=(localize "lancer.pilot-sheet.stat-tooltip.hp")}}}
+      {{{compact-stat-edit "mdi mdi-shield-star-outline" "system.overshield.value" "" tooltip=(localize "lancer.pilot-sheet.stat-tooltip.overshield")}}}
+      {{{compact-stat-view "mdi mdi-shield-outline" "system.armor" tooltip=(localize "lancer.pilot-sheet.stat-tooltip.armor")}}}
+      {{{compact-stat-view "cci cci-evasion" "system.evasion" tooltip=(localize "lancer.pilot-sheet.stat-tooltip.evasion")}}}
+      {{{compact-stat-view "cci cci-edef" "system.edef" tooltip=(localize "lancer.pilot-sheet.stat-tooltip.edef")}}}
+      {{{compact-stat-view "mdi mdi-arrow-right-bold-hexagon-outline" "system.speed" tooltip=(localize "lancer.pilot-sheet.stat-tooltip.speed")}}}
+      {{{compact-stat-view "cci cci-save" "system.save" tooltip=(localize "lancer.pilot-sheet.stat-tooltip.save")}}}
+      {{{compact-stat-view "cci cci-sensor" "system.sensor_range" tooltip=(localize "lancer.pilot-sheet.stat-tooltip.sensor_range")}}}
     </div>
   </header>
 
@@ -107,8 +107,8 @@
     <div class="tab pilot flexcol" data-group="primary" data-tab="narrative">
       <div class="card clipped">
         <div class="flexrow">
-          {{{clicker-stat-card "LICENSE LEVEL" "mdi mdi-shield-outline" "system.level" false }}}
-          {{{stat-rollable-card "GRIT" "cci cci-armor" "system.grit" }}}
+          {{{clicker-stat-card "LICENSE LEVEL" "mdi mdi-shield-outline" "system.level" false tooltip=(localize "lancer.pilot-sheet.stat-tooltip.license_level")}}}
+          {{{stat-rollable-card "GRIT" "cci cci-armor" "system.grit" tooltip=(localize "lancer.pilot-sheet.stat-tooltip.grit")}}}
         </div>
       </div>
 
@@ -263,10 +263,10 @@
       </div>
 
       <div class="flexrow">
-        {{{clicker-stat-card "HUL" "" "system.hull" true }}}
-        {{{clicker-stat-card "AGI" "" "system.agi" true }}}
-        {{{clicker-stat-card "SYS" "" "system.sys" true }}}
-        {{{clicker-stat-card "ENG" "" "system.eng" true }}}
+        {{{clicker-stat-card "HUL" "" "system.hull" true tooltip=(localize "lancer.pilot-sheet.stat-tooltip.hull")}}}
+        {{{clicker-stat-card "AGI" "" "system.agi" true tooltip=(localize "lancer.pilot-sheet.stat-tooltip.agi")}}}
+        {{{clicker-stat-card "SYS" "" "system.sys" true tooltip=(localize "lancer.pilot-sheet.stat-tooltip.sys")}}}
+        {{{clicker-stat-card "ENG" "" "system.eng" true tooltip=(localize "lancer.pilot-sheet.stat-tooltip.eng")}}}
       </div>
 
       {{!-- Talents --}}
