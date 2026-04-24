@@ -236,6 +236,12 @@
       "ipsn": "IPS-N Carina",
       "gal": "FORECAST/GALSIM"
     },
+    "compcon": {
+      "shareProxy": {
+        "name": "COMP/CON Share Import Proxy URL",
+        "hint": "Optional URL for a same-origin proxy endpoint that can perform COMP/CON share-code requests server-side. Leave blank to call COMP/CON directly from browser."
+      }
+    },
     "statusIconsConfig": {
       "menu-name": "Status Icons",
       "menu-label": "Status Icon Configuration",

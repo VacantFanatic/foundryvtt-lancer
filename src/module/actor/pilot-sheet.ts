@@ -14,7 +14,6 @@ import { EntryType } from "../enums";
 import type { PackedPilotData } from "../util/unpacking/packed-types";
 import { importCC } from "./import";
 
-const shareCodeMatcher = /^[A-Z0-9\d]{6}$/g;
 const COUNTER_MAX = 8;
 
 /**
@@ -70,43 +69,41 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
 
           // Fetch data to sync
           let raw_pilot_data = null;
-          if (pilot.system.cloud_id.match(shareCodeMatcher)) {
-            // pilot share codes
-            ui.notifications!.info("Importing character from share code...");
-            console.log(`Attempting import with share code: ${pilot.system.cloud_id}`);
-            try {
-              raw_pilot_data = await fetchPilotViaShareCode(pilot.system.cloud_id);
-            } catch (error) {
-              ui.notifications!.error("Error importing from share code. Share code may need to be refreshed.");
-              console.error(`Failed import with share code ${pilot.system.cloud_id}, error:`, error);
-              return;
-            }
-          } else if (pilot.system.cloud_id) {
-            // Vault ID from a logged-in Comp/Con account
-            ui.notifications!.info("Importing character from COMP/CON account...");
-            const cachedPilot = pilotCache().find(p => p.cloudID == pilot.system.cloud_id);
-            if (cachedPilot != undefined) {
-              try {
-                raw_pilot_data = await fetchPilotViaCache(cachedPilot);
-              } catch (error) {
-                ui.notifications!.error(
-                  "Failed to import from COMP/CON account. Try refreshing the page to reload pilot list."
-                );
-                console.error(`Failed to import vaultID ${pilot.system.cloud_id} via pilot list, error:`, error);
-                return;
-              }
-            } else {
-              ui.notifications!.error(
-                "Failed to import from COMP/CON account. Try refreshing the page to reload pilot list"
-              );
-              console.error(`Failed to find pilot in cache, vaultID: ${pilot.system.cloud_id}`);
-              return;
-            }
-          } else {
+          const cloudId = pilot.system.cloud_id?.trim();
+          if (!cloudId) {
             ui.notifications!.error(
               "Could not find character to import! No pilot selected via dropdown and no share code entered."
             );
             return;
+          }
+
+          // If this ID is present in the account cache, treat it as account-backed import.
+          // Otherwise treat it as a share code and query the share endpoint.
+          const cachedPilot = pilotCache().find(p => p.cloudID == cloudId);
+          if (cachedPilot != undefined) {
+            ui.notifications!.info("Importing character from COMP/CON account...");
+            try {
+              raw_pilot_data = await fetchPilotViaCache(cachedPilot);
+            } catch (error) {
+              ui.notifications!.error(
+                "Failed to import from COMP/CON account. Try refreshing the page to reload pilot list."
+              );
+              console.error(`Failed to import vaultID ${cloudId} via pilot list, error:`, error);
+              return;
+            }
+          } else {
+            ui.notifications!.info("Importing character from share code...");
+            console.log(`Attempting import with share code: ${cloudId}`);
+            try {
+              raw_pilot_data = await fetchPilotViaShareCode(cloudId);
+            } catch (error) {
+              const errMessage = error instanceof Error ? error.message : String(error);
+              ui.notifications!.error(
+                `Error importing from share code. ${errMessage}`
+              );
+              console.error(`Failed import with share code ${cloudId}, error:`, error);
+              return;
+            }
           }
           await importCC(this.actor as LancerPILOT, raw_pilot_data);
         });

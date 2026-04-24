@@ -1,4 +1,5 @@
 import type { CachedCloudPilot } from "../interfaces";
+import { LANCER } from "../config";
 import type { PackedPilotData } from "./unpacking/packed-types";
 
 // we only cache the id, cloud ids, and name; we're going to fetch all other data on user input
@@ -7,6 +8,47 @@ import type { PackedPilotData } from "./unpacking/packed-types";
 // (they could also re-login, we initiate a cache refresh there)
 
 let _cache: CachedCloudPilot[] = [];
+const CC_V2_SHARE_ENDPOINT = "https://api.compcon.app/share";
+const CC_V3_API_ENDPOINT = "https://idu55qr85i.execute-api.us-east-1.amazonaws.com/prod";
+const CC_V3_CLOUDFRONT_BASE = "https://ds69h3g1zxwgy.cloudfront.net";
+const CC_V3_API_KEY = "Y5DnZ4miJi30iazqn9VV73A253Db7HRxamHEQeMr";
+
+type ProxyRequestPayload = {
+  url: string;
+  init?: RequestInit;
+};
+
+function getShareProxyUrl(): string {
+  const proxySetting = game.settings.get(game.system.id, LANCER.setting_compcon_share_proxy);
+  return typeof proxySetting === "string" ? proxySetting.trim() : "";
+}
+
+async function fetchWithOptionalShareProxy(url: string, init?: RequestInit): Promise<Response> {
+  const proxyUrl = getShareProxyUrl();
+  if (!proxyUrl) {
+    return await fetch(url, init);
+  }
+
+  const payload: ProxyRequestPayload = {
+    url,
+    init: {
+      method: init?.method ?? "GET",
+      headers: init?.headers,
+      body: init?.body,
+      cache: init?.cache,
+      mode: init?.mode,
+      credentials: init?.credentials,
+    },
+  };
+
+  return await fetch(proxyUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+}
 
 export function cleanCloudOwnerID(str: string): string {
   return str.substring(0, 10) == "us-east-1:" ? str.substring(10) : str;
@@ -45,16 +87,87 @@ export function pilotCache(): CachedCloudPilot[] {
   return _cache;
 }
 
-export async function fetchPilotViaShareCode(sharecode: string): Promise<PackedPilotData> {
-  const shareCodeResponse = await fetch("https://api.compcon.app/share?code=" + sharecode, {
+async function fetchPilotViaLegacyShareCode(sharecode: string): Promise<PackedPilotData> {
+  const shareCodeResponse = await fetchWithOptionalShareProxy(
+    `${CC_V2_SHARE_ENDPOINT}?code=${encodeURIComponent(sharecode)}`,
+    {
+      headers: {
+        "x-api-key": "fcFvjjrnQy2hypelJQi4X9dRI55r5KuI4bC07Maf",
+      },
+    }
+  );
+
+  if (!shareCodeResponse.ok) {
+    throw new Error(`Legacy share endpoint returned HTTP ${shareCodeResponse.status}`);
+  }
+
+  const shareObj = await shareCodeResponse.json();
+  if (!shareObj?.presigned) {
+    throw new Error("Legacy share endpoint did not return a presigned URL");
+  }
+
+  const pilotResponse = await fetchWithOptionalShareProxy(shareObj["presigned"]);
+  if (!pilotResponse.ok) {
+    throw new Error(`Legacy presigned pilot fetch returned HTTP ${pilotResponse.status}`);
+  }
+  return await pilotResponse.json();
+}
+
+async function fetchPilotViaV3ShareCode(sharecode: string): Promise<PackedPilotData> {
+  const query = new URL(`${CC_V3_API_ENDPOINT}/code`);
+  query.searchParams.append("scope", "download");
+  query.searchParams.append("codes", JSON.stringify([sharecode]));
+
+  const codeLookupResponse = await fetchWithOptionalShareProxy(query.toString(), {
+    method: "GET",
     headers: {
-      "x-api-key": "fcFvjjrnQy2hypelJQi4X9dRI55r5KuI4bC07Maf",
+      "Content-Type": "application/json",
+      "x-api-key": CC_V3_API_KEY,
     },
   });
 
-  const shareObj = await shareCodeResponse.json();
-  const pilotResponse = await fetch(shareObj["presigned"]);
-  return await pilotResponse.json();
+  if (!codeLookupResponse.ok) {
+    throw new Error(`V3 share endpoint returned HTTP ${codeLookupResponse.status}`);
+  }
+
+  const codeLookupJson = await codeLookupResponse.json();
+  if (!codeLookupJson?.uri) {
+    throw new Error("V3 share endpoint did not return a downloadable URI");
+  }
+
+  const pilotResponse = await fetchWithOptionalShareProxy(`${CC_V3_CLOUDFRONT_BASE}/${codeLookupJson.uri}`, {
+    cache: "no-cache",
+  });
+  if (!pilotResponse.ok) {
+    throw new Error(`V3 cloudfront pilot fetch returned HTTP ${pilotResponse.status}`);
+  }
+
+  const pilotData = (await pilotResponse.json()) as PackedPilotData;
+  return pilotData;
+}
+
+export async function fetchPilotViaShareCode(sharecode: string): Promise<PackedPilotData> {
+  const trimmedCode = sharecode.trim();
+  let v3Error: unknown = null;
+  try {
+    return await fetchPilotViaV3ShareCode(trimmedCode);
+  } catch (err) {
+    v3Error = err;
+  }
+
+  try {
+    return await fetchPilotViaLegacyShareCode(trimmedCode);
+  } catch (legacyErr) {
+    const v3Message = v3Error instanceof Error ? v3Error.message : String(v3Error);
+    const legacyMessage = legacyErr instanceof Error ? legacyErr.message : String(legacyErr);
+    const proxyUrl = getShareProxyUrl();
+    if (!proxyUrl && v3Message.includes("Failed to fetch") && legacyMessage.includes("Failed to fetch")) {
+      throw new Error(
+        "All share-code import paths failed with browser fetch errors. This is usually CORS blocking for localhost origins. Use JSON import, or set a COMP/CON Share Import Proxy URL in System Settings."
+      );
+    }
+    throw new Error(`All share-code import paths failed. v3: ${v3Message}; legacy: ${legacyMessage}`);
+  }
 }
 
 export async function fetchPilotViaCache(cachedPilot: CachedCloudPilot): Promise<PackedPilotData> {
