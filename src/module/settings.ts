@@ -89,6 +89,15 @@ export const registerSettings = function () {
     restricted: false,
   });
 
+  game.settings.register(game.system.id, LANCER.setting_compcon_share_proxy, {
+    name: "lancer.compcon.shareProxy.name",
+    hint: "lancer.compcon.shareProxy.hint",
+    scope: "world",
+    config: true,
+    type: String,
+    default: "",
+  });
+
   game.settings.registerMenu(game.system.id, LANCER.setting_status_icons, {
     name: "lancer.statusIconsConfig.menu-name",
     label: "lancer.statusIconsConfig.menu-label",

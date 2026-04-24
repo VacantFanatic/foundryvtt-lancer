@@ -43,6 +43,7 @@ export const LANCER = {
   setting_floating_damage_numbers: "floatingNumbers",
   setting_ui_theme: "uiTheme",
   setting_compcon_login: "compconLogin",
+  setting_compcon_share_proxy: "compconShareProxy",
   setting_status_icons: "statusIconConfig",
   setting_automation: "automationOptions",
   setting_automation_switch: "automationSwitch",
