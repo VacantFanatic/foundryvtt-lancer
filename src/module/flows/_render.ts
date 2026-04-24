@@ -42,7 +42,7 @@ export async function createChatMessageStep(
 ) {
   if (rolls && !Array.isArray(rolls)) rolls = [rolls];
   let chat_data = {
-    type: CONST.CHAT_MESSAGE_STYLES.IC,
+    style: CONST.CHAT_MESSAGE_STYLES.IC,
     rolls,
     speaker: {
       actor: actor,

@@ -41,7 +41,7 @@ command: >-
         roll_tt: await roll.getTooltip(),
       });
       const chatData = {
-        type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+        style: CONST.CHAT_MESSAGE_STYLES.ROLL,
         roll: roll,
         speaker: {
         actor: cpjActor,

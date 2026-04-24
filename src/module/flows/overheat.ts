@@ -65,6 +65,10 @@ export async function preOverheatRollChecks(state: FlowState<LancerFlowState.Ove
       ui.notifications!.info("Token is not at heat cap. No need to roll stress.");
       return false;
     }
+    if (actor.system.stress.value <= 0) {
+      ui.notifications!.info("No stress remaining. Reactor damage cannot be rolled.");
+      return false;
+    }
     const { openSlidingHud: open } = await import("../apps/slidinghud");
     try {
       await open("stress", { stat: "stress", title: "Stress Damage", lancerActor: actor });
@@ -82,8 +86,8 @@ export async function preOverheatRollChecks(state: FlowState<LancerFlowState.Ove
       // 1-stress NPCs never actually lose their stress, they just become exposed.
       if (actor.is_npc() && actor.system.stress.max === 1) return true;
       await actor.update({
-        "system.stress": stress.value - 1,
-        "system.heat": heat.value - actor.system.heat.max,
+        "system.stress.value": stress.value - 1,
+        "system.heat.value": heat.value - actor.system.heat.max,
       });
     } else {
       return false;
