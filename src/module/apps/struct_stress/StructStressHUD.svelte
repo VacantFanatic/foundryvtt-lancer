@@ -23,18 +23,21 @@
 
   function getDamage(a: LancerActor | null) {
     if (!a || (!a.is_mech() && !a.is_npc())) return 0;
+    if (a.system[stat].value <= 0) return 0;
     return a.system[stat].max - getCurrent(a);
   }
 
   $: icon = stat === "stress" ? ("reactor" as const) : stat;
   $: current = getCurrent(lancerActor);
   $: damage = getDamage(lancerActor);
+  $: canRoll = damage > 0;
 </script>
 
 <form
   id="structstress"
   class="lancer-hud structstress window-content"
   on:submit|preventDefault={() => {
+    if (!canRoll) return;
     dispatch("submit");
   }}
 >
@@ -54,12 +57,16 @@
         {/each}
       </div>
       <p class="message">
-        Roll {damage}d6 to determine what happens.
+        {#if canRoll}
+          Roll {damage}d6 to determine what happens.
+        {:else}
+          No {stat} remaining. No roll is available.
+        {/if}
       </p>
     </div>
   {/if}
   <div class="lancer-hud-buttons flexrow">
-    <button class="dialog-button submit default" data-button="submit" type="submit" use:focus>
+    <button class="dialog-button submit default" data-button="submit" type="submit" use:focus disabled={!canRoll}>
       <i class="fas fa-check" />
       Roll
     </button>
