@@ -46,6 +46,32 @@ jobs:
             exit 1
           fi
 
+      # Verify repository links are pinned to this fork
+      - name: Verify manifest release links
+        run: |
+          REPO_BASE="https://github.com/VacantFanatic/foundryvtt-lancer"
+          VERSION="${{ steps.vars.outputs.version }}"
+
+          MANIFEST_URL='${{ fromJSON(steps.manifest.outputs.data).url }}'
+          MANIFEST_MANIFEST='${{ fromJSON(steps.manifest.outputs.data).manifest }}'
+          MANIFEST_DOWNLOAD='${{ fromJSON(steps.manifest.outputs.data).download }}'
+          MANIFEST_README='${{ fromJSON(steps.manifest.outputs.data).readme }}'
+          MANIFEST_BUGS='${{ fromJSON(steps.manifest.outputs.data).bugs }}'
+          MANIFEST_CHANGELOG='${{ fromJSON(steps.manifest.outputs.data).changelog }}'
+
+          expected_manifest="${REPO_BASE}/releases/latest/download/system.json"
+          expected_download="${REPO_BASE}/releases/download/v${VERSION}/lancer-v${VERSION}.zip"
+          expected_readme="${REPO_BASE}/blob/master/README.md"
+          expected_bugs="${REPO_BASE}/issues/new/choose"
+          expected_changelog="${REPO_BASE}/blob/master/CHANGELOG.md"
+
+          [[ "$MANIFEST_URL" == "$REPO_BASE" ]] || { echo "Invalid url: $MANIFEST_URL"; exit 1; }
+          [[ "$MANIFEST_MANIFEST" == "$expected_manifest" ]] || { echo "Invalid manifest link: $MANIFEST_MANIFEST"; exit 1; }
+          [[ "$MANIFEST_DOWNLOAD" == "$expected_download" ]] || { echo "Invalid download link: $MANIFEST_DOWNLOAD"; exit 1; }
+          [[ "$MANIFEST_README" == "$expected_readme" ]] || { echo "Invalid readme link: $MANIFEST_README"; exit 1; }
+          [[ "$MANIFEST_BUGS" == "$expected_bugs" ]] || { echo "Invalid bugs link: $MANIFEST_BUGS"; exit 1; }
+          [[ "$MANIFEST_CHANGELOG" == "$expected_changelog" ]] || { echo "Invalid changelog link: $MANIFEST_CHANGELOG"; exit 1; }
+
       # Set up Node
       - uses: actions/setup-node@v4
         with:
@@ -83,4 +109,4 @@ jobs:
           # TODO: can we automatically extract the changelog for this release?
           body: |
 
-            [Full changelog](https://github.com/Eranziel/foundryvtt-lancer/blob/master/CHANGELOG.md)
+            [Full changelog](https://github.com/VacantFanatic/foundryvtt-lancer/blob/master/CHANGELOG.md)
