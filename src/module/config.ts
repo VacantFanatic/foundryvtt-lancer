@@ -41,6 +41,10 @@ export const LANCER = {
   setting_stock_icons: "keepStockIcons",
   // setting_welcome: "hideWelcome", // Deprecated as of v2.7.0
   setting_floating_damage_numbers: "floatingNumbers",
+  setting_autoanimations_enabled: "autoAnimationsEnabled",
+  setting_autoanimations_damage: "autoAnimationsDamage",
+  setting_autoanimations_autorec_mode: "autoAnimationsAutorecMode",
+  setting_autoanimations_autorec_last_apply: "autoAnimationsAutorecLastApply",
   setting_ui_theme: "uiTheme",
   setting_compcon_login: "compconLogin",
   setting_compcon_share_proxy: "compconShareProxy",

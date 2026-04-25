@@ -1,0 +1,957 @@
+{
+  "melee": [
+    {
+      "id": "lancer-melee-sword",
+      "label": "sword",
+      "menu": "melee",
+      "metaData": {
+        "default": false,
+        "system": "lancer"
+      },
+      "primary": {
+        "video": {
+          "dbSection": "melee",
+          "menuType": "weapon",
+          "animation": "sword",
+          "variant": "01",
+          "color": "white",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
+      },
+      "macro": {
+        "enable": false,
+        "name": null,
+        "args": null,
+        "playWhen": null
+      },
+      "secondary": {
+        "enable": false
+      },
+      "source": {
+        "enable": false
+      },
+      "target": {
+        "enable": false
+      }
+    },
+    {
+      "id": "lancer-melee-axe",
+      "label": "axe",
+      "menu": "melee",
+      "metaData": {
+        "default": false,
+        "system": "lancer"
+      },
+      "primary": {
+        "video": {
+          "dbSection": "melee",
+          "menuType": "weapon",
+          "animation": "greataxe",
+          "variant": "01",
+          "color": "orange",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
+      },
+      "macro": {
+        "enable": false,
+        "name": null,
+        "args": null,
+        "playWhen": null
+      },
+      "secondary": {
+        "enable": false
+      },
+      "source": {
+        "enable": false
+      },
+      "target": {
+        "enable": false
+      }
+    }
+  ],
+  "range": [
+    {
+      "id": "lancer-range-rifle",
+      "label": "rifle",
+      "menu": "range",
+      "metaData": {
+        "default": false,
+        "system": "lancer"
+      },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "weapon",
+          "animation": "bullet",
+          "variant": "regular",
+          "color": "white",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
+      },
+      "macro": {
+        "enable": false,
+        "name": null,
+        "args": null,
+        "playWhen": null
+      },
+      "secondary": {
+        "enable": false
+      },
+      "source": {
+        "enable": false
+      },
+      "target": {
+        "enable": false
+      }
+    },
+    {
+      "id": "lancer-range-cannon",
+      "label": "cannon",
+      "menu": "range",
+      "metaData": {
+        "default": false,
+        "system": "lancer"
+      },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "weapon",
+          "animation": "bullet",
+          "variant": "regular",
+          "color": "orange",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
+      },
+      "macro": {
+        "enable": false,
+        "name": null,
+        "args": null,
+        "playWhen": null
+      },
+      "secondary": {
+        "enable": false
+      },
+      "source": {
+        "enable": false
+      },
+      "target": {
+        "enable": false
+      }
+    },
+    {
+      "id": "lancer-range-launcher",
+      "label": "launcher",
+      "menu": "range",
+      "metaData": {
+        "default": false,
+        "system": "lancer"
+      },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "spell",
+          "animation": "firebolt",
+          "variant": "01",
+          "color": "orange",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
+      },
+      "macro": {
+        "enable": false,
+        "name": null,
+        "args": null,
+        "playWhen": null
+      },
+      "secondary": {
+        "enable": false
+      },
+      "source": {
+        "enable": false
+      },
+      "target": {
+        "enable": false
+      }
+    },
+    {
+      "id": "lancer-range-missile",
+      "label": "missile",
+      "menu": "range",
+      "metaData": {
+        "default": false,
+        "system": "lancer"
+      },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "weapon",
+          "animation": "arrow",
+          "variant": "regular",
+          "color": "orange",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
+      },
+      "macro": {
+        "enable": false,
+        "name": null,
+        "args": null,
+        "playWhen": null
+      },
+      "secondary": {
+        "enable": false
+      },
+      "source": {
+        "enable": false
+      },
+      "target": {
+        "enable": false
+      }
+    },
+    {
+      "id": "lancer-range-laser",
+      "label": "laser",
+      "menu": "range",
+      "metaData": {
+        "default": false,
+        "system": "lancer"
+      },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "spell",
+          "animation": "witchbolt",
+          "variant": "01",
+          "color": "blue",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
+      },
+      "macro": {
+        "enable": false,
+        "name": null,
+        "args": null,
+        "playWhen": null
+      },
+      "secondary": {
+        "enable": false
+      },
+      "source": {
+        "enable": false
+      },
+      "target": {
+        "enable": false
+      }
+    },
+    {
+      "id": "lancer-range-beam",
+      "label": "beam",
+      "menu": "range",
+      "metaData": {
+        "default": false,
+        "system": "lancer"
+      },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "spell",
+          "animation": "witchbolt",
+          "variant": "01",
+          "color": "purple",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
+      },
+      "macro": {
+        "enable": false,
+        "name": null,
+        "args": null,
+        "playWhen": null
+      },
+      "secondary": {
+        "enable": false
+      },
+      "source": {
+        "enable": false
+      },
+      "target": {
+        "enable": false
+      }
+    },
+    {
+      "id": "lancer-range-shotgun",
+      "label": "shotgun",
+      "menu": "range",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "weapon",
+          "animation": "bullet",
+          "variant": "regular",
+          "color": "orange",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-range-sniper",
+      "label": "sniper",
+      "menu": "range",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "weapon",
+          "animation": "bullet",
+          "variant": "regular",
+          "color": "white",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-range-mortar",
+      "label": "mortar",
+      "menu": "range",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "spell",
+          "animation": "firebolt",
+          "variant": "01",
+          "color": "orange",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-range-howitzer",
+      "label": "howitzer",
+      "menu": "range",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "spell",
+          "animation": "firebolt",
+          "variant": "01",
+          "color": "orange",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-range-nexus",
+      "label": "nexus",
+      "menu": "range",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "spell",
+          "animation": "witchbolt",
+          "variant": "01",
+          "color": "blue",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-range-pistol",
+      "label": "pistol",
+      "menu": "range",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "range",
+          "menuType": "weapon",
+          "animation": "bullet",
+          "variant": "regular",
+          "color": "white",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    }
+  ],
+  "ontoken": [
+    {
+      "id": "lancer-ontoken-overcharge",
+      "label": "overcharge",
+      "menu": "ontoken",
+      "metaData": {
+        "default": false,
+        "system": "lancer"
+      },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "energy",
+          "animation": "energystrand",
+          "variant": "01",
+          "color": "blue",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.5,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
+      },
+      "macro": {
+        "enable": false,
+        "name": null,
+        "args": null,
+        "playWhen": null
+      },
+      "secondary": {
+        "enable": false
+      },
+      "source": {
+        "enable": false
+      },
+      "target": {
+        "enable": false
+      }
+    },
+    {
+      "id": "lancer-ontoken-tech-attack",
+      "label": "tech attack",
+      "menu": "ontoken",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "energy",
+          "animation": "energystrand",
+          "variant": "01",
+          "color": "blue",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.5, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-ontoken-invade",
+      "label": "invade",
+      "menu": "ontoken",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "energy",
+          "animation": "energystrand",
+          "variant": "01",
+          "color": "purple",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.5, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-ontoken-lockon",
+      "label": "lock on",
+      "menu": "ontoken",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "marker",
+          "animation": "energystrand",
+          "variant": "01",
+          "color": "yellow",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-ontoken-scan",
+      "label": "scan",
+      "menu": "ontoken",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "energy",
+          "animation": "energystrand",
+          "variant": "01",
+          "color": "green",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.5, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    }
+  ],
+  "templatefx": [],
+  "aura": [],
+  "preset": [],
+  "aefx": [
+    {
+      "id": "lancer-aefx-lockon",
+      "label": "lock on",
+      "menu": "aefx",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "marker",
+          "animation": "energystrand",
+          "variant": "01",
+          "color": "yellow",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-aefx-exposed",
+      "label": "exposed",
+      "menu": "aefx",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "energy",
+          "animation": "energystrand",
+          "variant": "01",
+          "color": "orange",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.4, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-aefx-impaired",
+      "label": "impaired",
+      "menu": "aefx",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "conditions",
+          "animation": "conditions",
+          "variant": "03",
+          "color": "purple",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-aefx-jammed",
+      "label": "jammed",
+      "menu": "aefx",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "conditions",
+          "animation": "conditions",
+          "variant": "04",
+          "color": "blue",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-aefx-shredded",
+      "label": "shredded",
+      "menu": "aefx",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "conditions",
+          "animation": "conditions",
+          "variant": "01",
+          "color": "red",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-aefx-slowed",
+      "label": "slowed",
+      "menu": "aefx",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "conditions",
+          "animation": "conditions",
+          "variant": "02",
+          "color": "blue",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-aefx-stunned",
+      "label": "stunned",
+      "menu": "aefx",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "conditions",
+          "animation": "conditions",
+          "variant": "05",
+          "color": "yellow",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    },
+    {
+      "id": "lancer-aefx-invisible",
+      "label": "invisible",
+      "menu": "aefx",
+      "metaData": { "default": false, "system": "lancer" },
+      "primary": {
+        "video": {
+          "dbSection": "static",
+          "menuType": "conditions",
+          "animation": "conditions",
+          "variant": "06",
+          "color": "blue",
+          "enableCustom": false,
+          "customPath": ""
+        },
+        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
+        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+      },
+      "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
+      "secondary": { "enable": false },
+      "source": { "enable": false },
+      "target": { "enable": false }
+    }
+  ],
+  "version": 5
+}

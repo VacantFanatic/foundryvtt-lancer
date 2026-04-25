@@ -15,6 +15,9 @@ export type DamageFlag = {
   damageResults: LancerFlowState.DamageResultSerialized[];
   critDamageResults: LancerFlowState.DamageResultSerialized[];
   targetDamageResults: LancerFlowState.DamageTargetResultSerialized[];
+  attackerUuid?: string;
+  attackerItemUuid?: string;
+  title?: string;
   ap: boolean;
   paracausal: boolean;
   half_damage: boolean;
@@ -75,23 +78,33 @@ export class DamageRollFlow extends Flow<LancerFlowState.DamageRollData> {
   }
 }
 
+function normalizeFlowTargetToken(target: unknown): LancerToken | null {
+  if (!target) return null;
+  if (target instanceof LancerTokenDocument) {
+    return (target.object as LancerToken | null) ?? null;
+  }
+  if (target instanceof LancerToken) return target;
+  const maybeToken = target as { document?: { documentName?: string } };
+  if (maybeToken?.document?.documentName === "Token") return target as LancerToken;
+  return null;
+}
+
+function tokenUuid(target: unknown): string | null {
+  const token = normalizeFlowTargetToken(target);
+  return token?.document?.uuid ?? null;
+}
+
 async function initDamageData(state: FlowState<LancerFlowState.DamageRollData>): Promise<boolean> {
   if (!state.data) throw new TypeError(`Damage flow state missing!`);
 
-  // Convert any hit_result.target LancerTokenDocuments into LancerTokens
+  // Normalize targets to token objects across Foundry v14 document/object variations.
   state.data.hit_results = state.data.hit_results
     .map(hr => {
-      let target: any = hr.target;
-      if (target instanceof LancerTokenDocument) {
-        const tokens = target.actor?.getActiveTokens() || [];
-        if (!tokens.length) return null;
-        target = tokens[0];
-      } else if (!(target instanceof LancerToken)) {
-        return null;
-      }
+      const target = normalizeFlowTargetToken(hr.target);
+      if (!target) return null;
       return {
         ...hr,
-        target: target as LancerToken,
+        target,
       };
     })
     .filter(hr => hr !== null) as LancerFlowState.HitResult[];
@@ -140,9 +153,8 @@ async function setDamageTags(state: FlowState<LancerFlowState.DamageRollData>): 
 async function setDamageTargets(state: FlowState<LancerFlowState.DamageRollData>): Promise<boolean> {
   if (!state.data) throw new TypeError(`Damage flow state missing!`);
   for (const hr of state.data.hit_results) {
-    if (hr.target instanceof LancerToken) {
-      hr.target.setTarget(true, { releaseOthers: false });
-    }
+    const target = normalizeFlowTargetToken(hr.target);
+    if (target) target.setTarget(true, { releaseOthers: false });
   }
   return true;
 }
@@ -150,11 +162,15 @@ async function setDamageTargets(state: FlowState<LancerFlowState.DamageRollData>
 async function showDamageHUD(state: FlowState<LancerFlowState.DamageRollData>): Promise<boolean> {
   if (!state.data) throw new TypeError(`Damage flow state missing!`);
   try {
+    const inheritedTargets = state.data.hit_results
+      .map(hr => normalizeFlowTargetToken(hr.target))
+      .filter((t): t is LancerToken => t !== null);
+    const startingTargets = inheritedTargets.length ? inheritedTargets : Array.from(game.user!.targets);
     // Initialize damage HUD data from the flow state
     state.data.damage_hud_data = DamageHudData.fromParams(state.item ?? state.actor, {
       tags: state.data.tags,
       title: state.data.title,
-      targets: Array.from(game.user!.targets),
+      targets: startingTargets,
       hitResults: state.data.hit_results,
       ap: state.data.ap,
       paracausal: state.data.paracausal,
@@ -166,9 +182,15 @@ async function showDamageHUD(state: FlowState<LancerFlowState.DamageRollData>): 
 
     // Filter state.data.hit_results down to those targets present in the HUD data
     state.data.hit_results = state.data.hit_results
-      .filter(hr => state.data?.damage_hud_data?.targets.some(t => hr.target.id === t.target.id))
+      .filter(hr => {
+        const hrUuid = tokenUuid(hr.target);
+        return !!hrUuid && state.data?.damage_hud_data?.targets.some(t => tokenUuid(t.target) === hrUuid);
+      })
       .map(hr => {
-        const hudTarget = state.data?.damage_hud_data?.targets.find(t => hr.target.id === t.target.id)!;
+        const hrUuid = tokenUuid(hr.target);
+        const hudTarget = state.data?.damage_hud_data?.targets.find(t => tokenUuid(t.target) === hrUuid);
+        // Preserve original hit/crit if HUD target mapping is unavailable.
+        if (!hudTarget) return hr;
         return {
           ...hr,
           hit: hudTarget.quality === HitQuality.Hit,
@@ -178,7 +200,9 @@ async function showDamageHUD(state: FlowState<LancerFlowState.DamageRollData>): 
 
     // Add hit results for any targets in HUD data which aren't in hit results already
     for (const t of state.data.damage_hud_data.targets) {
-      if (state.data.hit_results.some(hr => hr.target.id === t.target.id)) continue;
+      const tUuid = tokenUuid(t.target);
+      if (!tUuid) continue;
+      if (state.data.hit_results.some(hr => tokenUuid(hr.target) === tUuid)) continue;
       state.data.hit_results.push({
         target: t.target,
         total: "10",
@@ -529,6 +553,29 @@ async function printDamageCard(
 ): Promise<boolean> {
   if (!state.data) throw new TypeError(`Damage flow state missing!`);
   const template = options?.template || `systems/${game.system.id}/templates/chat/damage-card.hbs`;
+  if (!state.data.targets.length && state.data.hit_results.length) {
+    // Fallback: rebuild target rows from hit results so chat cards retain Apply Damage controls.
+    state.data.targets = state.data.hit_results.map(hr => {
+      const damagePool = hr.crit
+        ? state.data.crit_damage_results
+        : hr.hit
+          ? state.data.damage_results
+          : (state.data.reliable_results ?? []);
+      const targetUuid = hr.target.document.uuid;
+      const damage = damagePool
+        .filter(dr => !dr.target || dr.target.document.uuid === targetUuid)
+        .map(dr => ({ type: dr.d_type, amount: dr.roll.total || 0 }));
+      return {
+        target: hr.target,
+        damage,
+        hit: hr.hit,
+        crit: hr.crit,
+        ap: state.data.ap,
+        paracausal: state.data.paracausal,
+        half_damage: state.data.half_damage,
+      };
+    });
+  }
   const damageData: DamageFlag = {
     // Targets need to be replaced with their UUIDs to avoid circular references
     damageResults: state.data.damage_results.map(dr => ({
@@ -543,6 +590,9 @@ async function printDamageCard(
       ...t,
       target: t.target.document.uuid,
     })),
+    attackerUuid: state.actor.uuid,
+    attackerItemUuid: state.item?.uuid,
+    title: state.data.title,
     ap: state.data.ap,
     paracausal: state.data.paracausal,
     half_damage: state.data.half_damage,
@@ -661,8 +711,9 @@ export async function rollDamageCallback(event: JQuery.ClickEvent) {
   }
   const hit_results: LancerFlowState.HitResult[] = [];
   for (const t of attackData.targets) {
-    const target = (await fromUuid(t.uuid)) as LancerToken | null;
-    if (!target || target.documentName !== "Token") {
+    const targetDoc = (await fromUuid(t.uuid)) as unknown;
+    const target = normalizeFlowTargetToken(targetDoc);
+    if (!target || target.document?.documentName !== "Token") {
       ui.notifications?.error("Invalid target for damage roll");
       continue;
     }
@@ -723,8 +774,10 @@ export async function applyDamage(event: JQuery.ClickEvent) {
   }
   const hydratedDamageTargets = damageData.targetDamageResults
     .map(tdr => {
-      const target = fromUuidSync(tdr.target);
-      if (!target || !(target instanceof LancerTokenDocument)) return null;
+      const targetDoc = fromUuidSync(tdr.target) as unknown;
+      const targetToken = normalizeFlowTargetToken(targetDoc);
+      const target = targetToken?.document ?? null;
+      if (!target) return null;
       return {
         ...tdr,
         target,
@@ -750,8 +803,10 @@ export async function applyDamage(event: JQuery.ClickEvent) {
   const addBurn = data.addBurn === "true";
   const isCrit = data.crit === "true";
   const isHit = data.hit === "true";
-  const target = await fromUuid(data.target);
-  if (!target || !(target instanceof LancerTokenDocument)) {
+  const targetDoc = (await fromUuid(data.target)) as unknown;
+  const targetToken = normalizeFlowTargetToken(targetDoc);
+  const target = targetToken?.document ?? null;
+  if (!target) {
     ui.notifications?.error("Invalid target UUID for damage application");
     return;
   }

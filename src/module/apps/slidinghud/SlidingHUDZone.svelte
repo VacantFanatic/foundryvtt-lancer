@@ -50,7 +50,11 @@
   $: damageData = huds.damage.data;
   $: {
     if (damageData) {
-      damageData.replaceTargets($userTargets);
+      const hasUserTargets = ($userTargets?.length ?? 0) > 0;
+      const hasDamageTargets = (damageData.targets?.length ?? 0) > 0;
+      if (hasUserTargets || !hasDamageTargets) {
+        damageData.replaceTargets($userTargets);
+      }
       damageData = damageData;
     }
   }
