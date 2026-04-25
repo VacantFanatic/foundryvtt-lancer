@@ -202,7 +202,7 @@
   "secondaryTokenAttribute": "heat",
   "url": "https://github.com/VacantFanatic/foundryvtt-lancer",
   "manifest": "https://github.com/VacantFanatic/foundryvtt-lancer/releases/latest/download/system.json",
-  "download": "https://github.com/Eranziel/foundryvtt-lancer/releases/download/v2.11.9/lancer-v2.11.9.zip",
+  "download": "https://github.com/VacantFanatic/foundryvtt-lancer/releases/download/v2.11.9/lancer-v2.11.9.zip",
   "license": "GNU GPLv3",
   "readme": "https://github.com/VacantFanatic/foundryvtt-lancer/blob/master/README.md",
   "bugs": "https://github.com/VacantFanatic/foundryvtt-lancer/issues/new/choose",
