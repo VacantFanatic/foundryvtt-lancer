@@ -51,13 +51,12 @@ jobs:
         run: |
           REPO_BASE="https://github.com/VacantFanatic/foundryvtt-lancer"
           VERSION="${{ steps.vars.outputs.version }}"
-
-          MANIFEST_URL='${{ fromJSON(steps.manifest.outputs.data).url }}'
-          MANIFEST_MANIFEST='${{ fromJSON(steps.manifest.outputs.data).manifest }}'
-          MANIFEST_DOWNLOAD='${{ fromJSON(steps.manifest.outputs.data).download }}'
-          MANIFEST_README='${{ fromJSON(steps.manifest.outputs.data).readme }}'
-          MANIFEST_BUGS='${{ fromJSON(steps.manifest.outputs.data).bugs }}'
-          MANIFEST_CHANGELOG='${{ fromJSON(steps.manifest.outputs.data).changelog }}'
+          MANIFEST_URL="$(python3 -c "import json;print(json.load(open('src/system.json', encoding='utf-8'))['url'])")"
+          MANIFEST_MANIFEST="$(python3 -c "import json;print(json.load(open('src/system.json', encoding='utf-8'))['manifest'])")"
+          MANIFEST_DOWNLOAD="$(python3 -c "import json;print(json.load(open('src/system.json', encoding='utf-8'))['download'])")"
+          MANIFEST_README="$(python3 -c "import json;print(json.load(open('src/system.json', encoding='utf-8'))['readme'])")"
+          MANIFEST_BUGS="$(python3 -c "import json;print(json.load(open('src/system.json', encoding='utf-8'))['bugs'])")"
+          MANIFEST_CHANGELOG="$(python3 -c "import json;print(json.load(open('src/system.json', encoding='utf-8'))['changelog'])")"
 
           expected_manifest="${REPO_BASE}/releases/latest/download/system.json"
           expected_download="${REPO_BASE}/releases/download/v${VERSION}/lancer-v${VERSION}.zip"
