@@ -55,6 +55,45 @@ export const registerSettings = function () {
     default: false,
   });
 
+  game.settings.register(game.system.id, LANCER.setting_autoanimations_enabled, {
+    name: "lancer.autoAnimations.enabled.name",
+    hint: "lancer.autoAnimations.enabled.hint",
+    scope: "client",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  game.settings.register(game.system.id, LANCER.setting_autoanimations_damage, {
+    name: "lancer.autoAnimations.damage.name",
+    hint: "lancer.autoAnimations.damage.hint",
+    scope: "client",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  game.settings.register(game.system.id, LANCER.setting_autoanimations_autorec_mode, {
+    name: "lancer.autoAnimations.autorecMode.name",
+    hint: "lancer.autoAnimations.autorecMode.hint",
+    scope: "world",
+    config: true,
+    type: String,
+    choices: {
+      off: "lancer.autoAnimations.autorecMode.off",
+      merge: "lancer.autoAnimations.autorecMode.merge",
+      overwrite: "lancer.autoAnimations.autorecMode.overwrite",
+    },
+    default: "off",
+  });
+
+  game.settings.register(game.system.id, LANCER.setting_autoanimations_autorec_last_apply, {
+    scope: "world",
+    config: false,
+    type: String,
+    default: "",
+  });
+
   game.settings.register(game.system.id, LANCER.setting_ui_theme, {
     name: "lancer.uiTheme.name",
     hint: "lancer.uiTheme.hint",

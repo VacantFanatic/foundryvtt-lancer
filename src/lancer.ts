@@ -107,6 +107,7 @@ import { registerTours } from "./module/tours/register-tours";
 import { get_pack_id } from "./module/util/doc";
 import handleSocketMessage from "./module/socket";
 import preloadHUDs from "./module/apps/slidinghud/preload";
+import { applyLancerAutorecMenuIfConfigured, registerAutoAnimationsHooks } from "./module/integrations/autoanimations";
 
 const lp = LANCER.log_prefix;
 
@@ -400,6 +401,8 @@ Hooks.once("ready", async function () {
 
   // Fully populate token statuses, using a combination of the setting and items
   await LancerActiveEffect.updateIcons();
+  await registerAutoAnimationsHooks();
+  await applyLancerAutorecMenuIfConfigured();
 
   Hooks.on("updateCompendium", async collection => {
     if (collection?.metadata?.id == get_pack_id(EntryType.STATUS)) {

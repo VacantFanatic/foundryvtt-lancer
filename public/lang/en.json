@@ -224,6 +224,23 @@
       "name": "Floating Damage Numbers",
       "hint": "Enable floating damage numbers for changes to stats, including applying damage rolls. This setting is separate for each client."
     },
+    "autoAnimations": {
+      "enabled": {
+        "name": "Automated Animations Integration",
+        "hint": "Enable Lancer support for the Automated Animations module when it is installed and active."
+      },
+      "damage": {
+        "name": "Automated Animations on Damage Cards",
+        "hint": "Trigger Automated Animations when Lancer damage cards are posted, in addition to attack cards."
+      },
+      "autorecMode": {
+        "name": "Auto-Apply Lancer AA Global Menu",
+        "hint": "On startup, import the bundled Lancer AutoAnimations Global Recognition menu. Use Merge to keep existing entries, or Overwrite to replace category menus.",
+        "off": "Off",
+        "merge": "Merge Lancer menu",
+        "overwrite": "Overwrite with Lancer menu"
+      }
+    },
     "uiTheme": {
       "name": "UI Theme",
       "hint": "Colour scheme for the UI, echoing Comp/Con's themes.",

@@ -430,11 +430,16 @@ export async function rollAttacks(
   if (!state.data.acc_diff) throw new TypeError(`Accuracy/difficulty data missing!`);
 
   state.data.attack_rolls = attackRolls(state.data.grit + state.data.flat_bonus, state.data.acc_diff);
+  if (!state.data.attack_rolls.targeted.length && (game.user?.targets?.size ?? 0) > 0) {
+    // Fallback for v14/UI edge cases where HUD target list is empty but canvas targets exist.
+    state.data.attack_rolls.targeted = Array.from(game.user?.targets ?? []).map(target => ({
+      target,
+      roll: state.data.attack_rolls.roll,
+      usedLockOn: false,
+    }));
+  }
 
-  if (
-    game.settings.get(game.system.id, LANCER.setting_automation).attacks &&
-    state.data.attack_rolls.targeted.length > 0
-  ) {
+  if (state.data.attack_rolls.targeted.length > 0) {
     let data = await Promise.all(
       state.data.attack_rolls.targeted.map(async targetingData => {
         let target = targetingData.target;

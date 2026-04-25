@@ -1,3 +1,24 @@
+# 2.11.9 (2026-04-25)
+
+## Added
+
+- Built-in Automated Animations integration for Lancer attack and damage chat cards, with system settings to enable integration, control damage-phase triggers, and choose bundled autorec auto-apply mode (`off`/`merge`/`overwrite`).
+- Bundled Lancer AutoAnimations recognition menu (`lancer-autorec-menu.json`) including starter attack, damage, and Active Effect mappings.
+- Startup autorec auto-apply flow for GMs when AutoAnimations is installed, with persistent apply-tag tracking to avoid unnecessary reimports.
+
+## Changed
+
+- AutoAnimations integration now reads item names from Lancer chat card headers (including stripping `DAMAGE` suffixes) to improve autorec matching against displayed weapon/system names.
+- Build output now places the bundled Lancer autorec menu next to `system.json` in distribution output for simpler runtime loading.
+- Damage HUD target reconciliation now prioritizes inherited attack hit targets and preserves them when user target sets change during HUD updates.
+
+## Fixed
+
+- Fixed compatibility issues with Foundry v14 token/document resolution that could drop hit targets, remove damage target rows, hide Apply Damage controls, and prevent damage-triggered animations.
+- Fixed damage flow target propagation from attack cards so hit/miss/crit context is retained through damage roll and application paths.
+- Fixed Active Effect animation crashes caused by malformed or partial AutoAnimations autorec menu entries by sanitizing menu structures and enforcing missing option defaults.
+- Added runtime workarounds for known AutoAnimations 7.0.2 hook failures in Lancer/Active Effect paths, preventing integration-breaking exceptions.
+
 # 2.11.7 (2026-04-24)
 
 ## Added
@@ -38,7 +59,7 @@
 
 # 2.11.2 (2026-04-03)
 
-## Bug Fixes
+## Fixed
 
 - #892 - Fix bug which cleared pilots' prototype token name when editing pilot sheets.
 - #913 - Add d3 to dice configuration settings.
@@ -46,42 +67,42 @@
 
 # 2.11.1 (2025-07-17)
 
-## Bug Fixes
+## Fixed
 
 - #884 - Fix a couple bugs with Monstrosity structure results. Fixed missing localizations, added dismemberment damage roll. (This is entirely my fault and not @tw-blob's, as I did not merge the latest version of their work for 2.11.0.)
 
 # 2.11.0 (2025-07-05)
 
-## Features
+## Added
 
 - #476 - Add built-in support for the Monstrosity structure table. Thanks, @tw-blob!
 
-## Bug Fixes
+## Fixed
 
 - #863 - Fix a bug causing way too many deployables to be created during pilot import.
 - #882 - Ensure that players get their own burn check prompts, instead of the GM always receiving them.
 
 # 2.10.3 (2025-06-10)
 
-## Bug Fixes
+## Fixed
 
 - Fix another bug causing the stat change for Stunned to not be applied.
 
 # 2.10.2 (2025-06-10)
 
-## Bug Fixes
+## Fixed
 
 - Fix a bug causing status description text to not be copied from world/compendium items.
 
 # 2.10.1 (2025-06-09)
 
-## Bug Fixes
+## Fixed
 
 - Fix a bug causing world/compendium status items to not be included in the token status menu.
 
 # 2.10.0 (2025-06-08)
 
-## Features
+## Added
 
 - Attack HUD improvements! The attack HUD now:
   - Displays the attacker's name in the title.
@@ -92,7 +113,7 @@
 - Add an Active Effect to the Stunned status so that it sets the recipient's evasion to 5.
 - #857 - Bond items have a new default image, and fixed a bug with NPC feature default images.
 
-## Bug Fixes
+## Fixed
 
 - #871 - Fix a display issue for text inside `<p>` tags for NPC features, mech systems, etc...
 - #872 - Remove the "Unlink" context menu option for weapons & systems, as it serves no real purpose and can cause errors for modules.
@@ -100,7 +121,7 @@
 
 # 2.9.0 (2025-05-31)
 
-## Features
+## Added
 
 - #829 - Basic and Invade tech attacks now include a "Roll Damage" button for 2 heat.
 - #831 - Pilot sheets now display reserve actions.
@@ -108,7 +129,7 @@
 - #843 - Pilot sheets now display the "Effect" data for armor and gear.
 - If a token has the "Cover - Hard" or "Cover - Soft" status when targeted with an attack, the attack HUD will automatically select the corresponding cover state to use in the roll.
 
-## Bug Fixes
+## Fixed
 
 - #832, #833 - Display pilot armor, weapon, and gear actions on pilot sheet.
 - #858 - New scenes once again have fog exploration disabled by default.
@@ -116,29 +137,29 @@
 - #861, #862 - Improved token status handling. Fixed an issue which could prevent the Resistance statuses from populating (important because they have automation attached), and changed the priority so that world items are most important, then Status Icon Configuration setting, and finally compendium items (to backfill any missing core/LCP conditions/statuses).
 - #864 - When a structure roll results in a "Crushing Hit", set the mech/NPC's structure to 0. This will allow automation modules/macros to work more seamlessly with the system's structure automation.
 
-## Misc
+## Changed
 
 - #865 - Add new Flows to `docs/flow_api.md`.
 
 # 2.8.1 (2025-04-22)
 
-## Bug Fixes
+## Fixed
 
 - Scan (Journal) macro - Fix a bug with ownership of journals, so the generated journals can once again be viewed by all players. Make sure you drag a fresh copy of the macro from the compendium.
 
-## Misc
+## Changed
 
 - Automatically disable the Lancer Initiative module, alongside an informative popup. The module is for adding Lancer-style initiative to other game systems; it is fully integrated with the Lancer system so enabling the module on top can cause issues.
 
 # 2.8.0 (2025-03-30)
 
-## Features
+## Added
 
 - #763 - Dragging a Status/Condition item onto an actor sheet or token will add the corresponding status to the token. You can also drag them from chat messages, like the structure/stress results!
 - #793 - Attack HUD Spotter integration now detects and uses the range increase from House Guard 1.
 - Existing Premade NPCs (in the compendium) are now updated when the corresponding LCP is re-imported.
 
-## Bug Fixes
+## Fixed
 
 - #846 - Fix issues around manually creating & populating NPC classes, templates, and features. (Hopefully.)
 - #848 - Change default NPC heatcap to 0 so that NPCs without a heatcap (squads, monstrosity, etc...) get created with heatcap 0 instead of 5.
@@ -146,7 +167,7 @@
 
 # 2.7.2 (2025-03-11)
 
-## Bug Fixes
+## Fixed
 
 - #818 - Fix pilot import from Comp/Con JSON when using Cyrillic (and other non-ASCII) characters.
 - #837 - Show pilot armor descriptions, and pilot armor and weapon tags.
@@ -157,30 +178,30 @@
 
 # 2.7.1 (2025-03-05)
 
-## Bug Fixes
+## Fixed
 
 - Fix a bug causing reserves from manually selected LCP files to not be imported.
 - Fix a bug causing the system update chat message to be duplicated every time the game page loads.
 
-## Misc
+## Changed
 
 - Give the "Clear Compendiums" button distinct styling and a confirmation prompt.
 - Update the "Lancer Help" and first launch dialogs to DialogV2.
 
 # 2.7.0 (2025-03-04)
 
-## Features
+## Added
 
 - #654 - Compendium Manager Revamp. The LANCER Compendium Manager has been completely overhauled, including built-in importing of official data, multi-file select, and a little eye candy. Check out the tour!
 - Cut down on the amount of pop-up spam during/after world migration. Move acknowledgements and legal info into the system info journal.
 
-## Bug Fixes
+## Fixed
 
 - #431 - Reserves are now imported from LCPs.
 
 # 2.6.2 (2025-03-01)
 
-## Bug Fixes
+## Fixed
 
 - #806 - Automatically add flat bonus to attack HUD for "ranged_attack" and "tech_attack" bonus from items.
 - #809 - Add Deployable/Drone/Mine tags to items which have the matching kind of deployable, to match Comp/Con's similar functionality.
@@ -190,17 +211,17 @@
 
 # 2.6.1 (2025-02-26)
 
-## Bug Fixes
+## Fixed
 
 - #823 - Fix a bug causing Emperors to have "NaN" max hp.
 
 # 2.6.0 (2025-02-16)
 
-## Features
+## Added
 
 - #650 - v12 Support! This release brings support for Foundry v12 and drops support for Foundry v11. Huge thanks to @BoltsJ for doing the heavy lifting!
 
-## Bug Fixes
+## Fixed
 
 - Fix a bug during import causing pilots to be set as the deployer of their mech's deployables.
 
@@ -208,17 +229,17 @@
 
 This will be the final release for Foundry v11, barring any critical bug fixes.
 
-## Features
+## Added
 
 - #799 - Add a space for configurable flat attack bonuses in the attack HUD. This also adds a display for non-configurable flat bonuses, such as Grit or Tech Attack. Thanks, @eamondo2!
 
-## Misc
+## Changed
 
 - #753 - Add an Intangible icon to Hayley's Condition & Status icon set. Thanks for providing the icon, @DirkMcThermot!
 - Change the Comp/Con login dialog to say "Comp/Con Email" instead of "Comp/Con Username" to reduce confusion.
 - Use the "Down and Out" status icon for the defeated state, instead of the default skull icon. If you wish to keep the old skull icon instead, make a "Down and Out" status item in your world and assign it the image path `icons/svg/skull.svg`.
 
-## Bug Fixes
+## Fixed
 
 - #781 - Fix some styling so "undo damage" buttons do not bleed out of the chat card area.
 - #801 - Fix automation for consuming lock on with attacks. The lock on status will once again be removed after the attack, as long as a GM user is logged in.
@@ -228,7 +249,7 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 
 # 2.4.3 (2024-11-30)
 
-## Bug Fixes
+## Fixed
 
 - #798 - Fix a bug which could allow floating text to appear over tokens with no change. e.g. "-0 HP".
 - Fix a bug preventing migrations from completing.
@@ -237,7 +258,7 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 
 # 2.4.2 (2024-11-22)
 
-## Bug Fixes
+## Fixed
 
 - #782 - Drastically improve the legibility of the system settings windows (status icon config, automation config, action tracker config).
 - #791 - Fix a bug preventing targetless damage rolls from being displayed in chat.

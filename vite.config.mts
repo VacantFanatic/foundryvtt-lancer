@@ -55,6 +55,16 @@ async function mirrorDistToFoundrySystem(sourceDir: string, targetDir: string) {
   }
 }
 
+async function copyBundledAutorecToDist() {
+  const source = path.resolve("resources/autoanimations/lancer-autorec-menu.json");
+  const dest = path.resolve(DIST_DIR, "lancer-autorec-menu.json");
+  try {
+    await fs.copyFile(source, dest);
+  } catch (err) {
+    console.warn("[mirror-build-to-foundry-system] Could not copy lancer-autorec-menu.json into dist root.", err);
+  }
+}
+
 export default defineConfig({
   base: "/systems/lancer/",
   server: {
@@ -106,6 +116,7 @@ export default defineConfig({
       async closeBundle() {
         const sourceDir = path.resolve(DIST_DIR);
         const targetDir = path.resolve(FOUNDRY_SYSTEM_DIR);
+        await copyBundledAutorecToDist();
         await fs.mkdir(targetDir, { recursive: true });
         await removeRootMjsArtifacts(targetDir);
         await mirrorDistToFoundrySystem(sourceDir, targetDir);
