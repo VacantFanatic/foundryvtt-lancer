@@ -73,7 +73,7 @@ export async function updateActions(actor: LancerActor, actions: ActionTrackingD
  * @param type specific action to spend, or undefined for end-turn behavior.
  */
 export async function modAction(actor: LancerActor, spend: boolean, type?: ActionType) {
-  let actions = getActions(actor);
+  let actions = foundry.utils.deepClone(getActions(actor));
   if (actions) {
     switch (type) {
       case "move": // TODO: replace with tooltip for movement counting.
@@ -116,7 +116,7 @@ export async function modAction(actor: LancerActor, spend: boolean, type?: Actio
   }
 }
 export async function toggleAction(actor: LancerActor, type: ActionType) {
-  let actions = getActions(actor);
+  const actions = getActions(actor);
   if (actions) {
     if (actions[type]) {
       await modAction(actor, true, type);
