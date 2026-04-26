@@ -1,8 +1,8 @@
-# 2.11.11 (2026-04-26)
+# 2.11.10 (2026-04-26)
 
 ## Changed
 
-- Bumped manifest version to `2.11.11` and updated release download metadata in `src/system.json`.
+- Updated local release metadata in `src/system.json` to match the current latest tag (`v2.11.10`).
 
 ## Fixed
 
