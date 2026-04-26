@@ -123,7 +123,8 @@ export class LancerActionManager extends Application {
   private async resetActions() {
     if (this.target) {
       console.log("Resetting " + this.target.name);
-      modAction(this.target, false);
+      await modAction(this.target, false);
+      await this.update();
 
       // await ChatMessage.create({ user: game.userId, whisper: game.users!.contents.filter(u => u.isGM).map(u => u.id), content: `${this.target.name} has had their actions manually reset.` }, {})
     }
@@ -136,21 +137,24 @@ export class LancerActionManager extends Application {
     this.dragElement(html);
 
     // Enable reset.
-    html.find("#action-manager-reset").on("click", e => {
+    html.find("#action-manager-reset").on("click", async e => {
       e.preventDefault();
       if (this.canMod()) {
-        this.resetActions();
+        await this.resetActions();
       } else {
         console.log(`${game.user?.name} :: Users currently not allowed to reset actions through action manager.`);
       }
     });
 
     // Enable action toggles.
-    html.find("a.action[data-action]").on("click", e => {
+    html.find("a.action[data-action]").on("click", async e => {
       e.preventDefault();
       if (this.canMod()) {
         const action = e.currentTarget.dataset.action;
-        action && this.target && toggleAction(this.target, action as ActionType);
+        if (action && this.target) {
+          await toggleAction(this.target, action as ActionType);
+          await this.update();
+        }
       } else {
         console.log(`${game.user?.name} :: Users currently not allowed to toggle actions through action manager.`);
       }
