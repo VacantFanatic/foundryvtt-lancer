@@ -549,6 +549,10 @@
     "EnableInitiativeDesc": "Adds a button to owned combatants for rolling initiative",
     "AddActivation": "Add Activation",
     "RemoveActivation": "Remove Activation",
-    "UndoActivation": "Undo Activation"
+    "UndoActivation": "Undo Activation",
+    "COMBAT": {
+      "activateCombatantTurn": "Take Turn",
+      "deactivateCombatantTurn": "End Turn"
+    }
   }
 }
