@@ -67,9 +67,11 @@
             class="lancer-button add-damage-type small"
             type="button"
             on:click={addBonusDamage}
+            aria-label="Add bonus damage type"
+            title="Add bonus damage type"
             data-tooltip="Add a bonus damage type for only this target"
           >
-            <i class="mdi mdi-plus-thick" />
+            <i class="mdi mdi-plus-thick"></i>
           </button>
         {/if}
       </span>
@@ -83,9 +85,11 @@
           class="lancer-button add-damage-type"
           type="button"
           on:click={addBonusDamage}
+          aria-label="Add bonus damage type"
+          title="Add bonus damage type"
           data-tooltip="Add a bonus damage type for only this target"
         >
-          <i class="mdi mdi-plus-thick" />
+          <i class="mdi mdi-plus-thick"></i>
         </button>
       {/if}
     </div>

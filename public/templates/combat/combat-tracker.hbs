@@ -69,29 +69,29 @@
                         {{#if this.hasRolled}}
                         <span class="initiative" style="flex: 0 0 1.5em">{{this.initiative}}</span>
                         {{else if this.owner}}
-                        <a class="combatant-control" aria-label="{{localize 'COMBAT.InitiativeRoll'}}" role="button" data-tooltip"COMBAT.InitiativeRoll" data-control="rollInitiative">
+                        <a class="combatant-control" aria-label="{{localize 'COMBAT.InitiativeRoll'}}" role="button" data-tooltip="{{localize 'COMBAT.InitiativeRoll'}}" data-control="rollInitiative">
                             <i class="fas fa-dice-d20"></i></a>
                         {{/if}}
                     {{/if}}
                     {{#if ../user.isGM}}
-                    <a class="combatant-control {{#if this.hidden}}active{{/if}}" aria-label="{{localize 'COMBAT.ToggleVis'}}" role="button" data-tooltip="COMBAT.ToggleVis" data-control="toggleHidden">
+                    <a class="combatant-control {{#if this.hidden}}active{{/if}}" aria-label="{{localize 'COMBAT.ToggleVis'}}" role="button" data-tooltip="{{localize 'COMBAT.ToggleVis'}}" data-control="toggleHidden">
                         <i class="fas fa-eye-slash"></i>
                     </a>
-                    <a class="combatant-control {{#if this.defeated}}active{{/if}}" aria-label="{{localize 'COMBAT.ToggleDead'}}" role="button" data-tooltip="COMBAT.ToggleDead" data-control="toggleDefeated">
+                    <a class="combatant-control {{#if this.defeated}}active{{/if}}" aria-label="{{localize 'COMBAT.ToggleDead'}}" role="button" data-tooltip="{{localize 'COMBAT.ToggleDead'}}" data-control="toggleDefeated">
                         <i class="fas fa-skull"></i>
                     </a>
                     {{/if}}
                     {{#if this.canPing}}
-                    <a class="combatant-control" aria-label="{{localize 'COMBAT.PingCombatant'}}" role="button" data-tooltip="COMBAT.PingCombatant" data-control="pingCombatant">
+                    <a class="combatant-control" aria-label="{{localize 'COMBAT.PingCombatant'}}" role="button" data-tooltip="{{localize 'COMBAT.PingCombatant'}}" data-control="pingCombatant">
                         <i class="fa-solid fa-bullseye-arrow"></i>
                     </a>
                     {{/if}}
                     {{#unless ../user.isGM}}
-                    <a class="combatant-control" aria-label="{{localize 'COMBAT.PanToCombatant'}}" role="button" data-tooltip="COMBAT.PanToCombatant" data-control="panToCombatant">
+                    <a class="combatant-control" aria-label="{{localize 'COMBAT.PanToCombatant'}}" role="button" data-tooltip="{{localize 'COMBAT.PanToCombatant'}}" data-control="panToCombatant">
                         <i class="fa-solid fa-arrows-to-eye"></i>
                     </a>
                     {{/unless}}
-                    <span class="activations" data-tooltip="lancer.Actor.FIELDS.activations.label">
+                    <span class="activations" data-tooltip="{{localize 'lancer.Actor.FIELDS.activations.label'}}">
                         <i class="cci cci-activate"></i>
                         <span>{{this.activations}}</span>
                     </span>
