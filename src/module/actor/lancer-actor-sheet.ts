@@ -41,10 +41,138 @@ export class LancerActorSheet<T extends LancerActorType> extends foundry.appv1.s
   // Tracks collapse state between renders
   protected collapse_handler = new CollapseHandler();
 
+  /** Allow detached instances to render with a unique application id. */
+  get id(): string {
+    const detachedKey = (this.options as ActorSheet.Options & { detachedKey?: string })?.detachedKey;
+    if (!detachedKey) return super.id;
+    return `${super.id}-${detachedKey}`;
+  }
+
   static get defaultOptions(): ActorSheet.Options {
     return foundry.utils.mergeObject(super.defaultOptions, {
       scrollY: [".scroll-body"],
     });
+  }
+
+  protected _onDetachSheet(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this._detachSheet();
+  }
+
+  protected _triggerNativeDetach(): boolean {
+    const header = this.element?.find(".window-header");
+    if (!header?.length) return false;
+    const popoutWords = ["popout", "detach", "new window"];
+    const nativeControl = header
+      .find('a,button,[role="button"]')
+      .toArray()
+      .filter(el => !el.matches('[data-action="lancer-sheet-controls"]'))
+      .find(el => {
+        const action = (el.dataset?.action ?? "").toLowerCase();
+        if (["popout", "detach", "window-popout", "toggle-popout"].includes(action)) return true;
+        const classes = Array.from(el.classList).join(" ").toLowerCase();
+        if (classes.includes("popout") || classes.includes("detach")) return true;
+        const hay = `${el.getAttribute("aria-label") ?? ""} ${el.getAttribute("title") ?? ""} ${
+          el.getAttribute("data-tooltip") ?? ""
+        } ${el.textContent ?? ""}`.toLowerCase();
+        return popoutWords.some(word => hay.includes(word));
+      });
+    if (nativeControl) {
+      nativeControl.click();
+      return true;
+    }
+    return false;
+  }
+
+  protected _detachSheet(): void {
+    const nativePopout = (this as any)._onPopout;
+    if (typeof nativePopout === "function") {
+      nativePopout.call(this, new MouseEvent("click"));
+      return;
+    }
+    if (this._triggerNativeDetach()) return;
+    ui.notifications?.error("Unable to detach Application. You may have a pop-up blocker active.");
+  }
+
+  /** Open the actor portrait using Foundry's in-app ImagePopout viewer (V13+). */
+  protected _viewPortrait(): void {
+    const src = this.actor?.img;
+    if (!src) return;
+    const ImagePopoutCls =
+      (foundry as any).applications?.apps?.ImagePopout ?? (globalThis as any).ImagePopout;
+    if (!ImagePopoutCls) return;
+    try {
+      new ImagePopoutCls({
+        src,
+        uuid: this.actor.uuid,
+        window: { title: this.actor.name ?? "" },
+      }).render(true);
+    } catch (_err) {
+      new ImagePopoutCls(src, { title: this.actor.name }).render(true);
+    }
+  }
+
+  /** Find the existing native "Sheet" header control element, if rendered. */
+  protected _findHeaderSheetControl(header: JQuery): HTMLElement | null {
+    const candidates = header
+      .find('a,button,[role="button"]')
+      .toArray()
+      .filter(el => !el.matches('[data-action="lancer-sheet-controls"]'));
+    const isSheetEl = (el: HTMLElement): boolean => {
+      const action = (el.dataset?.action ?? "").toLowerCase();
+      if (action === "sheet" || action === "configuresheet") return true;
+      if (el.classList.contains("configure-sheet") || el.classList.contains("sheet")) return true;
+      const aria = (el.getAttribute("aria-label") ?? "").trim().toLowerCase();
+      const tip = (el.getAttribute("data-tooltip") ?? "").trim().toLowerCase();
+      const txt = (el.textContent ?? "").trim().toLowerCase();
+      const sheetLabel = (game.i18n.localize("SHEETS.Sheet") || "Sheet").trim().toLowerCase();
+      const sheetWord = "sheet";
+      const hay = `${aria} | ${tip} | ${txt}`;
+      if (aria === sheetLabel || aria === sheetWord) return true;
+      if (tip === sheetLabel || tip === sheetWord) return true;
+      if (txt === sheetLabel || txt === sheetWord) return true;
+      if (hay.includes(`configure ${sheetWord}`)) return true;
+      return false;
+    };
+    return candidates.find(isSheetEl) ?? null;
+  }
+
+  /** Add a direct header detach control for actor sheets. */
+  protected _injectHeaderDetachControl(): void {
+    const app = this.element;
+    if (!app?.length) return;
+    const header = app.find(".window-header");
+    if (!header.length || header.find('[data-action="lancer-sheet-detach-direct"]').length) return;
+    const findHeaderControl = (predicate: (el: HTMLElement) => boolean): HTMLElement | null =>
+      header
+        .find('a,button,[role="button"]')
+        .toArray()
+        .filter(el => !el.matches('[data-action="lancer-sheet-detach-direct"]'))
+        .find(predicate) ?? null;
+    const sheetControl = findHeaderControl(el => {
+      const action = (el.dataset?.action ?? "").toLowerCase();
+      if (action === "sheet" || action === "configuresheet") return true;
+      return el.classList.contains("configure-sheet");
+    });
+    const detachControl = $(
+      `<a class="header-control" data-action="lancer-sheet-detach-direct" data-tooltip="${game.i18n.localize(
+        "lancer.ActorSheet.Detach"
+      )}" aria-label="${game.i18n.localize("lancer.ActorSheet.Detach")}">
+        <i class="fas fa-up-right-from-square"></i>
+      </a>`
+    );
+    detachControl.on("click", ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      this._detachSheet();
+    });
+    const sheetAnchor = sheetControl ?? this._findHeaderSheetControl(header);
+    if (sheetAnchor) {
+      sheetAnchor.before(detachControl[0]);
+      return;
+    }
+    header.append(detachControl);
   }
 
   /* -------------------------------------------- */
@@ -55,6 +183,7 @@ export class LancerActorSheet<T extends LancerActorType> extends foundry.appv1.s
    */
   activateListeners(html: JQuery) {
     super.activateListeners(html);
+    this._injectHeaderDetachControl();
 
     // Enable collapse triggers.
     initializeCollapses(html);

@@ -25,7 +25,7 @@
   in:slide|global={{ delay: 100, duration: 300 }}
   out:slide|global={{ duration: 100 }}
 >
-  <i class="i--3 cci cci-{damage.type.toLowerCase()} damage--{damage.type.toLowerCase()}" data-tooltip={damage.type} />
+  <i class="i--3 cci cci-{damage.type.toLowerCase()} damage--{damage.type.toLowerCase()}" data-tooltip={damage.type}></i>
   <select class="damage-input-type" bind:value={damage.type}>
     {#each damageSelectOptions as damageOption}
       <option value={damageOption[1]} selected={selected(damageOption[1])}>
@@ -45,9 +45,11 @@
       class="lancer-button damage-delete"
       type="button"
       on:click={dispatchDelete}
+      aria-label="Remove damage type"
+      title="Remove damage type"
       data-tooltip="Remove this damage type"
     >
-      <i class="fas fa-trash" />
+      <i class="fas fa-trash"></i>
     </button>
   {/if}
 </div>

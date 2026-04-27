@@ -33,6 +33,11 @@
     "LancerDeployableSheet": "Lancer System Deployable Sheet",
     "LancerNPCSheet": "Lancer System NPC Sheet",
     "LancerItemSheet": "Lancer System Item Sheet",
+    "ActorSheet": {
+      "Detach": "Detach Window",
+      "Menu": "Window Controls",
+      "ViewPortrait": "View Portrait"
+    },
     "LancerFrameSheet": "Lancer System Frame Sheet",
     "LancerLicenseSheet": "Lancer System License Sheet",
     "LancerNPCClassSheet": "Lancer System NPC Class/Template Sheet",
@@ -522,6 +527,13 @@
         "teleport": "Teleport (Ability)"
       }
     }
+  },
+  "COMBAT": {
+    "ToggleVis": "Toggle Visibility",
+    "ToggleDead": "Toggle Defeated",
+    "PingCombatant": "Ping Combatant",
+    "PanToCombatant": "Pan to Combatant",
+    "InitiativeRoll": "Roll Initiative"
   },
   "LANCERINITIATIVE": {
     "IconSettingsMenu": "Icon Settings",

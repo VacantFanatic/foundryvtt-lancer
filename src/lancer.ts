@@ -108,6 +108,7 @@ import { get_pack_id } from "./module/util/doc";
 import handleSocketMessage from "./module/socket";
 import preloadHUDs from "./module/apps/slidinghud/preload";
 import { applyLancerAutorecMenuIfConfigured, registerAutoAnimationsHooks } from "./module/integrations/autoanimations";
+import { ACC_COLORSET, DIFF_COLORSET } from "./module/helpers/dice-colors";
 
 const lp = LANCER.log_prefix;
 
@@ -440,6 +441,36 @@ Hooks.once("ready", () => {
 Hooks.once("ready", () => {
   game.socket!.on(`system.${game.system.id}`, msg => {
     handleSocketMessage(msg);
+  });
+});
+
+// Register Dice So Nice colorsets for accuracy (green) and difficulty (red) dice
+Hooks.once("diceSoNiceReady", (dice3d: any) => {
+  dice3d.addColorset({
+    name: ACC_COLORSET,
+    description: "LANCER Accuracy",
+    category: "LANCER",
+    foreground: "#ffffff",
+    background: "#1f8a3a",
+    outline: "#0e3f1c",
+    edge: "#0e3f1c",
+    texture: "none",
+    material: "plastic",
+    font: "Arial",
+    visibility: "hidden",
+  });
+  dice3d.addColorset({
+    name: DIFF_COLORSET,
+    description: "LANCER Difficulty",
+    category: "LANCER",
+    foreground: "#ffffff",
+    background: "#b91c1c",
+    outline: "#3d0000",
+    edge: "#3d0000",
+    texture: "none",
+    material: "plastic",
+    font: "Arial",
+    visibility: "hidden",
   });
 });
 

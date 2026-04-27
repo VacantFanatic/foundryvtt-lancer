@@ -1,14 +1,16 @@
-# 2.11.11 (2026-04-26)
+# 2.11.13 (2026-04-27)
 
 ## Changed
 
-- Bumped manifest version to `2.11.11` and updated release download metadata in `src/system.json`.
+- Bumped manifest version to `2.11.13` and updated release download metadata in `src/system.json`.
+- Actor sheet header controls now use a direct `Detach Window` button instead of the overflow (`...`) menu to better match native pop-out behavior.
 
 ## Fixed
 
 - Action Manager now reliably applies action/reset updates by awaiting tracker mutations before re-rendering the HUD.
 - Fixed Action Manager visual state feedback by adding explicit active styles for toggled action buttons (`protocol`, `move`, `full`, `quick`, `reaction`).
 - Fixed Action Tracker updates under current Foundry data-model behavior by cloning action state before mutation and actor update.
+- Actor sheet detach now routes through native Foundry pop-out handling paths to support real detached browser windows.
 
 # 2.11.9 (2026-04-25)
 

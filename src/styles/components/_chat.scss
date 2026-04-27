@@ -70,6 +70,28 @@
         border-bottom: none;
       }
     }
+
+    .dice-tooltip .tooltip-part:has(.lancer-acc-flavor) {
+      .part-flavor.lancer-acc-flavor {
+        color: var(--lancer-accuracy-color, #1f8a3a);
+        font-weight: bold;
+      }
+
+      .dice-rolls .roll.die {
+        color: var(--lancer-accuracy-color, #1f8a3a);
+      }
+    }
+
+    .dice-tooltip .tooltip-part:has(.lancer-diff-flavor) {
+      .part-flavor.lancer-diff-flavor {
+        color: var(--lancer-difficulty-color, #b91c1c);
+        font-weight: bold;
+      }
+
+      .dice-rolls .roll.die {
+        color: var(--lancer-difficulty-color, #b91c1c);
+      }
+    }
   }
 
   .overcharge-heat-wrapper {

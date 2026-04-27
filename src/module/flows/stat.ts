@@ -7,6 +7,7 @@ import { LancerFlowState } from "./interfaces";
 import { LancerItem } from "../item/lancer-item";
 import { AccDiffHudData, type AccDiffHudDataSerialized } from "../apps/acc_diff";
 import { openSlidingHud } from "../apps/slidinghud";
+import { accDiffRollFragment, applyAccDiffDsnColors, colorizeAccDiffTooltip } from "../helpers/dice-colors";
 import type { UUIDRef } from "../source-template";
 import { Flow, type FlowState, type Step } from "./flow";
 
@@ -77,7 +78,7 @@ async function showStatRollHUD(state: FlowState<LancerFlowState.StatRollData>): 
     // User hit cancel, abort the flow
     return false;
   }
-  let acc_str = state.data.acc_diff.base.total != 0 ? ` + ${state.data.acc_diff.base.total}d6kh1` : "";
+  let acc_str = accDiffRollFragment(state.data.acc_diff.base.total);
   state.data.roll_str = `1d20+${state.data.bonus || 0}${acc_str}`;
   return true;
 }
@@ -87,9 +88,10 @@ async function rollCheck(state: FlowState<LancerFlowState.StatRollData>): Promis
   if (!state.data.acc_diff) throw new TypeError(`Stat roll acc/diff data missing!`);
   // Do the roll, this really is async despite the warning
   let roll = await new Roll(state.data.roll_str).evaluate();
+  applyAccDiffDsnColors(roll);
   state.data.result = {
     roll,
-    tt: await roll.getTooltip(),
+    tt: colorizeAccDiffTooltip(await roll.getTooltip()),
   };
   return true;
 }

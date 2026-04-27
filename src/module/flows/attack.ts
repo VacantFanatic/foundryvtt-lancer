@@ -8,6 +8,7 @@ import { checkForHit } from "../helpers/automation/targeting";
 import { LancerItem } from "../item/lancer-item";
 import type { UUIDRef } from "../source-template";
 import type { SystemTemplates } from "../system-template";
+import { accDiffRollFragment, applyAccDiffDsnColors, colorizeAccDiffTooltip } from "../helpers/dice-colors";
 import { renderTemplateStep } from "./_render";
 import { Flow, type FlowState, type Step } from "./flow";
 import { LancerFlowState } from "./interfaces";
@@ -15,14 +16,7 @@ import { LancerFlowState } from "./interfaces";
 const lp = LANCER.log_prefix;
 
 function rollStr(bonus: number, total: number): string {
-  let modStr = "";
-  if (total != 0) {
-    let sign = total > 0 ? "+" : "-";
-    let abs = Math.abs(total);
-    let roll = abs == 1 ? "1d6" : `${abs}d6kh1`;
-    modStr = ` ${sign} ${roll}`;
-  }
-  return `1d20 + ${bonus}${modStr}`;
+  return `1d20 + ${bonus}${accDiffRollFragment(total)}`;
 }
 
 function applyPluginsToRoll(str: string, plugins: RollModifier[]): string {
@@ -447,7 +441,8 @@ export async function rollAttacks(
         // This is really async despit the warning
         let attack_roll = await new Roll(targetingData.roll).evaluate();
         attack_roll.dice.forEach(d => (d.options.rollOrder = 1));
-        const attack_tt = await attack_roll.getTooltip();
+        applyAccDiffDsnColors(attack_roll);
+        const attack_tt = colorizeAccDiffTooltip(await attack_roll.getTooltip());
 
         if (targetingData.usedLockOn && game.user!.isGM) {
           targetingData.target.actor?.effectHelper.removeActiveEffect("lockon");
@@ -472,7 +467,8 @@ export async function rollAttacks(
   } else {
     // This is really async despit the warning
     let attack_roll = await new Roll(state.data.attack_rolls.roll).evaluate();
-    const attack_tt = await attack_roll.getTooltip();
+    applyAccDiffDsnColors(attack_roll);
+    const attack_tt = colorizeAccDiffTooltip(await attack_roll.getTooltip());
     state.data.attack_results = [{ roll: attack_roll, tt: attack_tt }];
     state.data.hit_results = [];
     return true;
