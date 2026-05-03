@@ -31,7 +31,8 @@
     box-sizing: border-box;
   }
 
-  #action-manager.hidden {
+  #action-manager.hidden,
+  #action-manager .lancer-action-manager-surface.hidden {
     display: none !important; // Because apparently you need to do this.
   }
   #action-manager-drag {
@@ -43,7 +44,8 @@
     display: inline-flex;
     padding: 2px;
   }
-  #action-manager.noclick a {
+  #action-manager.noclick a,
+  #action-manager .lancer-action-manager-surface.noclick a {
     cursor: unset !important;
   }
 
