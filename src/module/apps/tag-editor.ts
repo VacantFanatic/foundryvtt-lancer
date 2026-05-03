@@ -7,25 +7,23 @@ import { TargetedEditForm } from "./targeted-form-editor";
  * @extends {FormApplication}
  */
 export class TagEditForm extends TargetedEditForm<TagData> {
-  /** @override */
-  static get defaultOptions() {
-    return {
-      ...super.defaultOptions,
-      template: `systems/${game.system.id}/templates/window/tag.hbs`,
-      classes: ["lancer", "tag-editor"],
-      title: "Tag Editing",
-      submitOnClose: false,
-    };
-  }
+  static PARTS = {
+    form: { template: "systems/lancer/templates/window/tag.hbs" },
+  };
 
-  getData() {
+  static DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+    classes: ["lancer", "tag-editor"],
+    window: { title: "Tag Editing" },
+  });
+
+  async _prepareContext(options: Record<string, unknown>) {
     let tc = game.settings.get(game.system.id, LANCER.setting_tag_config) as Record<string, TagTemplateData>;
     let lid_options: { [key: string]: string } = {};
     Object.entries(tc).forEach(tag => (lid_options[tag[1].name] = tag[0]));
-    return {
-      ...super.getData(),
-      lid: super.getData().value.lid, // Compat thing for std-select
+    const context = await super._prepareContext(options);
+    return foundry.utils.mergeObject(context, {
+      lid: (context as any).value.lid, // Compat thing for std-select
       lid_options,
-    };
+    });
   }
 }

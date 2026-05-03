@@ -3,6 +3,7 @@ import type { ActionTrackingData, ActionType } from ".";
 import type { LancerActor } from "../actor/lancer-actor";
 import { LANCER } from "../config";
 import { getActions, modAction, toggleAction } from "./action-tracker";
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 declare module "fvtt-types/configuration" {
   interface FlagConfig {
@@ -19,16 +20,31 @@ declare module "fvtt-types/configuration" {
   }
 }
 
-export class LancerActionManager extends Application {
+export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEF_LEFT = 600;
   static DEF_TOP = 20;
   static enabled: boolean;
+  static PARTS = {
+    body: { template: "systems/lancer/templates/window/action_manager.hbs" },
+  };
+  static DEFAULT_OPTIONS = {
+    id: "action-manager",
+    position: {
+      width: 310,
+      height: 70,
+      left: LancerActionManager.DEF_LEFT,
+      top: LancerActionManager.DEF_TOP,
+    },
+    window: {
+      title: "action-manager",
+      minimizable: false,
+      resizable: false,
+      frame: false,
+    },
+    classes: ["lancer"],
+  };
 
   target: LancerActor | null = null;
-
-  constructor(...args: any) {
-    super(...args);
-  }
 
   async init() {
     // TODO: find the correct place to specify what game.system.id is expected to be
@@ -42,31 +58,15 @@ export class LancerActionManager extends Application {
     }
   }
 
-  /** @override */
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      template: `systems/${game.system.id}/templates/window/action_manager.hbs`,
-      width: 310,
-      height: 70,
-      left: LancerActionManager.DEF_LEFT,
-      top: LancerActionManager.DEF_TOP,
-      scale: 1,
-      popOut: false,
-      minimizable: false,
-      resizable: false,
-      title: "action-manager",
-    });
-  }
-
-  /** @override */
-  getData(_options = {}) {
+  async _prepareContext(options: Record<string, unknown>) {
+    const context = await super._prepareContext(options);
     const data = {
       position: this.position,
       name: this.target && this.target.name.toLocaleUpperCase(),
       actions: this.getActions(),
       clickable: game.user?.isGM || game.settings.get(game.system.id, LANCER.setting_actionTracker).allowPlayers,
     };
-    return data;
+    return foundry.utils.mergeObject(context, data);
   }
 
   // DATA BINDING
@@ -131,13 +131,16 @@ export class LancerActionManager extends Application {
   }
 
   // UI //
-  /** @override */
-  activateListeners(html: JQuery) {
+  _onRender(context: object, options: Record<string, unknown>) {
+    super._onRender(context, options);
+    const root = this.element;
+    if (!root) return;
+
     // Enable dragging.
-    this.dragElement(html);
+    this.dragElement(root);
 
     // Enable reset.
-    html.find("#action-manager-reset").on("click", async e => {
+    root.querySelector("#action-manager-reset")?.addEventListener("click", async e => {
       e.preventDefault();
       if (this.canMod()) {
         await this.resetActions();
@@ -147,18 +150,20 @@ export class LancerActionManager extends Application {
     });
 
     // Enable action toggles.
-    html.find("a.action[data-action]").on("click", async e => {
-      e.preventDefault();
-      if (this.canMod()) {
-        const action = e.currentTarget.dataset.action;
-        if (action && this.target) {
-          await toggleAction(this.target, action as ActionType);
-          await this.update();
+    root.querySelectorAll<HTMLAnchorElement>("a.action[data-action]").forEach(anchor =>
+      anchor.addEventListener("click", async e => {
+        e.preventDefault();
+        if (this.canMod()) {
+          const action = (e.currentTarget as HTMLElement).dataset.action;
+          if (action && this.target) {
+            await toggleAction(this.target, action as ActionType);
+            await this.update();
+          }
+        } else {
+          console.log(`${game.user?.name} :: Users currently not allowed to toggle actions through action manager.`);
         }
-      } else {
-        console.log(`${game.user?.name} :: Users currently not allowed to toggle actions through action manager.`);
-      }
-    });
+      })
+    );
 
     // Enable tooltips.
     this.loadTooltips();
@@ -212,17 +217,19 @@ export class LancerActionManager extends Application {
 
   // HELPERS //
 
-  private dragElement(html: JQuery) {
+  private dragElement(root: HTMLElement) {
     const appPos = this.position;
-    html.find("#action-manager-drag").on("mousedown", ev => {
+    const dragHandle = root.querySelector<HTMLElement>("#action-manager-drag");
+    if (!dragHandle) return;
+    dragHandle.onmousedown = ev => {
       ev.preventDefault();
       ev = ev || window.event;
 
-      let hud = $(document.body).find("#action-manager");
-      let marginLeft = parseInt(hud.css("marginLeft").replace("px", ""));
-      let marginTop = parseInt(hud.css("marginTop").replace("px", ""));
+      const hud = document.body.querySelector<HTMLElement>("#action-manager");
+      const marginLeft = parseInt(window.getComputedStyle(hud ?? root).marginLeft.replace("px", ""));
+      const marginTop = parseInt(window.getComputedStyle(hud ?? root).marginTop.replace("px", ""));
 
-      dragElement(document.getElementById("action-manager")!);
+      dragElement(root);
       let pos1 = 0,
         pos2 = 0,
         pos3 = 0,
@@ -274,7 +281,7 @@ export class LancerActionManager extends Application {
           appPos.left = xPos;
         }
       }
-    });
+    };
   }
 
   private canMod() {

@@ -1,24 +1,21 @@
-<form>
-    <div class="flexcol">
-        {{{std-text-input "action.name" label="ACTION NAME"}}}
-        {{{std-text-input "action.lid" label="ACTION ID"}}}
-        <div class="flexrow">
-            {{{std-select "action.activation" activation_type label="TYPE"}}}
-            {{{std-checkbox "action.tech_attack" label="IS TECH ATTACK?"}}}
-        </div>
-        {{{std-text-input "action.init" label="REACTION INIT"}}}
-        {{{std-text-input "action.trigger" label="REACTION TRIGGER"}}}
-        {{{std-num-input "action.cost" label="COST"}}}
-        {{{std-text-input "action.frequency" label="FREQUENCY"}}}
-        {{{std-num-input "action.heat_cost" label="HEAT COST"}}}
-        {{{std-text-input "action.terse" label="TERSE DESCRIPTION"}}}
-        <!-- TODO: Synergy --> 
-        <!-- TODO: damage and range
-        {{{item-edit-arrayed-damage "action.damage" "DAMAGE"}}}
-        {{{item-edit-arrayed-range "action.range" "RANGE"}}}
-        -->
-    </div>
+<section class="flexcol">
+  {{{std-text-input "action.name" label="ACTION NAME"}}}
+  {{{std-text-input "action.lid" label="ACTION ID"}}}
+  <div class="flexrow">
+    {{{std-select "action.activation" activation_type label="TYPE"}}}
+    {{{std-checkbox "action.tech_attack" label="IS TECH ATTACK?"}}}
+  </div>
+  {{{std-text-input "action.init" label="REACTION INIT"}}}
+  {{{std-text-input "action.trigger" label="REACTION TRIGGER"}}}
+  {{{std-num-input "action.cost" label="COST"}}}
+  {{{std-text-input "action.frequency" label="FREQUENCY"}}}
+  {{{std-num-input "action.heat_cost" label="HEAT COST"}}}
+  {{{std-text-input "action.terse" label="TERSE DESCRIPTION"}}}
+  <!-- TODO: Synergy -->
+  <!-- TODO: damage and range
+  {{{item-edit-arrayed-damage "action.damage" "DAMAGE"}}}
+  {{{item-edit-arrayed-range "action.range" "RANGE"}}}
+  -->
 
-    {{> dialog-save-buttons}}
-</form>
-
+  {{> dialog-save-buttons}}
+</section>

@@ -1,6 +1,7 @@
 import { LancerActor } from "../actor/lancer-actor";
 import { resolveDotpath } from "../helpers/commons";
 import { LancerItem } from "../item/lancer-item";
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 export async function richTextEdit(doc: foundry.abstract.Document.Any, property: string): Promise<string | undefined> {
   const originalText = foundry.utils.getProperty(doc, property);
@@ -29,61 +30,49 @@ export async function richTextEdit(doc: foundry.abstract.Document.Any, property:
  * A helper Dialog subclass for editing html descriptions, which will automatically fixup html written to it (so the user doesn't just nuke themselves)
  * @extends {Dialog}
  */
-export class HTMLEditDialog extends FormApplication {
-  // The document we're editing
-  target: LancerActor | LancerItem;
+export class HTMLEditDialog extends HandlebarsApplicationMixin(ApplicationV2) {
+  readonly target: LancerActor | LancerItem;
+  readonly textPath: string;
+  readonly resolve: () => void;
 
-  // The current val of the string we're editing
-  text: string;
+  static PARTS = {
+    form: { template: "systems/lancer/templates/window/html_editor.hbs" },
+  };
 
-  // Where this string is within the target
-  text_path: string;
+  static DEFAULT_OPTIONS = {
+    id: "lancer-html-editor",
+    tag: "form",
+    position: { width: 650 },
+    window: { resizable: true },
+    classes: ["lancer", "lancer-text-editor"],
+    form: {
+      handler: this.#onSubmitForm,
+      closeOnSubmit: true,
+      submitOnChange: false,
+    },
+  };
 
-  // Promise to signal completion of workflow
-  resolve: () => any;
-
-  constructor(target: LancerActor | LancerItem, text_path: string, options: any, resolve_func: () => any) {
-    super(
-      {
-        hasPerm: () => true, // We give it a dummy object because we don't want it messing with our shit
-      },
-      options
-    );
-    this.target = target;
-    this.text_path = text_path;
-    this.text = resolveDotpath(target, text_path) as string;
-    this.resolve = resolve_func;
+  constructor(options: {
+    document: LancerActor | LancerItem;
+    textPath: string;
+    resolve: () => void;
+    window?: { title?: string };
+  }) {
+    super(options);
+    this.target = options.document;
+    this.textPath = options.textPath;
+    this.resolve = options.resolve;
   }
 
-  /* -------------------------------------------- */
-
-  /** @override */
-  static get defaultOptions(): FormApplication.Options {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      template: `systems/${game.system.id}/templates/window/html_editor.hbs`,
-      width: 650,
-      height: "auto" as const,
-      resizable: true,
-      classes: ["lancer", "lancer-text-editor"],
-      submitOnChange: false,
-      submitOnClose: true,
-      closeOnSubmit: true,
+  async _prepareContext(options: Record<string, unknown>) {
+    const context = await super._prepareContext(options);
+    return foundry.utils.mergeObject(context, {
+      text: resolveDotpath(this.target, this.textPath),
     });
   }
 
-  /** @override
-   * Expose our data
-   */
-  getData(): any {
-    let new_data = {
-      text: this.text,
-    };
-    return foundry.utils.mergeObject(super.getData(), new_data);
-  }
-
-  /** @override */
-  async _updateObject(_event: unknown, formData: { text: string }) {
-    let new_text = formData["text"];
+  static async #onSubmitForm(this: HTMLEditDialog, _event: SubmitEvent, _form: HTMLFormElement, formData: any) {
+    let newText = formData.object.text;
 
     // We trust tox to have handles html correction
     // let doc = document.createElement('div');
@@ -91,13 +80,11 @@ export class HTMLEditDialog extends FormApplication {
     // new_text = doc.innerHTML; // Will have had all tags etc closed
 
     // Do the merge
-    this.target.update({ [this.text_path]: new_text }).then(this.resolve);
+    await this.target.update({ [this.textPath]: newText });
+    this.resolve();
   }
 
-  /** @override
-   * Want to resolve promise before closing
-   */
-  close(options: FormApplication.CloseOptions): any {
+  async close(options?: foundry.applications.api.ApplicationV2.CloseOptions): Promise<this> {
     this.resolve();
     return super.close(options);
   }
@@ -111,14 +98,7 @@ export class HTMLEditDialog extends FormApplication {
    */
   static async edit_text(in_object: LancerActor | LancerItem, at_path: string): Promise<void> {
     return new Promise((resolve, _reject) => {
-      const dlg = new this(
-        in_object,
-        at_path,
-        {
-          title: "Edit Text",
-        },
-        resolve
-      );
+      const dlg = new this({ document: in_object, textPath: at_path, resolve, window: { title: "Edit Text" } });
       dlg.render(true);
     });
   }

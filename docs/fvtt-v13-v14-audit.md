@@ -24,6 +24,15 @@ These classes are stable and currently depend on existing templates/listeners. T
 
 No immediate migration action is required for these files.
 
+## AppV2 migration guardrails
+
+- Runtime warnings for any class still extending V1 app bases are emitted through `warnIfUsingV1App` in `src/module/helpers/appv2-migration.ts`.
+- Use `static DEFAULT_OPTIONS` and `static PARTS`; do not keep V1 `defaultOptions` getters.
+- For forms, use `tag: "form"` and `DEFAULT_OPTIONS.form.handler` (`formData.object` payload) instead of `_updateObject`.
+- Move template data prep from `getData` to `_prepareContext`.
+- Move click bindings from jQuery `activateListeners` to either `DEFAULT_OPTIONS.actions` (`data-action`) or `_onRender` delegated DOM handlers that survive rerender.
+- Do not mutate `this.options` after `super(...)`; store runtime state on instance fields.
+
 ## Migrate next (low-risk targets)
 
 1. `src/module/helpers/compcon-login-form.ts`

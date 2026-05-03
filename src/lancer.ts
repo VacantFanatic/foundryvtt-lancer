@@ -109,6 +109,7 @@ import handleSocketMessage from "./module/socket";
 import preloadHUDs from "./module/apps/slidinghud/preload";
 import { applyLancerAutorecMenuIfConfigured, registerAutoAnimationsHooks } from "./module/integrations/autoanimations";
 import { ACC_COLORSET, DIFF_COLORSET } from "./module/helpers/dice-colors";
+import { warnIfUsingV1App } from "./module/helpers/appv2-migration";
 
 const lp = LANCER.log_prefix;
 
@@ -117,7 +118,7 @@ function asJQuery(html: HTMLElement | JQuery<HTMLElement>): JQuery<HTMLElement> 
 }
 
 function asHTMLElement(html: HTMLElement | JQuery<HTMLElement>): HTMLElement | null {
-  return html instanceof HTMLElement ? html : html[0] ?? null;
+  return html instanceof HTMLElement ? html : (html[0] ?? null);
 }
 
 declare module "fvtt-types/configuration" {
@@ -134,6 +135,8 @@ declare module "fvtt-types/configuration" {
 addEnrichers();
 Hooks.once("init", () => {
   console.log(`Initializing LANCER RPG System ${LANCER.ASCII}`);
+  warnIfUsingV1App(LancerActionManager, "LancerActionManager");
+  warnIfUsingV1App(CompconLoginForm, "CompconLoginForm");
 
   CONFIG.ActiveEffect.legacyTransferral = false;
 
@@ -899,7 +902,7 @@ function addSettingsButtons(_app: foundry.applications.sidebar.tabs.Settings, ht
   $(html).find("#settings-lancer").append(faqButton);
 
   loginButton.on("click", async () => {
-    const app = new CompconLoginForm({});
+    const app = new CompconLoginForm();
     return app.render(true);
   });
 

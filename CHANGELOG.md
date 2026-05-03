@@ -1,3 +1,19 @@
+# 2.12.0 (2026-05-03)
+
+## Changed
+
+- Migrated remaining App Framework V1 utility applications to ApplicationV2 patterns, including COMP/CON login, HTML editor, targeted edit forms, inventory dialog, action manager HUD, and shared Svelte host plumbing.
+- Updated legacy form/dialog templates to AppV2 form hosting expectations (outer form supplied by app, submit wiring through AppV2 handlers).
+- Added AppV2 migration guardrails and audit notes, including runtime warnings for any classes still extending V1 application bases during QA.
+
+## Fixed
+
+- Improved rerender resilience for migrated app interactions by moving away from V1 `getData`/`_updateObject` lifecycles and onto AppV2 context and handler flows.
+
+## Action Needed
+
+- If you maintain modules/macros that instantiate these helper apps directly, update constructor assumptions to AppV2 option-style patterns where applicable.
+
 # 2.11.13 (2026-04-27)
 
 ## Changed
