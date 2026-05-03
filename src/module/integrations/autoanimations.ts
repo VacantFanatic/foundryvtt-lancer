@@ -144,7 +144,7 @@ function defaultSourceOrTarget() {
 function sanitizeMenuEntry(entry: Record<string, unknown>): Record<string, unknown> {
   const out = foundry.utils.deepClone(entry);
   if (!out.soundOnly || typeof out.soundOnly !== "object") out.soundOnly = {};
-  if (!((out.soundOnly as Record<string, unknown>).sound)) {
+  if (!(out.soundOnly as Record<string, unknown>).sound) {
     (out.soundOnly as Record<string, unknown>).sound = defaultSound();
   }
 
@@ -302,9 +302,7 @@ export async function registerAutoAnimationsHooks(): Promise<void> {
         const allTargets = attackTargets.length
           ? await Promise.all(attackTargets.map(t => fromUuid(t.uuid)))
           : Array.from(game.user?.targets ?? []);
-        const hitTargets = await Promise.all(
-          attackTargets.filter(t => t.hit || t.crit).map(t => fromUuid(t.uuid))
-        );
+        const hitTargets = await Promise.all(attackTargets.filter(t => t.hit || t.crit).map(t => fromUuid(t.uuid)));
         await playAttackAnimation({
           actor,
           item: itemForAA,
@@ -326,8 +324,10 @@ export async function registerAutoAnimationsHooks(): Promise<void> {
       | undefined;
     if (!damageData) return;
 
-    const speakerActor = message.speaker?.actor ? game.actors?.get(message.speaker.actor) ?? null : null;
-    const actorByFlag = damageData.attackerUuid ? ((await fromUuid(damageData.attackerUuid)) as LancerActor | null) : null;
+    const speakerActor = message.speaker?.actor ? (game.actors?.get(message.speaker.actor) ?? null) : null;
+    const actorByFlag = damageData.attackerUuid
+      ? ((await fromUuid(damageData.attackerUuid)) as LancerActor | null)
+      : null;
     const actor = actorByFlag ?? (speakerActor instanceof LancerActor ? speakerActor : null);
     if (!(actor instanceof LancerActor)) return;
     const sourceItem = damageData.attackerItemUuid
@@ -539,7 +539,6 @@ export async function playDamageAnimation(data: Omit<AATriggerData, "playOnMiss"
   if (!useDamageTrigger()) return;
   await playAnimation({ ...data, playOnMiss: true });
 }
-
 
 export async function applyLancerAutorecMenuIfConfigured(): Promise<void> {
   const mode = game.settings.get(game.system.id, LANCER.setting_autoanimations_autorec_mode) as

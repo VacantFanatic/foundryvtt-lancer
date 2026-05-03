@@ -607,7 +607,13 @@ export function convertBonus(item: LancerItem, name: string, bonus: BonusData) {
       break;
     case "attack":
       target_type = EntryType.MECH;
-      changes.push({ type: changeType, phase: "initial", value: String(value), priority, key: "system.bonuses.flat.range_attack" });
+      changes.push({
+        type: changeType,
+        phase: "initial",
+        value: String(value),
+        priority,
+        key: "system.bonuses.flat.range_attack",
+      });
       break;
     case "tech_attack":
       target_type = EntryType.MECH;
@@ -615,11 +621,23 @@ export function convertBonus(item: LancerItem, name: string, bonus: BonusData) {
       break;
     case "grapple":
       target_type = EntryType.MECH;
-      changes.push({ type: changeType, phase: "initial", value: String(value), priority, key: "system.bonuses.flat.grapple" });
+      changes.push({
+        type: changeType,
+        phase: "initial",
+        value: String(value),
+        priority,
+        key: "system.bonuses.flat.grapple",
+      });
       break;
     case "ram":
       target_type = EntryType.MECH;
-      changes.push({ type: changeType, phase: "initial", value: String(value), priority, key: "system.bonuses.flat.ram" });
+      changes.push({
+        type: changeType,
+        phase: "initial",
+        value: String(value),
+        priority,
+        key: "system.bonuses.flat.ram",
+      });
       break;
     case "save":
       target_type = EntryType.MECH;
@@ -627,7 +645,13 @@ export function convertBonus(item: LancerItem, name: string, bonus: BonusData) {
       break;
     case "sp":
       target_type = EntryType.MECH;
-      changes.push({ type: changeType, phase: "initial", value: String(value), priority, key: "system.loadout.sp.max" });
+      changes.push({
+        type: changeType,
+        phase: "initial",
+        value: String(value),
+        priority,
+        key: "system.loadout.sp.max",
+      });
       break;
     case "size":
       target_type = EntryType.MECH;
@@ -641,7 +665,7 @@ export function convertBonus(item: LancerItem, name: string, bonus: BonusData) {
       target_type = EntryType.MECH;
       changes.push({
         type: "override",
-          phase: "initial",
+        phase: "initial",
         value: "1",
         priority,
         key: "system.structure_repair_cost",
@@ -651,7 +675,7 @@ export function convertBonus(item: LancerItem, name: string, bonus: BonusData) {
       target_type = EntryType.MECH;
       changes.push({
         type: "override",
-          phase: "initial",
+        phase: "initial",
         value: "1",
         priority,
         key: "system.stress_repair_cost",
@@ -671,7 +695,13 @@ export function convertBonus(item: LancerItem, name: string, bonus: BonusData) {
       break;
     case "limited_bonus":
       target_type = EntryType.MECH;
-      changes.push({ type: changeType, phase: "initial", value: String(value), priority, key: "system.loadout.limited_bonus" });
+      changes.push({
+        type: changeType,
+        phase: "initial",
+        value: String(value),
+        priority,
+        key: "system.loadout.limited_bonus",
+      });
       break;
     case "pilot_hp":
       target_type = EntryType.PILOT;
@@ -720,7 +750,13 @@ export function convertBonus(item: LancerItem, name: string, bonus: BonusData) {
       break;
     case "deployable_tech_attack":
       target_type = "only_deployable";
-      changes.push({ type: changeType, phase: "initial", value: String(value), priority, key: "system.tech_attack_bonus" }); // Dumb but whastever
+      changes.push({
+        type: changeType,
+        phase: "initial",
+        value: String(value),
+        priority,
+        key: "system.tech_attack_bonus",
+      }); // Dumb but whastever
       break;
     case "deployable_save":
       target_type = "only_deployable";
@@ -757,7 +793,13 @@ export function convertBonus(item: LancerItem, name: string, bonus: BonusData) {
       break;
     case "drone_tech_attack":
       target_type = "only_drone";
-      changes.push({ type: changeType, phase: "initial", value: String(value), priority, key: "system.tech_attack_bonus" });
+      changes.push({
+        type: changeType,
+        phase: "initial",
+        value: String(value),
+        priority,
+        key: "system.tech_attack_bonus",
+      });
       break;
     case "drone_save":
       target_type = "only_drone";

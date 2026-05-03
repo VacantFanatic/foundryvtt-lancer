@@ -1,4 +1,4 @@
-<form class="{{cssClass}} lancer-sheet" autocomplete="off">
+<section class="{{cssClass}} lancer-sheet" autocomplete="off">
   {{! Sheet Header }}
   <header class="sheet-header card clipped-bot">
     <h1 class="name">
@@ -26,12 +26,12 @@
       class="gen-control fas fa-plus"
       data-action="append"
       data-path="system.ranks"
-      style="align-self: flex-end;margin-right: 1em;"
+      style="align-self: flex-end; margin-right: 1em"
       data-action-value="(struct)talent_rank"
     ></a>
     {{#each system.ranks as |rank index|}}
       <div class="talent-level card clipped-bot flexcol">
-        <div class="lancer-header lancer-talent" style="flex-basis: auto;">
+        <div class="lancer-header lancer-talent" style="flex-basis: auto">
           <i class="cci cci-rank-{{inc index}} i--6 i--dark"></i>
           <input
             class="lancer-invisible-input"
@@ -73,4 +73,4 @@
       </div>
     {{/each}}
   </div>
-</form>
+</section>

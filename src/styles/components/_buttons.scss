@@ -9,7 +9,9 @@
     box-shadow: var(--button-shadow);
 
     &:hover {
-      box-shadow: var(--button-shadow), var(--hover-bright);
+      box-shadow:
+        var(--button-shadow),
+        var(--hover-bright);
     }
 
     &.noninteractive {

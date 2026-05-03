@@ -487,8 +487,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -510,8 +532,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -533,8 +577,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -556,8 +622,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -579,8 +667,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -602,8 +712,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isReturning": false, "onlyX": false, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 500, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isReturning": false,
+          "onlyX": false,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 500,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -686,8 +818,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.5, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.5,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -709,8 +863,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.5, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.5,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -732,8 +908,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.2,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -755,8 +953,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.5, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.5,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -783,8 +1003,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.2,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -806,8 +1048,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.4, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.4,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -829,8 +1093,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.2,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -852,8 +1138,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.2,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -875,8 +1183,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.2,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -898,8 +1228,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.2,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -921,8 +1273,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.2,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },
@@ -944,8 +1318,30 @@
           "enableCustom": false,
           "customPath": ""
         },
-        "sound": { "enable": false, "delay": 0, "file": null, "startTime": 0, "volume": 0.75, "repeat": 1, "repeatDelay": 250 },
-        "options": { "isRadius": true, "size": 1.2, "isWait": false, "delay": 0, "repeat": 1, "repeatDelay": 250, "opacity": 1, "elevation": 1000, "zIndex": 1, "saturate": 0, "contrast": 0, "tint": false, "tintColor": "#FFFFFF" }
+        "sound": {
+          "enable": false,
+          "delay": 0,
+          "file": null,
+          "startTime": 0,
+          "volume": 0.75,
+          "repeat": 1,
+          "repeatDelay": 250
+        },
+        "options": {
+          "isRadius": true,
+          "size": 1.2,
+          "isWait": false,
+          "delay": 0,
+          "repeat": 1,
+          "repeatDelay": 250,
+          "opacity": 1,
+          "elevation": 1000,
+          "zIndex": 1,
+          "saturate": 0,
+          "contrast": 0,
+          "tint": false,
+          "tintColor": "#FFFFFF"
+        }
       },
       "macro": { "enable": false, "name": null, "args": null, "playWhen": null },
       "secondary": { "enable": false },

@@ -32,7 +32,8 @@ export class WeaponRangeTemplate extends foundry.canvas.placeables.MeasuredTempl
     return this.range.type === RangeType.Burst;
   }
 
-  private actorSheet: FormApplication | undefined;
+  /** Open actor sheet (App V2) when placing a template from a sheet, if any. */
+  private actorSheet: foundry.applications.api.ApplicationV2 | undefined;
 
   /**
    * Creates a new WeaponRangeTemplate from a provided range object

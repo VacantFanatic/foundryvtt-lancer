@@ -1,6 +1,7 @@
 import { EntryType } from "../enums";
 import { handleDocDropping } from "../helpers/dragdrop";
 import { handleContextMenus } from "../helpers/item";
+import type { LancerItemSheetData } from "../interfaces";
 import { get_pack_id } from "../util/doc";
 import { LancerItemSheet } from "./item-sheet";
 import { LancerItem } from "./lancer-item";
@@ -10,19 +11,16 @@ import { LancerItem } from "./lancer-item";
  * @extends {LancerItemSheet}
  */
 export class LancerLicenseSheet extends LancerItemSheet<EntryType.LICENSE> {
-  /**
-   * @override
-   * Extend and override the default options used by the generic Lancer item sheet
-   */
-  static get defaultOptions(): ItemSheet.Options {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      width: 700,
-      height: 750,
-    });
-  }
+  static override DEFAULT_OPTIONS = foundry.utils.mergeObject(
+    super.DEFAULT_OPTIONS,
+    { position: { width: 700, height: 750 } },
+    { inplace: false }
+  );
 
-  async getData() {
-    let data = await super.getData();
+  protected override async _prepareContext(
+    options: Partial<foundry.applications.types.ApplicationRenderOptions>
+  ): Promise<LancerItemSheetData<EntryType.LICENSE>> {
+    const data = await super._prepareContext(options);
 
     // Build an unlocks array
     let unlocks: LancerItem[][] = [[]];
@@ -57,10 +55,8 @@ export class LancerLicenseSheet extends LancerItemSheet<EntryType.LICENSE> {
       });
     }
 
-    // Put the unlocks array in. Don't bother meddling the type
-    (data as any)["unlocks"] = unlocks;
+    (data as Record<string, unknown>)["unlocks"] = unlocks;
 
-    // Pass it along
     return data;
   }
 
@@ -77,11 +73,11 @@ export class LancerLicenseSheet extends LancerItemSheet<EntryType.LICENSE> {
    * Activate event listeners using the prepared sheet HTML
    * @param html - The prepared HTML object ready to be rendered into the DOM
    */
-  activateListeners(html: JQuery) {
+  override activateListeners(html: HTMLElement): void {
     super.activateListeners(html);
 
-    // If an item is dropped on it, set its license & manufacturer to match the license
-    handleDocDropping(html, (doc, dest, evt) => {
+    const $html = $(html);
+    handleDocDropping($html, (doc, dest, evt) => {
       if (doc.type == "Item") {
         doc.document.update({
           system: {
@@ -92,8 +88,7 @@ export class LancerLicenseSheet extends LancerItemSheet<EntryType.LICENSE> {
       }
     });
 
-    // Everything below here is only needed if the sheet is editable
-    if (!this.options.editable) return;
+    if (!this.isEditable) return;
 
     // TODO: Add refresh button
   }

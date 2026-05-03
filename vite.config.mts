@@ -21,12 +21,12 @@ async function removeRootMjsArtifacts(systemDir: string) {
     return;
   }
   await Promise.all(
-    names.map(async (name) => {
+    names.map(async name => {
       if (!name.endsWith(".mjs") && !name.endsWith(".mjs.map")) return;
       const p = path.join(systemDir, name);
       const st = await fs.stat(p).catch(() => null);
       if (st?.isFile()) await fs.unlink(p);
-    }),
+    })
   );
 }
 
@@ -43,7 +43,7 @@ async function mirrorDistToFoundrySystem(sourceDir: string, targetDir: string) {
         const code = err && typeof err === "object" && "code" in err ? (err as NodeJS.ErrnoException).code : undefined;
         if (code === "EBUSY" || code === "EPERM") {
           console.warn(
-            "[mirror-build-to-foundry-system] Skipped packs/ (files in use). Close Foundry VTT and run `npm run build` again to update compendium packs.",
+            "[mirror-build-to-foundry-system] Skipped packs/ (files in use). Close Foundry VTT and run `npm run build` again to update compendium packs."
           );
         } else {
           throw err;

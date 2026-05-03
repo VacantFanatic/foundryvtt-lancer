@@ -8,41 +8,24 @@ const lp = LANCER.log_prefix;
  * Extend the basic ActorSheet
  */
 export class LancerNPCSheet extends LancerActorSheet<EntryType.NPC> {
-  /**
-   * Extend and override the default options used by the NPC Sheet
-   */
-  static get defaultOptions(): ActorSheet.Options {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["lancer", "sheet", "actor", "npc"],
-      template: `systems/${game.system.id}/templates/actor/npc.hbs`,
-      width: 800,
-      height: 800,
-      tabs: [
-        {
-          navSelector: ".lancer-tabs",
-          contentSelector: ".sheet-body",
-          initial: "mech",
-        },
-      ],
-    });
-  }
+  static override DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+    classes: ["lancer", "sheet", "actor", "npc"],
+    position: { width: 800, height: 800 },
+  });
 
-  /* -------------------------------------------- */
+  static override PARTS = {
+    body: { template: "systems/lancer/templates/actor/npc.hbs" },
+  };
 
-  /**
-   * Activate event listeners using the prepared sheet HTML
-   * @param html {HTMLElement}   The prepared HTML object ready to be rendered into the DOM
-   */
-  activateListeners(html: JQuery) {
+  override activateListeners(html: HTMLElement): void {
     super.activateListeners(html);
 
-    // Everything below here is only needed if the sheet is editable
-    if (!this.options.editable) return;
+    if (!this.isEditable) return;
 
-    // Macro triggers
+    const $html = $(html);
     if (this.actor.isOwner) {
       // Macros that can be handled via the generic item interface
-      let itemMacros = html.find(".item-macro");
+      let itemMacros = $html.find(".item-macro");
       itemMacros.on("click", (ev: any) => {
         ev.stopPropagation(); // Avoids triggering parent event handlers
 
@@ -53,7 +36,7 @@ export class LancerNPCSheet extends LancerActorSheet<EntryType.NPC> {
       });
 
       // Tech rollers
-      let techMacro = html.find(".roll-tech");
+      let techMacro = $html.find(".roll-tech");
       techMacro.on("click", ev => {
         if (!ev.currentTarget) return; // No target, let other handlers take care of it.
         ev.stopPropagation();
@@ -63,7 +46,7 @@ export class LancerNPCSheet extends LancerActorSheet<EntryType.NPC> {
       });
 
       // Item/Macroable Dragging
-      html
+      $html
         .find('li[class*="item"]')
         .add('span[class*="item"]')
         .each((_i: number, item: any) => {

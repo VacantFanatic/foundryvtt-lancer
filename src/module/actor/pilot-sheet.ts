@@ -1,5 +1,6 @@
 import { LANCER } from "../config";
 const lp = LANCER.log_prefix;
+import type { LancerActorSheetData } from "../interfaces";
 import { LancerActorSheet } from "./lancer-actor-sheet";
 import type { HelperOptions } from "handlebars";
 import { buildCounterHeader, buildCounterHTML } from "../helpers/item";
@@ -20,49 +21,48 @@ const COUNTER_MAX = 8;
  * Extend the basic ActorSheet
  */
 export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
-  /**
-   * Extend and override the default options used by the Pilot Sheet
-   * @returns {Object}
-   */
-  static get defaultOptions(): ActorSheet.Options {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["lancer", "sheet", "actor", "pilot"],
-      template: `systems/${game.system.id}/templates/actor/pilot.hbs`,
-      width: 900,
-      height: 800,
-      tabs: [
-        {
-          navSelector: ".lancer-tabs",
-          contentSelector: ".sheet-body",
-          initial: "tactical",
-        },
-      ],
-    });
-  }
+  static override DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+    classes: ["lancer", "sheet", "actor", "pilot"],
+    position: { width: 900, height: 800 },
+  });
 
-  /**
-   * Activate event listeners using the prepared sheet HTML
-   * @param html {JQuery}   The prepared HTML object ready to be rendered into the DOM
-   */
-  activateListeners(html: JQuery) {
+  static override PARTS = {
+    body: { template: "systems/lancer/templates/actor/pilot.hbs" },
+  };
+
+  static override TABS = {
+    primary: {
+      initial: "tactical",
+      tabs: [
+        { id: "cloud", group: "primary" },
+        { id: "dossier", group: "primary" },
+        { id: "narrative", group: "primary" },
+        { id: "tactical", group: "primary" },
+        { id: "loadout", group: "primary" },
+        { id: "effects", group: "primary" },
+      ],
+    },
+  };
+
+  override activateListeners(html: HTMLElement): void {
     super.activateListeners(html);
 
-    // Everything below here is only needed if the sheet is editable
-    if (!this.options.editable) return;
+    if (!this.isEditable) return;
 
+    const $html = $(html);
     if (this.actor.isOwner) {
       let pilot = this.actor as LancerPILOT;
       // Item/Macroable Dragging
 
       // Cloud id select
-      let cloudSelect = html.find('select[name="selectCloudId"]');
+      let cloudSelect = $html.find('select[name="selectCloudId"]');
       cloudSelect.on("change", evt => {
         evt.stopPropagation();
         pilot.update({ "system.cloud_id": (evt.target as HTMLSelectElement).value });
       });
 
       // Cloud download
-      let download = html.find('.cloud-control[data-action*="download"]');
+      let download = $html.find('.cloud-control[data-action*="download"]');
       if (pilot.system.cloud_id) {
         download.on("click", async ev => {
           ev.stopPropagation();
@@ -98,9 +98,7 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
               raw_pilot_data = await fetchPilotViaShareCode(cloudId);
             } catch (error) {
               const errMessage = error instanceof Error ? error.message : String(error);
-              ui.notifications!.error(
-                `Error importing from share code. ${errMessage}`
-              );
+              ui.notifications!.error(`Error importing from share code. ${errMessage}`);
               console.error(`Failed import with share code ${cloudId}, error:`, error);
               return;
             }
@@ -112,19 +110,19 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
       }
 
       // JSON Import
-      html.find<HTMLInputElement>("input#pilot-json-import").on("change", ev => this._onPilotJsonUpload(ev));
+      $html.find<HTMLInputElement>("input#pilot-json-import").on("change", ev => this._onPilotJsonUpload(ev));
 
       // editing rawID clears vaultID
       // (other way happens automatically because we prioritise vaultID in commit)
-      let rawInput = html.find('input[name="rawID"]');
+      let rawInput = $html.find('input[name="rawID"]');
       rawInput.on("input", async ev => {
         if ((ev.target as any).value != "") {
-          (html.find('select[name="vaultID"]')[0] as any).value = "";
+          ($html.find('select[name="vaultID"]')[0] as any).value = "";
         }
       });
 
       // Mech swapping
-      let mechActivators = html.find(".activate-mech");
+      let mechActivators = $html.find(".activate-mech");
       mechActivators.on("click", async ev => {
         ev.stopPropagation();
         let mech = (await resolve_ref_element(ev.currentTarget.parentElement!)) as LancerActor | null;
@@ -134,7 +132,7 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
         this.activateMech(mech);
       });
 
-      let mechDeactivator = html.find(".deactivate-mech");
+      let mechDeactivator = $html.find(".deactivate-mech");
       mechDeactivator.on("click", async ev => {
         ev.stopPropagation();
 
@@ -185,8 +183,10 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
     });
   }
 
-  async getData(): Promise<object> {
-    const data: any = await super.getData(); // Not fully populated yet!
+  protected override async _prepareContext(
+    options: Partial<foundry.applications.types.ApplicationRenderOptions>
+  ): Promise<LancerActorSheetData<EntryType.PILOT>> {
+    const data = (await super._prepareContext(options)) as LancerActorSheetData<EntryType.PILOT>;
 
     data.compConPilotList = pilotCache()
       .sort((p1, p2) => {
@@ -205,6 +205,22 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
       );
 
     return data;
+  }
+
+  protected override _processFormData(
+    event: SubmitEvent | null,
+    form: HTMLFormElement,
+    formData: foundry.applications.ux.FormDataExtended
+  ): object {
+    const expanded = super._processFormData(event, form, formData) as Record<string, unknown>;
+    if (
+      this.actor.is_pilot() &&
+      expanded["system.callsign"] &&
+      this.actor.system.callsign !== expanded["system.callsign"]
+    ) {
+      expanded["prototypeToken.name"] = expanded["system.callsign"];
+    }
+    return expanded;
   }
 
   // Pilots can handle most stuff
@@ -303,26 +319,6 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
     // }
   }
 
-  /* -------------------------------------------- */
-
-  /**
-   * Implement the _updateObject method as required by the parent class spec
-   * This defines how to update the subject of the form when the form is submitted
-   * @private
-   */
-  async _updateObject(event: Event, formData: any) {
-    if (!this.actor.is_pilot()) return;
-    // Do some pre-processing
-    // Do these only if the callsign updated
-    if (formData["system.callsign"] && this.actor.system.callsign !== formData["system.callsign"]) {
-      // Use the Actor's name for the pilot's callsign
-      // formData["name"] = formData["data.callsign"];
-      // Copy the pilot's callsign to the prototype token
-      formData["prototypeToken.name"] = formData["system.callsign"];
-    }
-    // Then let parent handle
-    return super._updateObject(event, formData);
-  }
 }
 
 export function pilotCounters(pilot: LancerPILOT, _options: HelperOptions): string {

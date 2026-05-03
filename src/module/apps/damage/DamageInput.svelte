@@ -25,7 +25,10 @@
   in:slide|global={{ delay: 100, duration: 300 }}
   out:slide|global={{ duration: 100 }}
 >
-  <i class="i--3 cci cci-{damage.type.toLowerCase()} damage--{damage.type.toLowerCase()}" data-tooltip={damage.type}></i>
+  <i
+    class="i--3 cci cci-{damage.type.toLowerCase()} damage--{damage.type.toLowerCase()}"
+    data-tooltip={damage.type}
+  ></i>
   <select class="damage-input-type" bind:value={damage.type}>
     {#each damageSelectOptions as damageOption}
       <option value={damageOption[1]} selected={selected(damageOption[1])}>

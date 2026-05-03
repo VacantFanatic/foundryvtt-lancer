@@ -136,7 +136,6 @@ addEnrichers();
 Hooks.once("init", () => {
   console.log(`Initializing LANCER RPG System ${LANCER.ASCII}`);
   warnIfUsingV1App(LancerActionManager, "LancerActionManager");
-  warnIfUsingV1App(CompconLoginForm, "CompconLoginForm");
 
   CONFIG.ActiveEffect.legacyTransferral = false;
 
@@ -724,7 +723,16 @@ async function promptInstallCoreData() {
 
 function setupSheets() {
   const actors = foundry.documents.collections.Actors;
-  actors.unregisterSheet("core", foundry.appv1.sheets.ActorSheet);
+  const sheets = foundry.applications.sheets;
+  actors.unregisterSheet("core", sheets.ActorSheetV2);
+  // Older worlds / shims may still have the legacy V1 class registered.
+  if (foundry.appv1?.sheets?.ActorSheet) {
+    try {
+      actors.unregisterSheet("core", foundry.appv1.sheets.ActorSheet);
+    } catch {
+      /* already absent */
+    }
+  }
   actors.registerSheet("lancer", LancerPilotSheet, { types: [EntryType.PILOT], makeDefault: true });
   actors.registerSheet("lancer", LancerMechSheet, { types: [EntryType.MECH], makeDefault: true });
   actors.registerSheet("lancer", LancerNPCSheet, { types: [EntryType.NPC], makeDefault: true });
@@ -733,7 +741,15 @@ function setupSheets() {
     makeDefault: true,
   });
   const items = foundry.documents.collections.Items;
-  items.unregisterSheet("core", foundry.appv1.sheets.ItemSheet);
+  const ItemSheetV2 = (sheets as unknown as { ItemSheetV2?: (typeof sheets)["DocumentSheetV2"] }).ItemSheetV2;
+  items.unregisterSheet("core", ItemSheetV2 ?? sheets.DocumentSheetV2);
+  if (foundry.appv1?.sheets?.ItemSheet) {
+    try {
+      items.unregisterSheet("core", foundry.appv1.sheets.ItemSheet);
+    } catch {
+      /* already absent */
+    }
+  }
   items.registerSheet("lancer", LancerItemSheet, {
     types: [
       EntryType.SKILL,
