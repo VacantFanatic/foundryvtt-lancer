@@ -52,9 +52,9 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
       game.settings.get(game.system.id, LANCER.setting_actionTracker).showHotbar &&
       !game.settings.get("core", "noCanvas");
     if (LancerActionManager.enabled) {
-      this.loadUserPos();
       await this.updateControlledToken();
-      this.render(true);
+      await this.render(true);
+      await this.loadUserPos();
     }
   }
 
@@ -169,29 +169,16 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
     this.loadTooltips();
   }
 
-  private loadUserPos() {
+  private async loadUserPos() {
     if (!game.user?.getFlag(game.system.id, "action-manager")?.pos) return;
 
     const pos = game.user.getFlag(game.system.id, "action-manager")!.pos!;
-    const appPos = this.position;
-    return new Promise(resolve => {
-      function loop() {
-        let ele = document.getElementById("action-manager");
-        if (ele) {
-          const newTop = pos.top < 5 || pos.top > window.innerHeight + 5 ? LancerActionManager.DEF_TOP : pos.top;
-          const newLeft = pos.left < 5 || pos.left > window.innerWidth + 5 ? LancerActionManager.DEF_LEFT : pos.left;
+    const newTop = pos.top < 5 || pos.top > window.innerHeight + 5 ? LancerActionManager.DEF_TOP : pos.top;
+    const newLeft = pos.left < 5 || pos.left > window.innerWidth + 5 ? LancerActionManager.DEF_LEFT : pos.left;
 
-          appPos.top = newTop;
-          appPos.left = newLeft;
-          ele.style.top = newTop + "px";
-          ele.style.left = newLeft + "px";
-          resolve(true);
-        } else {
-          setTimeout(loop, 20);
-        }
-      }
-      loop();
-    });
+    this.position.top = newTop;
+    this.position.left = newLeft;
+    await this.setPosition({ top: newTop, left: newLeft });
   }
 
   private loadTooltips() {
@@ -225,7 +212,7 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
       ev.preventDefault();
       ev = ev || window.event;
 
-      const hud = document.body.querySelector<HTMLElement>("#action-manager");
+      const hud = this.element;
       const marginLeft = parseInt(window.getComputedStyle(hud ?? root).marginLeft.replace("px", ""));
       const marginTop = parseInt(window.getComputedStyle(hud ?? root).marginTop.replace("px", ""));
 

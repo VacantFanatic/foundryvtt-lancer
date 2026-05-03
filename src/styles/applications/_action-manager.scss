@@ -1,12 +1,36 @@
 @layer lancer.applications {
-  /* Action tracker floating bar */
+  /* Action tracker: `#action-manager` is the ApplicationV2 host (single id). Inner markup uses
+     `.lancer-action-manager-surface` so we never duplicate ids (which broke drag / saved position). */
   #action-manager {
+    display: flex;
     flex-direction: column;
     position: fixed;
     z-index: 100;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  #action-manager .window-content {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  #action-manager .lancer-action-manager-surface {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
     background-color: #eaeaea;
     border: 1px solid #5d5d5d;
+    box-sizing: border-box;
   }
+
   #action-manager.hidden {
     display: none !important; // Because apparently you need to do this.
   }
@@ -28,12 +52,20 @@
     align-items: center;
   }
   .action-label {
-    display: inline-flex;
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    min-height: 2rem;
     padding-left: 12px;
     border-bottom: 1px solid black;
     background-color: var(--primary-color);
     color: var(--light-text);
     font-style: italic;
+  }
+
+  #action-manager .action-manager-controls {
+    flex: 0 0 auto;
+    align-items: stretch;
   }
 
   a.action {

@@ -1,7 +1,6 @@
 <div
-  id="action-manager"
-  class="clipped card {{#unless actions}}hidden{{/unless}} {{#unless clickable}}noclick{{/unless}}"
-  style="width: {{position.width}}px; height: {{position.height}}px; top: {{position.top}}px; left: {{position.left}}px"
+  class="lancer-action-manager-surface clipped card {{#unless actions}}hidden{{/unless}} {{#unless clickable}}noclick{{/unless}}"
+  style="width: {{position.width}}px; height: {{position.height}}px;"
 >
   <div class="action-label">
     <div>{{name}}</div>
@@ -9,7 +8,7 @@
       <div style="right: 0px; position: absolute"><a id="action-manager-reset" class="mdi mdi-restore"></a></div>
     {{/if}}
   </div>
-  <div style="display: inline-flex">
+  <div class="action-manager-controls" style="display: inline-flex">
     <i id="action-manager-drag" class="mdi mdi-drag"></i>
     <div class="action-bar">
       <a class="action {{#if actions.protocol}}lancer-protocol{{/if}}" data-action="protocol">
