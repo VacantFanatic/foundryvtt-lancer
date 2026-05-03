@@ -130,8 +130,9 @@ export class LancerItemSheet<T extends LancerItemType> extends HandlebarsApplica
   }
 
   override activateListeners(html: HTMLElement): void {
-    const $html = $(html);
-    super.activateListeners(html);
+    void html;
+    super.activateListeners(this.element);
+    const $html = $(this.element);
 
     initializeCollapses($html);
     applyCollapseListeners($html);

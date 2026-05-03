@@ -31,27 +31,57 @@ import {
 } from "../helpers/refs";
 import { LancerItem } from "../item/lancer-item";
 import { lookupOwnedDeployables } from "../util/lid";
+import type { LancerActorSheetData } from "../interfaces";
 import { LancerActor, type LancerActorType } from "./lancer-actor";
+
+const { HandlebarsApplicationMixin } = foundry.applications.api;
+const { ActorSheetV2 } = foundry.applications.sheets;
 const lp = LANCER.log_prefix;
 
 /**
- * Extend the basic ActorSheet
+ * Lancer actor sheet base (Application V2).
  */
-export class LancerActorSheet<T extends LancerActorType> extends foundry.appv1.sheets.ActorSheet<ActorSheet.Options> {
+export class LancerActorSheet<T extends LancerActorType> extends HandlebarsApplicationMixin(ActorSheetV2) {
+  declare document: LancerActor;
+
   // Tracks collapse state between renders
   protected collapse_handler = new CollapseHandler();
 
   /** Allow detached instances to render with a unique application id. */
   get id(): string {
-    const detachedKey = (this.options as ActorSheet.Options & { detachedKey?: string })?.detachedKey;
+    const detachedKey = (this.options as { detachedKey?: string })?.detachedKey;
     if (!detachedKey) return super.id;
     return `${super.id}-${detachedKey}`;
   }
 
-  static get defaultOptions(): ActorSheet.Options {
-    return foundry.utils.mergeObject(super.defaultOptions, {
+  get actor(): LancerActor {
+    return this.document;
+  }
+
+  static override DEFAULT_OPTIONS = foundry.utils.mergeObject(
+    (ActorSheetV2 as { DEFAULT_OPTIONS?: object }).DEFAULT_OPTIONS ?? {},
+    {
+      tag: "form",
       scrollY: [".scroll-body"],
-    });
+      form: {
+        closeOnSubmit: false,
+        submitOnChange: true,
+        handler: LancerActorSheet.#onSubmitForm,
+      },
+    },
+    { inplace: false }
+  );
+
+  static async #onSubmitForm(
+    this: LancerActorSheet<LancerActorType>,
+    event: Event,
+    _form: HTMLFormElement,
+    formData: foundry.applications.ux.FormDataExtended
+  ): Promise<void> {
+    event.preventDefault();
+    const updateData = { ...formData.object };
+    this._propagateData(updateData);
+    await this.actor.update(updateData);
   }
 
   protected _onDetachSheet(event: Event): void {
@@ -61,8 +91,8 @@ export class LancerActorSheet<T extends LancerActorType> extends foundry.appv1.s
   }
 
   protected _triggerNativeDetach(): boolean {
-    const header = this.element?.find(".window-header");
-    if (!header?.length) return false;
+    const header = $(this.element).find(".window-header");
+    if (!header.length) return false;
     const popoutWords = ["popout", "detach", "new window"];
     const nativeControl = header
       .find('a,button,[role="button"]')
@@ -99,8 +129,7 @@ export class LancerActorSheet<T extends LancerActorType> extends foundry.appv1.s
   protected _viewPortrait(): void {
     const src = this.actor?.img;
     if (!src) return;
-    const ImagePopoutCls =
-      (foundry as any).applications?.apps?.ImagePopout ?? (globalThis as any).ImagePopout;
+    const ImagePopoutCls = (foundry as any).applications?.apps?.ImagePopout ?? (globalThis as any).ImagePopout;
     if (!ImagePopoutCls) return;
     try {
       new ImagePopoutCls({
@@ -140,8 +169,8 @@ export class LancerActorSheet<T extends LancerActorType> extends foundry.appv1.s
 
   /** Add a direct header detach control for actor sheets. */
   protected _injectHeaderDetachControl(): void {
-    const app = this.element;
-    if (!app?.length) return;
+    const app = $(this.element);
+    if (!app.length) return;
     const header = app.find(".window-header");
     if (!header.length || header.find('[data-action="lancer-sheet-detach-direct"]').length) return;
     const findHeaderControl = (predicate: (el: HTMLElement) => boolean): HTMLElement | null =>
@@ -181,71 +210,56 @@ export class LancerActorSheet<T extends LancerActorType> extends foundry.appv1.s
    * Activate event listeners using the prepared sheet HTML
    * @param html {HTMLElement}   The prepared HTML object ready to be rendered into the DOM
    */
-  activateListeners(html: JQuery) {
-    super.activateListeners(html);
+  override activateListeners(html: HTMLElement): void {
+    // App V2: core `data-action` / tab delegation is bound to the application root (`this.element`),
+    // not the partial render target passed as `html`. Use the root so tabs and sheet actions work.
+    void html;
+    super.activateListeners(this.element);
     this._injectHeaderDetachControl();
 
-    // Enable collapse triggers.
-    initializeCollapses(html);
-    applyCollapseListeners(html);
+    const $html = $(this.element);
 
-    // Enable any action grid buttons.
-    this._activateActionGridListeners(html);
+    initializeCollapses($html);
+    applyCollapseListeners($html);
 
-    // Make generic refs clickable to open the item
-    handleRefClickOpen(html);
+    this._activateActionGridListeners($html);
 
-    // Enable ref dragging
-    handleRefDragging(html);
+    handleRefClickOpen($html);
 
-    // Everything below here is only needed if the sheet is editable
-    if (!this.options.editable) return;
+    handleRefDragging($html);
 
-    // All-actor macros
-    this._activateFlowListeners(html);
+    this._tabs?.forEach(t => t.bind(this.element));
 
-    // All-actor macro dragging
-    this._activateFlowDragging(html);
+    if (!this.isEditable) return;
 
-    // Make +/- buttons work
-    handleInputPlusMinusButtons(html, this.actor);
+    this._activateFlowListeners($html);
 
-    // Make counter pips work
-    handleCounterInteraction(html, this.actor);
+    this._activateFlowDragging($html);
 
-    // Enable hex use triggers.
-    handleUsesInteraction(html, this.actor);
+    handleInputPlusMinusButtons($html, this.actor);
 
-    // Enable loading hex triggers.
-    handleLoadedInteraction(html, this.actor);
+    handleCounterInteraction($html, this.actor);
 
-    // Enable charged hex triggers.
-    handleChargedInteraction(html, this.actor);
+    handleUsesInteraction($html, this.actor);
 
-    // Enable power use triggers.
-    handlePowerUsesInteraction(html, this.actor);
+    handleLoadedInteraction($html, this.actor);
 
-    // Enable context menu triggers.
-    handleContextMenus(html, this.actor);
+    handleChargedInteraction($html, this.actor);
 
-    // Enable viewing inventory on sheets that support it
-    this._activateInventoryButton(html);
+    handlePowerUsesInteraction($html, this.actor);
 
-    // Make refs droppable, in such a way that we take ownership when dropped
-    handleRefSlotDropping(html, this.actor, x => this.quickOwnDrop(x).then(v => v[0]));
+    handleContextMenus($html, this.actor);
 
-    // Enable general controls, so items can be deleted and such
-    handleGenControls(html, this.actor);
+    this._activateInventoryButton($html);
 
-    // Enable popout editors
-    handlePopoutTextEditor(html, this.actor);
+    handleRefSlotDropping($html, this.actor, x => this.quickOwnDrop(x).then(v => v[0]));
 
-    // Add export button.
-    // addExportButton(this.object, html);
+    handleGenControls($html, this.actor);
 
-    // Add root dropping
+    handlePopoutTextEditor($html, this.actor);
+
     handleDocDropping(
-      html,
+      $html,
       async (entry, _dest, _event) => this.onRootDrop(entry, _event, _dest),
       (entry, _dest, _event) => this.canRootDrop(entry)
     );
@@ -412,7 +426,6 @@ export class LancerActorSheet<T extends LancerActorType> extends foundry.appv1.s
       if (game.user?.isGM || game.settings.get(game.system.id, LANCER.setting_actionTracker).allowPlayers) {
         const params = ev.currentTarget.dataset;
         const action = params.action as ActionType | undefined;
-        const data = await this.getData();
         if (action && params.val) {
           let spend: boolean;
           if (params.action === "move") {
@@ -420,7 +433,7 @@ export class LancerActorSheet<T extends LancerActorType> extends foundry.appv1.s
           } else {
             spend = params.val === "true";
           }
-          modAction((<any>data).actor as LancerActor, spend, action);
+          modAction(this.actor as LancerActor, spend, action);
         }
       } else {
         console.log(`${game.user?.name} :: Users currently not allowed to toggle actions through action manager.`);
@@ -687,40 +700,26 @@ export class LancerActorSheet<T extends LancerActorType> extends foundry.appv1.s
     }
   }
 
-  /**
-   * Implement the _updateObject method as required by the parent class spec
-   * This defines how to update the subject of the form when the form is submitted
-   * @private
-   */
-  async _updateObject(_event: Event, formData: any): Promise<LancerActor | undefined> {
-    // Automatically propagates changes to image/name
-    this._propagateData(formData);
-
-    // Simple writeback
-    await this.actor.update(formData);
-
-    return this.actor;
-  }
-
-  /**
-   * Prepare data for rendering the Actor sheet
-   * The prepared data object contains both the actor data as well as additional sheet options
-   */
-  async getData(): Promise<object> {
-    const data: any = await super.getData(); // Not fully populated yet!
+  protected override async _prepareContext(
+    options: Partial<foundry.applications.types.ApplicationRenderOptions>
+  ): Promise<LancerActorSheetData<T>> {
+    const data = (await super._prepareContext(options)) as LancerActorSheetData<T>;
+    data.actor = (data.actor ?? this.document) as LancerActor;
     data.collapse = {};
-    data.system = this.actor.system; // Alias
+    data.system = this.actor.system;
     if (data.system.loadout) {
       for (const [key, value] of Object.entries(data.system.loadout)) {
         if (!Array.isArray(value)) continue;
-        data.system.loadout[key] = (value as { id: string; status: string; value: LancerItem }[]).sort(
-          (a: any, b: any) => a?.value?.sort - b?.value?.sort
-        );
+        (data.system.loadout as Record<string, unknown>)[key] = (
+          value as { id: string; status: string; value: LancerItem }[]
+        ).sort((a: { value?: { sort?: number } }, b: { value?: { sort?: number } }) => (a?.value?.sort ?? 0) - (b?.value?.sort ?? 0));
       }
     }
     data.itemTypes = this.actor.itemTypes;
     for (const [key, value] of Object.entries(data.itemTypes)) {
-      data.itemTypes[key] = (value as LancerItem[]).sort((a: any, b: any) => a.sort - b.sort);
+      (data.itemTypes as Record<string, LancerItem[]>)[key] = (value as LancerItem[]).sort(
+        (a: LancerItem, b: LancerItem) => a.sort - b.sort
+      );
     }
     data.effect_categories = LancerActiveEffect.prepareActiveEffectCategories(this.actor);
     data.deployables = lookupOwnedDeployables(this.actor);
