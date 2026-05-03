@@ -7,11 +7,37 @@
     }
   }
 
+  /* App V2: form is the app root — flex column so tab bodies and scroll regions fill the window */
+  application.lancer.sheet,
+  .application.lancer.sheet {
+    .window-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .sheet-body.scroll-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+    }
+  }
+
   .lancer.actor.mech.sheet {
     /* The main, top region */
     .stat-grid {
       display: grid;
-      grid-template: repeat(5, 5em) / repeat(5, 1fr);
+      grid-template: repeat(5, 3.75em) / repeat(5, 1fr);
 
       /* Most things auto-layout just fine */
 

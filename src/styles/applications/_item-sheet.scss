@@ -6,4 +6,29 @@
       text-align: center;
     }
   }
+
+  application.lancer.item.sheet,
+  .application.lancer.item.sheet {
+    .window-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .sheet-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+    }
+  }
 }
