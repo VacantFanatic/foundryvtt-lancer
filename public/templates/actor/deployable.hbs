@@ -1,4 +1,4 @@
-<form class="{{cssClass}} lancer-sheet" autocomplete="off">
+<section class="{{cssClass}} lancer-sheet" autocomplete="off">
   {{! Sheet Header }}
   <header class="sheet-header card clipped-bot">
     <h1 class="name">
@@ -21,17 +21,17 @@
   </header>
 
   {{! Sheet Tab Navigation }}
-  <nav class="lancer-tabs" data-group="primary">
-    <a class="item lancer-tab medium" data-tab="status">{{localize "lancer.deployable-sheet.tabs.status"}}</a>
-    <a class="item lancer-tab medium" data-tab="config">{{localize "lancer.deployable-sheet.tabs.config"}}</a>
-    <a class="item lancer-tab medium" data-tab="effects">{{localize "lancer.mech-sheet.tabs.effects"}}</a>
+  <nav class="tabs lancer-tabs" data-group="primary">
+    <a class="item lancer-tab medium {{tabs.primary.status.cssClass}}" data-action="tab" data-group="primary" data-tab="status">{{localize "lancer.deployable-sheet.tabs.status"}}</a>
+    <a class="item lancer-tab medium {{tabs.primary.config.cssClass}}" data-action="tab" data-group="primary" data-tab="config">{{localize "lancer.deployable-sheet.tabs.config"}}</a>
+    <a class="item lancer-tab medium {{tabs.primary.effects.cssClass}}" data-action="tab" data-group="primary" data-tab="effects">{{localize "lancer.mech-sheet.tabs.effects"}}</a>
     <!--<a class="item lancer-tab medium" data-tab="mech">&lt;FRAME//LOADOUT&gt;</a>-->
   </nav>
 
   {{! Sheet Body }}
   <section class="sheet-body">
     {{! Active Tab }}
-    <div class="tab manage" data-group="primary" data-tab="status">
+    <div class="tab manage {{tabs.primary.status.cssClass}}" data-group="primary" data-tab="status">
       <div class="wraprow quadruple">
         {{{stat-edit-max-card "HP" "mdi mdi-heart-outline" "system.hp.value" "system.hp.max"}}}
         {{{stat-edit-max-card "HEAT" "cci cci-heat" "system.heat.value" "system.heat.max"}}}
@@ -68,10 +68,11 @@
     </div>
 
     {{! Config Tab }}
-    <div class="tab manage flexcol" data-group="primary" data-tab="config">
+    <div class="tab manage flexcol {{tabs.primary.config.cssClass}}" data-group="primary" data-tab="config">
       {{! Frame Stats }}
-      <div class="card clipped" style="text-align: left;">
-        <span class="lancer-header lancer-primary major" style="text-align: center;">{{localize
+      <div class="card clipped" style="text-align: left">
+        <span class="lancer-header lancer-primary major" style="text-align: center">{{
+            localize
             "lancer.deployable-sheet.stats.label"
           }}</span>
         <div class="card clipped wraprow quadruple">
@@ -96,8 +97,8 @@
       </div>
     </div>
 
-    <div class="tab effects" data-group="primary" data-tab="effects">
+    <div class="tab effects {{tabs.primary.effects.cssClass}}" data-group="primary" data-tab="effects">
       {{{effect-categories-view actor effect_categories}}}
     </div>
   </section>
-</form>
+</section>

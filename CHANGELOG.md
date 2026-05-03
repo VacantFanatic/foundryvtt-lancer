@@ -1,3 +1,15 @@
+# 2.13.0 (2026-05-03)
+
+## Changed
+
+- Migrated all Lancer actor and item document sheets to Foundry Application Framework V2 (`ActorSheetV2`, `ItemSheetV2` / `DocumentSheetV2` with `HandlebarsApplicationMixin`), including `static PARTS`, `static TABS`, `_prepareContext`, and form `handler` submission instead of V1 `getData` / `_updateObject`.
+- Sheet registration now unregisters core V2 default sheets (with optional cleanup of legacy V1 registrations when still present).
+- Actor and item sheet Handlebars templates no longer nest a root `<form>` (outer form is supplied by the V2 app); tab navigation uses `data-action="tab"` and `tabs.<group>.<id>.cssClass` for active state.
+
+## Fixed
+
+- Pilot callsign changes again propagate to `prototypeToken.name` via `_processFormData` under the V2 form pipeline.
+
 # 2.12.0 (2026-05-03)
 
 ## Changed
@@ -567,7 +579,7 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 
 # 2.0.0 (2024-06-02)
 
-_IT'S FINALLY HERE!_
+*IT'S FINALLY HERE!*
 
 This update to the system has been a long labour of love for myself and the rest of the team. Of course this includes long-awaited support for Foundry v11, but also a large refactor of the bones of the system. Largely this will be invisible to you as users, but it will make for easier maintenance of the system, development of modules to support Lancer, and expansions of the system automation. We hope you all enjoy!
 
@@ -764,7 +776,7 @@ Here is a summary of the changes, though in any refactor this large some items w
 
 - Update the pilot import system to use Comp/Con's new share code system. "Vault" and "cloud" style codes are no longer supported.
 - Update Lancer Initiative to take advantage of Foundry v9 features, eliminating the "Dummy Combatant".
-- Added Custom Paint Job macro from \[REDACTED\] to the Macros compendium.
+- Added Custom Paint Job macro from REDACTED to the Macros compendium.
 - Added Scan macro from Jazzy (and speck and Valkyrion) to the Macros compendium.
 - Added Mimic Gun macro from Infalle to the Macros compendium.
 
@@ -815,7 +827,7 @@ Here is a summary of the changes, though in any refactor this large some items w
 - Reorganized system automation settings into their own sub-menu.
 - Structure/stress macros now use a HUD similar to attacks, improved logic, and automatically trigger (unless disabled via automation settings) when hp <= 0 and heat > max.
 - #229 - Weapons with the self heat tag now apply heat to the owner when used.
-- Add context menus to item preview cards with options to edit, remove, and mark as destroyed/repaired. Replaces the static delete buttons and "click _almost_ anywhere to open the item" functionality.
+- Add context menus to item preview cards with options to edit, remove, and mark as destroyed/repaired. Replaces the static delete buttons and "click *almost* anywhere to open the item" functionality.
 
 ## Bug Fixes
 
@@ -874,7 +886,7 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - #233 - We no longer override the token data on new Actors, allowing the Foundry configuration for default settings to work as expected.
 - #260 - Dice So Nice (and other modules that trigger on dice rolls) will once again trigger on skill check rolls.
 - #262 - Importing an Actor from a compendium no longer overwrites the imported data with defaults.
-- #271 - Actor attribute names have been standardized. Pilots now have burn and overshield, and the unnecessary `current_` prefix on many attributes have been removed.
+- #271 - Actor attribute names have been standardized. Pilots now have burn and overshield, and the unnecessary `current`_ prefix on many attributes have been removed.
 - #276 - Fix a small formatting issue on the secondary roll button in structure/stress chat messages.
 - #278 - Add capability to rename and delete weapon profiles via right click menu.
 - #280 - Show talent actions alongside talents in pilot/mech sheets.
@@ -914,7 +926,7 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 ## Features
 
 - #235 - Importing Status & Conditions compendium now
-- #70 - Partially resolved, will show the _first_ integrated weapon on the sheet
+- #70 - Partially resolved, will show the *first* integrated weapon on the sheet
 - #176 - Better item sorting
 - Superheavies can now be braced
 - Can now track your inventory to see what you don't have equipped!
