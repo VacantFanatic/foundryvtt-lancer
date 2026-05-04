@@ -1,7 +1,10 @@
-# 2.13.0 (2026-05-03)
+# 2.12.0 (2026-05-03)
 
 ## Changed
 
+- Migrated remaining App Framework V1 utility applications to ApplicationV2 patterns, including COMP/CON login, HTML editor, targeted edit forms, inventory dialog, action manager HUD, and shared Svelte host plumbing.
+- Updated legacy form/dialog templates to AppV2 form hosting expectations (outer form supplied by app, submit wiring through AppV2 handlers).
+- Added AppV2 migration guardrails and audit notes, including runtime warnings for any classes still extending V1 application bases during QA.
 - `npm run build` mirrors `dist/` into `**F:/FoundryVTT/Data/systems/lancer**` by default; set `SKIP_FOUNDRY_DIST_MIRROR=1` to skip, or `FOUNDRY_SYSTEM_DIR` / `MIRROR_DIST_TO_FOUNDRY_DATA=1` to use another destination (see README).
 - Migrated all Lancer actor and item document sheets to Foundry Application Framework V2 (`ActorSheetV2`, `ItemSheetV2` / `DocumentSheetV2` with `HandlebarsApplicationMixin`), including `static PARTS`, `static TABS`, `_prepareContext`, and form `handler` submission instead of V1 `getData` / `_updateObject`.
 - Sheet registration now unregisters core V2 default sheets (with optional cleanup of legacy V1 registrations when still present).
@@ -9,6 +12,7 @@
 
 ## Fixed
 
+- Improved rerender resilience for migrated app interactions by moving away from V1 `getData`/`_updateObject` lifecycles and onto AppV2 context and handler flows.
 - Actor and item sheet overflow sizing no longer depends on `:has(...)`; host + `section.lancer-sheet` flex rules now apply consistently in Foundry/Electron so vertical scrollbars appear when content exceeds window height.
 - Mech header name input is larger by default and now allows full-name display with wrap-safe sizing instead of forced ellipsis truncation.
 - Actor sheets (`section.lancer-sheet`) use a **column flex** layout so `section.sheet-body.scroll-body` gets a bounded height and shows a **vertical scrollbar** when tab content (e.g. pilot tactical talents) overflows the window.
@@ -24,18 +28,6 @@
 - Actor and item sheets call `**super.activateListeners(html)`** for Foundry core `data-action` handling, while Lancer-specific listeners (tabs, rolls, flows, editors, drag-drop) delegate from `**this.element`** so clicks still reach handlers under Application V2.
 - Actor sheet flex and scroll rules also apply when the sheet `**form` / `application` host is a direct child of `.window-content`** (typical Foundry 14 layout), so tab bodies scroll instead of clipping.
 - After each render, actor and item sheets call `**changeTab`** with the group’s configured **initial** tab when no `.tab.active` panel exists for that group, avoiding a blank tab body when tab state desyncs.
-
-# 2.12.0 (2026-05-03)
-
-## Changed
-
-- Migrated remaining App Framework V1 utility applications to ApplicationV2 patterns, including COMP/CON login, HTML editor, targeted edit forms, inventory dialog, action manager HUD, and shared Svelte host plumbing.
-- Updated legacy form/dialog templates to AppV2 form hosting expectations (outer form supplied by app, submit wiring through AppV2 handlers).
-- Added AppV2 migration guardrails and audit notes, including runtime warnings for any classes still extending V1 application bases during QA.
-
-## Fixed
-
-- Improved rerender resilience for migrated app interactions by moving away from V1 `getData`/`_updateObject` lifecycles and onto AppV2 context and handler flows.
 
 ## Action Needed
 
