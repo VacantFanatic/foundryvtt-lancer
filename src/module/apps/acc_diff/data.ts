@@ -25,6 +25,7 @@ export class AccDiffHudWeapon {
   accurate: boolean;
   inaccurate: boolean;
   seeking: boolean;
+  tech: boolean;
   melee: boolean;
   thrown: boolean;
   engaged: boolean;
@@ -38,6 +39,7 @@ export class AccDiffHudWeapon {
       accurate: t.boolean,
       inaccurate: t.boolean,
       seeking: t.boolean,
+      tech: t.boolean,
       melee: t.boolean,
       thrown: t.boolean,
       engaged: t.boolean,
@@ -56,6 +58,7 @@ export class AccDiffHudWeapon {
     this.accurate = obj.accurate;
     this.inaccurate = obj.inaccurate;
     this.seeking = obj.seeking;
+    this.tech = obj.tech;
     this.melee = obj.melee;
     this.thrown = obj.thrown;
     this.engaged = obj.engaged;
@@ -67,6 +70,7 @@ export class AccDiffHudWeapon {
       accurate: this.accurate,
       inaccurate: this.inaccurate,
       seeking: this.seeking,
+      tech: this.tech,
       melee: this.melee,
       thrown: this.thrown,
       engaged: this.engaged,
@@ -88,7 +92,8 @@ export class AccDiffHudWeapon {
       (this.inaccurate ? 1 : 0) -
       (this.impaired ? 1 : 0) -
       (this.engaged ? 1 : 0) -
-      (this.seeking || (this.melee && !this.thrown) ? 0 : cover)
+      // Seeking, tech attacks, and non-thrown melee ignore cover
+      (this.seeking || this.tech || (this.melee && !this.thrown) ? 0 : cover)
     );
   }
 
@@ -402,10 +407,18 @@ export class AccDiffHudData {
         (runtimeData.is_npc_feature() && runtimeData.system.type === NpcFeatureType.Weapon))
         ? runtimeData
         : null;
+    const techItem =
+      runtimeData instanceof LancerItem &&
+      !runtimeData.is_mech_weapon() &&
+      !runtimeData.is_pilot_weapon() &&
+      !(runtimeData.is_npc_feature() && runtimeData.system.type === NpcFeatureType.Weapon)
+        ? runtimeData
+        : null;
     const weapon = {
       accurate: false,
       inaccurate: false,
       seeking: false,
+      tech: !!(title?.toLowerCase() === "tech attack" || techItem),
       melee: weaponItem?.currentProfile().type === WeaponType.Melee || false,
       thrown: false,
       engaged: false,
