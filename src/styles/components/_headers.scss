@@ -139,7 +139,8 @@
     float: left;
   }
 
-  .pilot-stats {
+  /* Pilot header only (see `pilot.hbs`): wider stat inputs, readable fill on `--pilot-stat-color`. */
+  .lancer.sheet.pilot header.sheet-header .header-details.pilot-stats {
     clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
     -webkit-clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
     background-color: var(--pilot-stat-color);
@@ -149,6 +150,33 @@
 
     .lancer-stat.minor {
       color: var(--dark-text);
+    }
+
+    .compact-stat {
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+
+    input[type="number"].lancer-stat {
+      flex: 1 1 auto;
+      min-width: 2.75rem;
+      max-width: 4.5rem;
+      width: auto;
+      font-size: 0.9rem;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--dark-text);
+      background-color: color-mix(in srgb, var(--pilot-stat-color), var(--background-color) 22%);
+      border: 1px solid color-mix(in srgb, var(--dark-text), transparent 72%);
+      border-radius: 2px;
+      padding: 1px 5px;
+      margin: 0 0.15em;
+      box-sizing: border-box;
+
+      &:focus-visible {
+        outline: 2px solid var(--primary-highlight);
+        outline-offset: 1px;
+      }
     }
   }
 
@@ -174,8 +202,8 @@
     align-self: stretch;
 
     /* For buttons/icons, we want them to not grow but also not just get squashed into nothing 
-  * If this unbalances things, add an equal # of balancers to the other side
-  */
+     * If this unbalances things, add an equal # of balancers to the other side
+     */
     a,
     :not(a) i,
     img {
@@ -191,8 +219,8 @@
     }
 
     /* Spans are the main bodies of headers. We want them to grow! 
-  * Inputs too for those cases where the title is editable.
-  */
+     * Inputs too for those cases where the title is editable.
+     */
     span,
     input {
       flex-grow: 1;

@@ -22,177 +22,209 @@ import { BonusEditDialog } from "../apps/bonus-editor";
 import { OrgType } from "../enums";
 import { handleTagEditButtons } from "../helpers/tags";
 
+const { HandlebarsApplicationMixin } = foundry.applications.api;
+const sheets = foundry.applications.sheets as typeof foundry.applications.sheets & {
+  ItemSheetV2?: typeof foundry.applications.sheets.DocumentSheetV2;
+};
+const ItemSheetV2Base =
+  "ItemSheetV2" in sheets && sheets.ItemSheetV2 ? sheets.ItemSheetV2 : foundry.applications.sheets.DocumentSheetV2;
+
 const lp = LANCER.log_prefix;
 
 /**
- * Extend the basic ItemSheet with some very simple modifications
- * @extends {ItemSheet}
+ * Lancer item sheet (Application V2).
  */
-export class LancerItemSheet<T extends LancerItemType> extends foundry.appv1.sheets.ItemSheet<ItemSheet.Options> {
-  constructor(document: LancerItem, options: Partial<ItemSheet.Options>) {
-    super(document, options);
-    if (this.item.is_mech_weapon()) {
-      // TODO Figure out if this even does anything
-      this.options.initial = `profile${this.item.system.selected_profile_index}`;
+export class LancerItemSheet<T extends LancerItemType> extends HandlebarsApplicationMixin(ItemSheetV2Base) {
+  declare document: LancerItem;
+
+  static override DEFAULT_OPTIONS = foundry.utils.mergeObject(
+    (ItemSheetV2Base as { DEFAULT_OPTIONS?: object }).DEFAULT_OPTIONS ?? {},
+    {
+      classes: ["lancer", "sheet", "item"],
+      tag: "form",
+      position: { width: 700, height: 700 },
+      window: { resizable: true },
+      form: {
+        closeOnSubmit: false,
+        submitOnChange: true,
+        handler: LancerItemSheet.#onSubmitForm,
+      },
+    },
+    { inplace: false }
+  );
+
+  static override PARTS = {
+    body: { template: "systems/lancer/templates/item/skill.hbs" },
+  };
+
+  constructor(
+    arg0: LancerItem | (foundry.applications.types.ApplicationConfiguration & { document?: LancerItem }),
+    arg1?: Partial<foundry.applications.types.ApplicationConfiguration>
+  ) {
+    // Avoid `instanceof foundry.documents.abstract.Document` — that symbol can be undefined in some runtimes
+    // (throws "Right-hand side of 'instanceof' is not an object") and breaks item sheet construction.
+    const first = arg0 as object | null;
+    const opts: Record<string, unknown> =
+      first !== null &&
+      typeof first === "object" &&
+      "document" in first &&
+      (first as { document?: unknown }).document !== undefined
+        ? { ...(first as Record<string, unknown>), ...(arg1 ?? {}) }
+        : { document: arg0 as LancerItem, ...(arg1 ?? {}) };
+    if (!opts.document) {
+      throw new Error("LancerItemSheet requires a document");
+    }
+    const doc = opts.document as LancerItem;
+    if (doc.is_mech_weapon()) {
+      const idx = Number(doc.system.selected_profile_index ?? 0);
+      opts.tabs = foundry.utils.mergeObject((opts.tabs as object) ?? {}, {
+        initial: { primary: `profile${Number.isFinite(idx) ? idx : 0}` },
+      });
+    }
+    super(opts as ConstructorParameters<typeof ItemSheetV2Base>[0]);
+  }
+
+  get item(): LancerItem {
+    return this.document;
+  }
+
+  static async #onSubmitForm(
+    this: LancerItemSheet<LancerItemType>,
+    event: Event,
+    _form: HTMLFormElement,
+    formData: foundry.applications.ux.FormDataExtended
+  ): Promise<void> {
+    event.preventDefault();
+    await this.item.update(formData.object);
+  }
+
+  protected override _onRender(context: object, options: Record<string, unknown>): void {
+    super._onRender(context, options);
+    this._ensureDefaultTabsIfBlank();
+  }
+
+  /**
+   * If no content panel has `.active` for a tab group, activate the configured initial tab
+   * (`static TABS` and/or `_getTabsConfig` for dynamic profile tabs).
+   */
+  protected _ensureDefaultTabsIfBlank(): void {
+    const root = (this.form ?? this.element) as HTMLElement;
+    const groups = new Map<string, string>();
+
+    const ctor = this.constructor as unknown as { TABS?: Record<string, { initial?: string }> };
+    if (ctor.TABS) {
+      for (const [groupId, conf] of Object.entries(ctor.TABS)) {
+        if (conf?.initial) groups.set(groupId, conf.initial);
+      }
+    }
+
+    if (typeof this._getTabsConfig === "function") {
+      const primary = this._getTabsConfig("primary");
+      if (primary?.initial) groups.set("primary", primary.initial);
+    }
+
+    for (const [groupId, initial] of groups) {
+      if (root.querySelector(`.tab.active[data-group="${groupId}"]`)) continue;
+      this.changeTab(initial, groupId, { force: true });
     }
   }
 
-  // Tracks collapse state between renders
   protected collapse_handler = new CollapseHandler();
 
-  /**
-   * @override
-   * Extend and override the default options used by the Item Sheet
-   */
-  static get defaultOptions(): ItemSheet.Options {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["lancer", "sheet", "item"],
-      width: 700,
-      height: 700,
-      tabs: [
-        {
-          navSelector: ".lancer-tabs",
-          contentSelector: ".sheet-body",
-          initial: "description",
-        },
-      ],
-    });
+  protected override _configureRenderParts(options: Partial<foundry.applications.types.ApplicationRenderOptions>) {
+    const parts = super._configureRenderParts(options) as Record<string, { template: string }>;
+    parts.body = { template: `systems/lancer/templates/item/${this.item.type}.hbs` };
+    return parts;
   }
 
-  /** @override */
-  get template() {
-    const path = `systems/${game.system.id}/templates/item`;
-    return `${path}/${this.item.type}.hbs`;
+  protected override _getTabsConfig(group: string): foundry.applications.types.ApplicationTabsConfiguration | null {
+    if (group === "primary" && this.item.is_mech_weapon()) {
+      const profiles = this.item.system.profiles ?? [];
+      const idx = Number(this.item.system.selected_profile_index ?? 0);
+      return {
+        initial: `profile${Number.isFinite(idx) ? idx : 0}`,
+        tabs: profiles.map((p: { name?: string }, i: number) => ({
+          id: `profile${i}`,
+          group: "primary",
+          label: p.name ?? `<Profile ${i}>`,
+        })),
+      };
+    }
+    return super._getTabsConfig(group);
   }
 
-  /* -------------------------------------------- */
-
-  /**
-   * Private helper that applies context menus according to the editability of the sheet.
-   * @param html {JQuery}    The prepared HTML object ready to be rendered into the DOM
-   * @param data_getter      Reference to a function which can provide the sheet data
-   * @param commit_func      Reference to a function which can commit/save data back to the document
-   */
   _activateContextListeners(html: JQuery) {
-    // Enable custom context menu triggers. If the sheet is not editable, show only the "view" option.
-    handleContextMenus(html, this.item, !this.options.editable);
-    // Enable tag edit buttons
+    handleContextMenus(html, this.item, !this.isEditable);
     handleTagEditButtons(html, this.item);
   }
 
-  /**
-   * @override
-   * Activate event listeners using the prepared sheet HTML
-   * @param html {JQuery}   The prepared HTML object ready to be rendered into the DOM
-   */
-  activateListeners(html: JQuery) {
+  override activateListeners(html: HTMLElement): void {
     super.activateListeners(html);
+    const $el = $(this.element);
 
-    // Enable collapse triggers.
-    initializeCollapses(html);
-    applyCollapseListeners(html);
+    initializeCollapses($el);
+    applyCollapseListeners($el);
 
-    let getfunc = () => this.getData();
-    let commitfunc = (_: any) => {
-      ui.notifications?.error("DEPRECATED");
-    };
+    $el.find(".ref.set.click-open").on("click", click_evt_open_ref);
+    handleRefDragging($el);
+    this._activateContextListeners($el);
 
-    // Make refs clickable
-    $(html).find(".ref.set.click-open").on("click", click_evt_open_ref);
+    this._tabs?.forEach(t => t.bind(this.element));
 
-    // Enable ref dragging
-    handleRefDragging(html);
-
-    this._activateContextListeners(html);
-
-    // Everything below here is only needed if the sheet is editable
-    if (!this.options.editable) {
+    if (!this.isEditable) {
       return;
     }
 
-    // Make +/- buttons work
-    handleInputPlusMinusButtons(html, this.item);
-
-    // Make counter pips work
-    handleCounterInteraction(html, this.item);
-
-    // Enable hex use triggers.
-    handleUsesInteraction(html, this.item);
-
-    // Allow dragging items into lists
-    handleDocListDropping(html, this.item);
-    handleLIDListDropping(html, this.item);
-
-    // Allow set things by drop. Mostly we use this for manufacturer/license dragging
-    handleRefSlotDropping(html, this.item, null); // Don't restrict what can be dropped past type, and don't take ownership or whatever
-
-    // Enable our subform editors editors
-    BonusEditDialog.handle(html, ".editable.bonus", this.item);
-    ActionEditDialog.handle(html, ".action-editor", this.item);
-
-    // Enable popout editors
-    handlePopoutTextEditor(html, this.item);
-
-    // Enable general controls, so items can be deleted and such
-    handleGenControls(html, this.item);
+    handleInputPlusMinusButtons($el, this.item);
+    handleCounterInteraction($el, this.item);
+    handleUsesInteraction($el, this.item);
+    handleDocListDropping($el, this.item);
+    handleLIDListDropping($el, this.item);
+    handleRefSlotDropping($el, this.item, null);
+    BonusEditDialog.handle($el, ".editable.bonus", this.item);
+    ActionEditDialog.handle($el, ".action-editor", this.item);
+    handlePopoutTextEditor($el, this.item);
+    handleGenControls($el, this.item);
   }
 
-  /* -------------------------------------------- */
+  protected override async _prepareContext(
+    options: Partial<foundry.applications.types.ApplicationRenderOptions>
+  ): Promise<LancerItemSheetData<T>> {
+    const context = (await super._prepareContext(options)) as LancerItemSheetData<T>;
+    context.item = this.item;
+    context.system = this.item.system;
+    context.collapse = {};
 
-  /**
-   * Implement the _updateObject method as required by the parent class spec
-   * This defines how to update the subject of the form when the form is submitted
-   * @private
-   */
-  async _updateObject(_event: Event | JQuery.Event, formData: any): Promise<any> {
-    // Simple writeback
-    await this.item.update(formData);
-  }
-
-  /**
-   * Prepare data for rendering the frame sheet
-   * The prepared data object contains both the actor data as well as additional sheet options
-   */
-  async getData(): Promise<LancerItemSheetData<T>> {
-    const data = super.getData() as LancerItemSheetData<T>; // Not fully populated yet!
-    data.system = this.item.system; // Set our alias
-    data.collapse = {};
-
-    // Populate deployables depending on our context
-    data.deployables = {};
+    context.deployables = {};
     if (!this.item.pack && this.item.actor) {
-      // Use those owned in the world
-      data.deployables = lookupOwnedDeployables(this.item.actor);
+      context.deployables = lookupOwnedDeployables(this.item.actor);
     } else {
-      // Use compendium. This is probably overkill but, who well
-      let deps =
+      const deps =
         (await game.packs.get(get_pack_id(EntryType.DEPLOYABLE))?.getDocuments({ type: EntryType.DEPLOYABLE })) ?? [];
-      for (let d of deps as LancerDEPLOYABLE[]) {
-        data.deployables[d.system.lid] = d;
+      for (const d of deps as LancerDEPLOYABLE[]) {
+        context.deployables[d.system.lid] = d;
       }
     }
 
-    // Additionally we would like to find a matching license. Re-use ctx, try both a world and global reg, actor as well if it exists
-    data.license = null;
+    context.license = null;
     if (this.actor?.is_pilot() || this.actor?.is_mech()) {
-      data.license = await findLicenseFor(this.item, this.actor!);
+      context.license = await findLicenseFor(this.item, this.actor!);
     } else {
-      data.license = await findLicenseFor(this.item);
+      context.license = await findLicenseFor(this.item);
     }
 
     if (this.item.is_organization()) {
-      // console.log(OrgType);
-      data.org_types = OrgType;
+      context.org_types = OrgType;
     }
 
     if (this.item.is_status()) {
-      data.status_types = StatusConditionType;
-      if (!data.system.lid) {
-        data.system.lid = `status-${data.document.id}`;
+      context.status_types = StatusConditionType;
+      if (!context.system.lid) {
+        context.system.lid = `status-${context.document.id}`;
       }
     }
 
-    console.log(`${lp} Rendering with following item ctx: `, data);
-    return data;
+    console.log(`${lp} Rendering with following item ctx: `, context);
+    return context;
   }
 }

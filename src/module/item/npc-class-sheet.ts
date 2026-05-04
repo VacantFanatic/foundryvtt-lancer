@@ -11,27 +11,25 @@ const lp = LANCER.log_prefix;
  * @extends {LancerItemSheet}
  */
 export class LancerNPCClassSheet extends LancerItemSheet<EntryType.NPC_CLASS | EntryType.NPC_TEMPLATE> {
-  /**
-   * @override
-   * Extend and override the default options used by the generic Lancer item sheet
-   */
-  static get defaultOptions(): ItemSheet.Options {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      width: 900,
-      height: 750,
-    });
-  }
+  static override DEFAULT_OPTIONS = foundry.utils.mergeObject(
+    super.DEFAULT_OPTIONS,
+    { position: { width: 900, height: 750 } },
+    { inplace: false }
+  );
 
   base_feature_items!: (LancerItem & { type: EntryType.NPC_FEATURE })[];
   optional_feature_items!: (LancerItem & { type: EntryType.NPC_FEATURE })[];
 
-  async getData(): Promise<LancerItemSheetData<EntryType.NPC_CLASS | EntryType.NPC_TEMPLATE>> {
-    let data = await super.getData();
+  protected override async _prepareContext(
+    options: Partial<foundry.applications.types.ApplicationRenderOptions>
+  ): Promise<LancerItemSheetData<EntryType.NPC_CLASS | EntryType.NPC_TEMPLATE>> {
+    const data = await super._prepareContext(options);
 
-    // Want to resolve all of our lids
-    let item = this.item as LancerNPC_CLASS | LancerNPC_TEMPLATE;
-    (data as any).base_features = await Promise.all(Array.from(item.system.base_features).map(lid => fromLid(lid)));
-    (data as any).optional_features = await Promise.all(
+    const item = this.item as LancerNPC_CLASS | LancerNPC_TEMPLATE;
+    (data as Record<string, unknown>).base_features = await Promise.all(
+      Array.from(item.system.base_features).map(lid => fromLid(lid))
+    );
+    (data as Record<string, unknown>).optional_features = await Promise.all(
       Array.from(item.system.optional_features).map(lid => fromLid(lid))
     );
 

@@ -16,25 +16,24 @@ export class LancerNPCFeatureSheet extends LancerItemSheet<EntryType.NPC_FEATURE
    * Activate event listeners using the prepared sheet HTML
    * @param html {JQuery}   The prepared HTML object ready to be rendered into the DOM
    */
-  activateListeners(html: JQuery) {
+  override activateListeners(html: HTMLElement): void {
     super.activateListeners(html);
 
-    // Everything below here is only needed if the sheet is editable
-    if (!this.options.editable) return;
+    if (!this.isEditable) return;
 
-    // Watch for damage append. Can't use a gen-control for this one because it needs to
-    // insert into 3 different arrays.
-    html.find(".npc-damage-append").on("click", _e => {
-      console.log("NPC damage append");
-      if (!this.object.is_npc_feature() || this.object.system.type !== NpcFeatureType.Weapon) return;
-      const damages = (this.object.system as unknown as SystemTemplates.NPC.WeaponData).damage;
-      damages[0].push(new Damage(defaults.DAMAGE()));
-      damages[1].push(new Damage(defaults.DAMAGE()));
-      damages[2].push(new Damage(defaults.DAMAGE()));
-      console.log("new damages", damages);
-      this.object.update({
-        "system.damage": damages,
+    $(html)
+      .find(".npc-damage-append")
+      .on("click", _e => {
+        console.log("NPC damage append");
+        if (!this.item.is_npc_feature() || this.item.system.type !== NpcFeatureType.Weapon) return;
+        const damages = (this.item.system as unknown as SystemTemplates.NPC.WeaponData).damage;
+        damages[0].push(new Damage(defaults.DAMAGE()));
+        damages[1].push(new Damage(defaults.DAMAGE()));
+        damages[2].push(new Damage(defaults.DAMAGE()));
+        console.log("new damages", damages);
+        this.item.update({
+          "system.damage": damages,
+        });
       });
-    });
   }
 }

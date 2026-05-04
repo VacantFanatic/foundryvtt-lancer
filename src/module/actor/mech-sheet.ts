@@ -1,3 +1,4 @@
+import type { LancerActorSheetData } from "../interfaces";
 import { LancerActorSheet } from "./lancer-actor-sheet";
 import { resolveDotpath } from "../helpers/commons";
 import type { LancerMECH } from "./lancer-actor";
@@ -11,41 +12,36 @@ import ContextMenu = foundry.applications.ux.ContextMenu;
  * Extend the basic ActorSheet
  */
 export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
-  /**
-   * Extend and override the default options used by the NPC Sheet
-   */
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["lancer", "sheet", "actor", "mech"],
-      template: `systems/${game.system.id}/templates/actor/mech.hbs`,
-      width: 900,
-      height: 800,
+  static override DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+    classes: ["lancer", "sheet", "actor", "mech"],
+    position: { width: 900, height: 800 },
+  });
+
+  static override PARTS = {
+    body: { template: "systems/lancer/templates/actor/mech.hbs" },
+  };
+
+  static override TABS = {
+    primary: {
+      initial: "stats",
       tabs: [
-        {
-          navSelector: ".lancer-tabs",
-          contentSelector: ".sheet-body",
-          initial: "stats",
-        },
+        { id: "stats", group: "primary" },
+        { id: "loadout", group: "primary" },
+        { id: "talents", group: "primary" },
+        { id: "effects", group: "primary" },
       ],
-    });
-  }
+    },
+  };
 
-  /* -------------------------------------------- */
-
-  /**
-   * @override
-   * Activate event listeners using the prepared sheet HTML
-   * @param html {HTMLElement}   The prepared HTML object ready to be rendered into the DOM
-   */
-  activateListeners(html: JQuery<HTMLElement>) {
+  override activateListeners(html: HTMLElement): void {
     super.activateListeners(html);
 
-    // Everything below here is only needed if the sheet is editable
-    if (!this.options.editable) return;
+    if (!this.isEditable) return;
 
-    this._activateOverchargeControls(html);
-    this._activateLoadoutControls(html);
-    this._activateMountContextMenus(html);
+    const $html = $(this.element);
+    this._activateOverchargeControls($html);
+    this._activateLoadoutControls($html);
+    this._activateMountContextMenus($html);
   }
 
   /* -------------------------------------------- */
@@ -127,18 +123,17 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
    * Handles actions in the overcharge panel
    */
   _activateOverchargeControls(html: JQuery<HTMLElement>) {
-    // Overcharge text
-    let overchargeText = html.find(".overcharge-text");
-
-    overchargeText.on("click", ev => {
+    html.off("click.lancerOverchargeControls");
+    html.on("click.lancerOverchargeControls", ".overcharge-text", ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
       if (!this.actor.is_mech()) return;
       this._setOverchargeLevel(ev, Math.min(this.actor.system.overcharge + 1, 3));
     });
-
-    // Overcharge reset
-    let overchargeReset = html.find(".overcharge-reset");
-
-    overchargeReset.on("click", ev => {
+    html.on("click.lancerOverchargeControls", ".overcharge-reset", ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (!this.actor.is_mech()) return;
       this._setOverchargeLevel(ev, 0);
     });
   }
@@ -225,11 +220,10 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
       name: "Superheavy Bracing",
       icon: "",
       callback: async (target: HTMLElement) => {
-        let cd = await this.getData();
         let mountPath = target.dataset.path ?? "";
 
         // Get the current mount
-        let mount = resolveDotpath(cd, mountPath) as Actor.OfType<"mech">["loadout"]["weapon_mounts"][0];
+        let mount = resolveDotpath(this.actor, mountPath) as Actor.OfType<"mech">["loadout"]["weapon_mounts"][0];
         if (!mount) {
           console.error("Bad mountpath:", mountPath);
         }
@@ -276,11 +270,13 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
     }
   }
 
-  async getData(): Promise<object> {
-    let data = await super.getData();
-    data.pilot = this.actor.system.pilot?.value;
-    data.is_active = this.actor.system.pilot?.value?.system.active_mech?.value == this.actor;
-    // data.pilot = await this.actor.system.pilot;
+  protected override async _prepareContext(
+    options: Partial<foundry.applications.types.ApplicationRenderOptions>
+  ): Promise<LancerActorSheetData<EntryType.MECH>> {
+    const data = (await super._prepareContext(options)) as LancerActorSheetData<EntryType.MECH>;
+    (data as Record<string, unknown>).pilot = this.actor.system.pilot?.value;
+    (data as Record<string, unknown>).is_active =
+      this.actor.system.pilot?.value?.system.active_mech?.value == this.actor;
     return data;
   }
 }

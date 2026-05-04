@@ -1,4 +1,4 @@
-<form class="{{cssClass}} lancer-sheet" autocomplete="off">
+<section class="{{cssClass}} lancer-sheet" autocomplete="off">
   {{!-- Sheet Header --}}
   <header class="sheet-header">
     <div class="name flexrow">
@@ -36,19 +36,19 @@
   </header>
 
   {{!-- Sheet Tab Navigation --}}
-  <nav class="lancer-tabs" data-group="primary">
-    <a class="item lancer-tab medium" data-tab="cloud">{{localize "lancer.pilot-sheet.tabs.cloud"}}</a>
-    <a class="item lancer-tab medium" data-tab="dossier">{{localize "lancer.pilot-sheet.tabs.dossier"}}</a>
-    <a class="item lancer-tab medium" data-tab="narrative">{{localize "lancer.pilot-sheet.tabs.narrative"}}</a>
-    <a class="item lancer-tab medium" data-tab="tactical">{{localize "lancer.pilot-sheet.tabs.tactical"}}</a>
-    <a class="item lancer-tab medium" data-tab="loadout">{{localize "lancer.pilot-sheet.tabs.mech"}}</a>
-    <a class="item lancer-tab medium" data-tab="effects">{{localize "lancer.common-sheet.tabs.effects"}}</a>
+  <nav class="tabs lancer-tabs" data-group="primary">
+    <a class="item lancer-tab medium {{tabs.primary.cloud.cssClass}}" data-action="tab" data-group="primary" data-tab="cloud">{{localize "lancer.pilot-sheet.tabs.cloud"}}</a>
+    <a class="item lancer-tab medium {{tabs.primary.dossier.cssClass}}" data-action="tab" data-group="primary" data-tab="dossier">{{localize "lancer.pilot-sheet.tabs.dossier"}}</a>
+    <a class="item lancer-tab medium {{tabs.primary.narrative.cssClass}}" data-action="tab" data-group="primary" data-tab="narrative">{{localize "lancer.pilot-sheet.tabs.narrative"}}</a>
+    <a class="item lancer-tab medium {{tabs.primary.tactical.cssClass}}" data-action="tab" data-group="primary" data-tab="tactical">{{localize "lancer.pilot-sheet.tabs.tactical"}}</a>
+    <a class="item lancer-tab medium {{tabs.primary.loadout.cssClass}}" data-action="tab" data-group="primary" data-tab="loadout">{{localize "lancer.pilot-sheet.tabs.mech"}}</a>
+    <a class="item lancer-tab medium {{tabs.primary.effects.cssClass}}" data-action="tab" data-group="primary" data-tab="effects">{{localize "lancer.common-sheet.tabs.effects"}}</a>
   </nav>
 
   {{!-- Sheet Body --}}
   <section class="sheet-body scroll-body">
     {{!-- Cloud Management Tab --}}
-    <div class="tab manage" data-group="primary" data-tab="cloud">
+    <div class="tab manage {{tabs.primary.cloud.cssClass}}" data-group="primary" data-tab="cloud">
       <div style="display: grid; grid-template: auto / 1fr 1fr;">
         <div class="card clipped" style="grid-area: 1/1/2/3;">
           <span class="lancer-header lancer-primary major">{{localize "lancer.pilot-sheet.cloud-header.label"}}</span>
@@ -83,7 +83,7 @@
     </div>
 
     {{!-- Dossier Tab --}}
-    <div class="tab dossier active" data-group="primary" data-tab="dossier">
+    <div class="tab dossier {{tabs.primary.dossier.cssClass}}" data-group="primary" data-tab="dossier">
       <div class="wraprow double">
         <div class="card clipped">
           <span class="lancer-header lancer-primary major">{{localize "lancer.pilot-sheet.dossier.cs"}}</span>
@@ -104,7 +104,7 @@
     </div>
 
     {{!-- Pilot Narrative Tab --}}
-    <div class="tab pilot flexcol" data-group="primary" data-tab="narrative">
+    <div class="tab pilot flexcol {{tabs.primary.narrative.cssClass}}" data-group="primary" data-tab="narrative">
       <div class="card clipped">
         <div class="flexrow">
           {{{clicker-stat-card "LICENSE LEVEL" "mdi mdi-shield-outline" "system.level" false tooltip=(localize "lancer.pilot-sheet.stat-tooltip.license_level")}}}
@@ -256,7 +256,7 @@
     </div>
 
     {{!-- Pilot Tactical Tab --}}
-    <div class="tab tactical flexcol" data-group="primary" data-tab="tactical">
+    <div class="tab tactical flexcol {{tabs.primary.tactical.cssClass}}" data-group="primary" data-tab="tactical">
       {{!-- Counters --}}
       <div class="flexrow">
         {{{pilot-counters actor}}}
@@ -299,14 +299,14 @@
     * ActiveMechRef (maybe just drag&drop & a link here to get to it?)
     * Access to a full list of things unlocked by licenses (read-only)
     --}}
-    <div class="tab loadout flexcol" data-group="primary" data-tab="loadout">
+    <div class="tab loadout flexcol {{tabs.primary.loadout.cssClass}}" data-group="primary" data-tab="loadout">
       {{!-- Active Mech --}}
       {{{ all-mech-preview }}}
     </div>
 
     {{!-- Effects Tab --}}
-    <div class="tab effects flexcol" data-group="primary" data-tab="effects">
+    <div class="tab effects flexcol {{tabs.primary.effects.cssClass}}" data-group="primary" data-tab="effects">
       {{{effect-categories-view actor effect_categories}}} 
     </div>
   </section>
-</form>
+</section>

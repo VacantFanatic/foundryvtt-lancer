@@ -6,26 +6,25 @@ import { TargetedEditForm } from "./targeted-form-editor";
  * @extends {Dialog}
  */
 export class ActionEditDialog extends TargetedEditForm<ActionData> {
-  /** @override */
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      template: `systems/${game.system.id}/templates/window/action_editor.hbs`,
-      title: "Action Editing",
-      classes: ["lancer", "action-editor"],
-      submitOnClose: false,
-    });
-  }
+  static PARTS = {
+    form: { template: "systems/lancer/templates/window/action_editor.hbs" },
+  };
 
-  getData() {
+  static DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+    window: { title: "Action Editing" },
+    classes: ["lancer", "action-editor"],
+  });
+
+  async _prepareContext(options: Record<string, unknown>) {
     // let activation_type: { [key: string]: string } = ActivationType;
     let activation_type: { [key: string]: string } = {};
     Object.entries(ActivationType).forEach(activation => (activation_type[activation[1]] = activation[1]));
-    return {
-      ...super.getData(),
+    const context = await super._prepareContext(options);
+    return foundry.utils.mergeObject(context, {
       action: this.value,
       activation_type, // Provide options for std-select for activation type
       path: this.value_path,
-    };
+    });
   }
 
   /** @override */

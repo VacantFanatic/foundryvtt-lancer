@@ -3,6 +3,7 @@ import { handleGenControls } from "../helpers/commons";
 import { handleRefDragging, click_evt_open_ref } from "../helpers/refs";
 import { handleContextMenus } from "../helpers/item";
 import { applyCollapseListeners, initializeCollapses } from "../helpers/collapse";
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 interface FilledCategory {
   label: string;
@@ -11,7 +12,6 @@ interface FilledCategory {
 
 export interface InventoryDialogData {
   content: string;
-  buttons: Record<string, Dialog.Button>;
   categories: FilledCategory[];
 }
 
@@ -19,42 +19,62 @@ export interface InventoryDialogData {
  * A helper Dialog subclass for editing an actors inventories
  * @extends {Dialog}
  */
-export class InventoryDialog extends Dialog {
-  constructor(readonly actor: LancerActor, dialogData: Dialog.Data, options: Partial<Dialog.Options> = {}) {
-    super(dialogData, options);
-    this.actor = actor;
+export class InventoryDialog extends HandlebarsApplicationMixin(ApplicationV2) {
+  constructor(options: { document: LancerActor; window?: { title?: string } }) {
+    super(options);
   }
 
-  /* -------------------------------------------- */
+  static PARTS = {
+    body: { template: "systems/lancer/templates/window/inventory.hbs" },
+  };
 
-  /** @override */
-  static get defaultOptions(): Dialog.Options {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      template: `systems/${game.system.id}/templates/window/inventory.hbs`,
-      width: 600,
-      height: "auto",
-      classes: ["lancer", "inventory-editor"],
-    }) as any;
+  static DEFAULT_OPTIONS = {
+    id: "lancer-inventory-editor",
+    position: { width: 600, height: "auto" },
+    classes: ["lancer", "inventory-editor"],
+  };
+
+  get actor(): LancerActor {
+    return this.options.document as LancerActor;
   }
 
-  async getData(): Promise<object> {
+  async _prepareContext(options: Record<string, unknown>): Promise<object> {
+    const context = await super._prepareContext(options);
     // Fill out our categories
-    return {
-      ...(await super.getData()),
+    return foundry.utils.mergeObject(context, {
       categories: this.populate_categories(this.actor),
-    };
+    });
   }
 
-  /** @inheritdoc */
-  render(force: any, options = {}) {
+  _onRender(context: object, options: Record<string, unknown>) {
+    super._onRender(context, options);
     // Register the active Application with the referenced Documents, to get updates
     this.actor.apps[this.appId] = this;
-    return super.render(force, options);
+
+    const html = $(this.element);
+
+    initializeCollapses(html);
+    applyCollapseListeners(html);
+
+    // Everything below here is only needed if the sheet is editable
+    let getfunc = () => this.getData();
+    let commitfunc = (_: any) => {};
+
+    // Enable general controls, so items can be deleted and such
+    handleGenControls(html, this.actor);
+
+    // Enable ref dragging
+    handleRefDragging(html);
+
+    handleContextMenus(html, this.actor);
+
+    // Make refs clickable to open the item
+    html.find(".ref.set.click-open").on("click", click_evt_open_ref);
   }
 
-  async close(options: FormApplication.CloseOptions = {}) {
+  async _onClose(options: Record<string, unknown>): Promise<void> {
     delete this.actor.apps[this.appId];
-    return super.close(options);
+    return super._onClose(options);
   }
 
   // Get the appropriate cats for the given actor
@@ -133,42 +153,13 @@ export class InventoryDialog extends Dialog {
     return cats;
   }
 
-  /**
-   * @override
-   * Activate event listeners using the prepared sheet HTML
-   * @param html {HTMLElement}   The prepared HTML object ready to be rendered into the DOM
-   */
-  activateListeners(html: JQuery<HTMLElement>) {
-    super.activateListeners(html);
-
-    initializeCollapses(html);
-    applyCollapseListeners(html);
-
-    // Everything below here is only needed if the sheet is editable
-    let getfunc = () => this.getData();
-    let commitfunc = (_: any) => {};
-
-    // Enable general controls, so items can be deleted and such
-    handleGenControls(html, this.actor);
-
-    // Enable ref dragging
-    handleRefDragging(html);
-
-    handleContextMenus(html, this.actor);
-
-    // Make refs clickable to open the item
-    $(html).find(".ref.set.click-open").on("click", click_evt_open_ref);
-  }
-
   static async show_inventory(actor: LancerActor): Promise<void> {
     return new Promise((resolve, _reject) => {
-      const dlg = new this(actor, {
-        title: `${actor.name}'s inventory`,
-        content: "",
-        buttons: {},
-        close: () => resolve(),
-        default: "",
-      }); // Register the active Application with the referenced Documents
+      const dlg = new this({
+        document: actor,
+        window: { title: `${actor.name}'s inventory` },
+      });
+      dlg.addEventListener("close", () => resolve(), { once: true });
       dlg.render(true);
     });
   }

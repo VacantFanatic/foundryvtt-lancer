@@ -6,24 +6,25 @@ import { EntryType } from "../enums";
  * Extend the basic ActorSheet
  */
 export class LancerDeployableSheet extends LancerActorSheet<EntryType.DEPLOYABLE> {
-  /**
-   * Extend and override the default options used by the NPC Sheet
-   */
-  static get defaultOptions(): ActorSheet.Options {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["lancer", "sheet", "actor", "deployable"],
-      template: `systems/${game.system.id}/templates/actor/deployable.hbs`,
-      width: 800,
-      height: 800,
+  static override DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+    classes: ["lancer", "sheet", "actor", "deployable"],
+    position: { width: 800, height: 800 },
+  });
+
+  static override PARTS = {
+    body: { template: "systems/lancer/templates/actor/deployable.hbs" },
+  };
+
+  static override TABS = {
+    primary: {
+      initial: "status",
       tabs: [
-        {
-          navSelector: ".lancer-tabs",
-          contentSelector: ".sheet-body",
-          initial: "status",
-        },
+        { id: "status", group: "primary" },
+        { id: "config", group: "primary" },
+        { id: "effects", group: "primary" },
       ],
-    });
-  }
+    },
+  };
 
   // Need to allow this stuff for setting deployable
   canRootDrop(item: ResolvedDropData): boolean {
@@ -52,11 +53,10 @@ export class LancerDeployableSheet extends LancerActorSheet<EntryType.DEPLOYABLE
    * Activate event listeners using the prepared sheet HTML
    * @param html {HTMLElement}   The prepared HTML object ready to be rendered into the DOM
    */
-  activateListeners(html: any) {
+  override activateListeners(html: HTMLElement): void {
     super.activateListeners(html);
 
-    // Everything below here is only needed if the sheet is editable
-    if (!this.options.editable) return;
+    if (!this.isEditable) return;
 
     // Add or Remove options
     // Yes, theoretically this could be abstracted out to one function. You do it then.

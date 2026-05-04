@@ -87,10 +87,12 @@
     }
   }
 
+  /* Let the sheet flex chain assign height (see _actor-sheet.scss); a fixed calc here clipped tabs under App V2. */
   .scroll-body {
+    overflow-x: hidden;
     overflow-y: auto;
     margin-top: 8px;
-    height: calc(100% - 168px);
+    min-height: 0;
   }
 
   .monospace {

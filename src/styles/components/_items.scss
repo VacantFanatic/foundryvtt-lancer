@@ -4,8 +4,8 @@
   /* ===== GENERIC ===== */
 
   /* Used on some item cards to add a border and consistent spacing.
- * Should be used on an inner div of a card.
- */
+   * Should be used on an inner div of a card.
+   */
   .lancer-body {
     min-height: 15px;
     padding: 3px;
@@ -731,6 +731,20 @@
 
   .mech-weapon-wrapper {
     margin-bottom: 4px;
+  }
+
+  /* Weapon preview title bar: default .lancer-header is 2em fixed — give name + controls room */
+  .lancer-header.lancer-weapon {
+    flex: 0 0 auto;
+    min-height: 2.35em;
+    justify-content: flex-start;
+    gap: 0.25em;
+
+    span.minor {
+      text-align: left;
+      line-height: 1.15;
+      align-self: center;
+    }
   }
 
   .sheet-weapon-mod {

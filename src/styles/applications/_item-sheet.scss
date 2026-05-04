@@ -6,4 +6,45 @@
       text-align: center;
     }
   }
+
+  application.lancer.item.sheet,
+  .application.lancer.item.sheet {
+    .window-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    > section.lancer-sheet,
+    form > section.lancer-sheet {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    > section.lancer-sheet > :not(.sheet-body),
+    form > section.lancer-sheet > :not(.sheet-body) {
+      flex: 0 0 auto;
+    }
+
+    .sheet-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+  }
 }

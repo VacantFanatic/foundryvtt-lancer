@@ -26,7 +26,7 @@ export class CoreActiveFlow extends ActivationFlow {
     "applySelfHeat",
     "updateItemAfterAction",
     "consumeCorePower",
-    // TODO: deduct action from actor's action tracker
+    "spendActivationActionTracker",
     "printActionUseCard",
   ];
 

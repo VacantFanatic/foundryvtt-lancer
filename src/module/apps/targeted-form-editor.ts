@@ -1,36 +1,32 @@
 import { LancerActor } from "../actor/lancer-actor";
 import { drilldownDocument, resolveDotpath } from "../helpers/commons";
 import { LancerItem } from "../item/lancer-item";
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /**
  * A helper FormApplication subclass for editing a particular
  * @extends {FormApplication}
  */
-export class TargetedEditForm<T> extends FormApplication {
+export class TargetedEditForm<T> extends HandlebarsApplicationMixin(ApplicationV2) {
   // The T we're editing
-  value: T;
+  readonly value: T;
 
   // Where it is
-  value_path: string;
+  readonly value_path: string;
 
   // The item we're editing it on
-  target: LancerItem | LancerActor;
+  readonly target: LancerItem | LancerActor;
 
   // Promise to signal completion of workflow
-  resolve: () => any;
+  readonly resolve: () => void;
 
   constructor(
     target: LancerItem | LancerActor,
     value_path: string,
-    options: Partial<FormApplication.Options> = {},
-    resolve_func: () => any
+    options: Record<string, unknown> = {},
+    resolve_func: () => void
   ) {
-    super(
-      {
-        hasPerm: () => true,
-      },
-      options
-    );
+    super(foundry.utils.mergeObject(options, { document: target }, { inplace: false }));
     this.target = target;
     this.value_path = value_path;
     this.value = resolveDotpath(target, value_path) as T;
@@ -42,16 +38,26 @@ export class TargetedEditForm<T> extends FormApplication {
    * Activate event listeners using the prepared sheet HTML
    * @param html {HTMLElement}   The prepared HTML object ready to be rendered into the DOM
    */
-  activateListeners(html: JQuery<HTMLElement>) {
-    super.activateListeners(html); // Enable popout editors
-    // handlePopoutTextEditor(html, this.target); // TODO HANDLE THIS
-  }
+  static PARTS = {
+    form: { template: "" },
+  };
+
+  static DEFAULT_OPTIONS = {
+    tag: "form",
+    position: { width: 400, height: "auto" },
+    classes: ["lancer", "targeted-form-editor"],
+    form: {
+      handler: this.#onSubmitForm,
+      closeOnSubmit: true,
+      submitOnChange: false,
+    },
+  };
 
   // Enables summoning of this form
-  static handle(html: JQuery, selector: string, root_doc: LancerItem | LancerActor) {
+  static handle(html: JQuery, selector: string, root_doc: LancerItem | LancerActor): void {
     html.find(selector).on("click", async evt => {
       evt.stopPropagation();
-      const elt = evt.currentTarget;
+      const elt = evt.currentTarget as HTMLElement;
       const path = elt.dataset.path;
       if (path) {
         let dd = drilldownDocument(root_doc, path);
@@ -63,30 +69,13 @@ export class TargetedEditForm<T> extends FormApplication {
   /* -------------------------------------------- */
 
   // Override this to set child
-  /** @override */
-  static get defaultOptions() {
-    return {
-      ...super.defaultOptions,
-      width: 400,
-      height: "auto" as const,
-      classes: ["lancer", "targeted-form-editor"],
-      submitOnChange: false,
-      submitOnClose: true,
-      closeOnSubmit: true,
-      // title and template should be provided by child
-    };
-  }
-
   // Override this to add any auxillary data
-  /** @override
-   * Expose our data
-   */
-  getData(): any {
-    return {
-      ...super.getData(),
+  async _prepareContext(options: Record<string, unknown>) {
+    const context = await super._prepareContext(options);
+    return foundry.utils.mergeObject(context, {
       value: this.value,
       path: this.value_path,
-    };
+    });
   }
 
   // Override this - this should return the object that should be updated at path
@@ -95,9 +84,13 @@ export class TargetedEditForm<T> extends FormApplication {
   }
 
   /** @override */
-  async _updateObject(event: SubmitEvent, form_data: Record<string, string | number | boolean>) {
+  protected async updateTarget(
+    event: SubmitEvent,
+    form_data: Record<string, string | number | boolean>
+  ): Promise<unknown> {
     // If cancel button, then do not save
-    if (event.submitter?.dataset.button == "cancel") return;
+    const submitter = event.submitter as HTMLElement | null;
+    if (submitter?.dataset.button == "cancel") return;
 
     // Do basic fixup
     form_data = this.fixupForm(form_data);
@@ -109,7 +102,17 @@ export class TargetedEditForm<T> extends FormApplication {
     }
 
     // Submit changes
-    return this.target.update(new_result).then(this.resolve);
+    return this.target.update(new_result);
+  }
+
+  static async #onSubmitForm(
+    this: TargetedEditForm<unknown>,
+    event: SubmitEvent,
+    _form: HTMLFormElement,
+    formData: any
+  ) {
+    await this.updateTarget(event, formData.object);
+    this.resolve();
   }
 
   /* -------------------------------------------- */

@@ -8,15 +8,14 @@ import { TargetedEditForm } from "./targeted-form-editor";
 export class CounterEditForm extends TargetedEditForm<CounterData> {
   /* -------------------------------------------- */
 
-  /** @override */
-  static get defaultOptions() {
-    return {
-      ...super.defaultOptions,
-      template: `systems/${game.system.id}/templates/window/counter.hbs`,
-      classes: ["lancer", "counter-editor"],
-      title: "Counter Editing",
-    };
-  }
+  static PARTS = {
+    form: { template: "systems/lancer/templates/window/counter.hbs" },
+  };
+
+  static DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+    classes: ["lancer", "counter-editor"],
+    window: { title: "Counter Editing" },
+  });
 
   /** @override */
   fixupForm(form_data: Record<string, string | number | boolean>): Record<string, string | number | boolean> {

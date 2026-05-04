@@ -136,9 +136,7 @@
         box-shadow: none;
         flex-direction: row-reverse;
         pointer-events: none;
-        transition:
-          right 600ms,
-          opacity 200ms;
+        transition: right 600ms, opacity 200ms;
         z-index: 999;
       }
 

@@ -1,32 +1,36 @@
 import { populatePilotCache } from "../util/compcon";
 
-export default class CompconLoginForm extends FormApplication {
-  constructor(object?: any, options = {}) {
-    super(object, options);
-  }
-  static get defaultOptions(): FormApplication.Options {
-    return {
-      ...super.defaultOptions,
-      template: `systems/${game.system.id}/templates/window/compcon_login.hbs`,
-      width: 480,
-      height: "auto",
-      resizable: false,
-      classes: ["lancer"],
-      submitOnChange: false,
-      submitOnClose: false,
-      closeOnSubmit: false,
-      title: "COMP/CON Login",
-    };
-  }
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-  /** @override */
-  async _updateObject(_event: any, formData: any) {
+export default class CompconLoginForm extends HandlebarsApplicationMixin(ApplicationV2) {
+  static PARTS = {
+    form: { template: "systems/lancer/templates/window/compcon_login.hbs" },
+  };
+
+  static DEFAULT_OPTIONS = {
+    id: "lancer-compcon-login",
+    tag: "form",
+    position: { width: 480 },
+    window: {
+      title: "COMP/CON Login",
+      resizable: false,
+    },
+    classes: ["lancer"],
+    form: {
+      handler: this.#onSubmitForm,
+      closeOnSubmit: false,
+      submitOnChange: false,
+    },
+  };
+
+  static async #onSubmitForm(this: CompconLoginForm, _event: SubmitEvent, _form: HTMLFormElement, formData: any) {
+    const data = formData.object;
     try {
       //FIRST attempt to login with case sensitivity
 
       const { Auth } = await import("@aws-amplify/auth");
 
-      let res = await Auth.signIn(formData.username, formData.password);
+      let res = await Auth.signIn(data.username, data.password);
       ui.notifications!.info("Logged in as " + res.attributes.email);
       // we have a fresh login token, let's populate the pilot cache
       // no need to block on it, it can happen in the background
@@ -39,7 +43,7 @@ export default class CompconLoginForm extends FormApplication {
         const { Auth } = await import("@aws-amplify/auth");
 
         //username will be converted to lowercase to make emails case insensitive
-        let res = await Auth.signIn(formData.username.toLocaleLowerCase(), formData.password);
+        let res = await Auth.signIn(data.username.toLocaleLowerCase(), data.password);
         ui.notifications!.info("Logged in as " + res.attributes.email);
         // we have a fresh login token, let's populate the pilot cache
         // no need to block on it, it can happen in the background

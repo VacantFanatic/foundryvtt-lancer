@@ -10,7 +10,35 @@ import path from "node:path";
 import systemJson from "./src/system.json";
 
 const DIST_DIR = "dist";
-const FOUNDRY_SYSTEM_DIR = "F:/FoundryVTT/Data/systems/lancer";
+
+/** After `vite build`, `dist/` is also copied here unless skipped or overridden (see README). */
+const DEFAULT_MIRROR_LANCER_DIR = "F:/FoundryVTT/Data/systems/lancer";
+
+function getExplicitMirrorDir(): string | null {
+  const raw = process.env.FOUNDRY_SYSTEM_DIR ?? process.env.VITE_FOUNDRY_SYSTEM_DIR;
+  const d = raw?.trim();
+  return d ? path.resolve(d) : null;
+}
+
+async function getFvttDataMirrorDir(): Promise<string | null> {
+  const flag = process.env.MIRROR_DIST_TO_FOUNDRY_DATA ?? process.env.VITE_MIRROR_DIST_TO_FOUNDRY_DATA;
+  if (flag !== "1") return null;
+  try {
+    const { execSync } = await import("node:child_process");
+    const dataPath = execSync("npx fvtt --config ./fvttrc.yml configure get dataPath", { encoding: "utf8" }).trim();
+    if (!dataPath || dataPath === "undefined") return null;
+    return path.join(dataPath, "Data", "systems", "lancer");
+  } catch {
+    return null;
+  }
+}
+
+async function getMirrorTargetDir(): Promise<string | null> {
+  if (process.env.SKIP_FOUNDRY_DIST_MIRROR === "1" || process.env.VITE_SKIP_FOUNDRY_DIST_MIRROR === "1") {
+    return null;
+  }
+  return getExplicitMirrorDir() ?? (await getFvttDataMirrorDir()) ?? path.resolve(DEFAULT_MIRROR_LANCER_DIR);
+}
 
 /** Remove prior JS chunks at the system root so old bundles cannot coexist with the new lancer.mjs. */
 async function removeRootMjsArtifacts(systemDir: string) {
@@ -21,12 +49,12 @@ async function removeRootMjsArtifacts(systemDir: string) {
     return;
   }
   await Promise.all(
-    names.map(async (name) => {
+    names.map(async name => {
       if (!name.endsWith(".mjs") && !name.endsWith(".mjs.map")) return;
       const p = path.join(systemDir, name);
       const st = await fs.stat(p).catch(() => null);
       if (st?.isFile()) await fs.unlink(p);
-    }),
+    })
   );
 }
 
@@ -43,7 +71,7 @@ async function mirrorDistToFoundrySystem(sourceDir: string, targetDir: string) {
         const code = err && typeof err === "object" && "code" in err ? (err as NodeJS.ErrnoException).code : undefined;
         if (code === "EBUSY" || code === "EPERM") {
           console.warn(
-            "[mirror-build-to-foundry-system] Skipped packs/ (files in use). Close Foundry VTT and run `npm run build` again to update compendium packs.",
+            "[mirror-build-to-foundry-system] Skipped packs/ (files in use). Close Foundry VTT and run `npm run build` again to update compendium packs."
           );
         } else {
           throw err;
@@ -114,9 +142,10 @@ export default defineConfig({
       name: "mirror-build-to-foundry-system",
       apply: "build",
       async closeBundle() {
-        const sourceDir = path.resolve(DIST_DIR);
-        const targetDir = path.resolve(FOUNDRY_SYSTEM_DIR);
         await copyBundledAutorecToDist();
+        const sourceDir = path.resolve(DIST_DIR);
+        const targetDir = await getMirrorTargetDir();
+        if (!targetDir) return;
         await fs.mkdir(targetDir, { recursive: true });
         await removeRootMjsArtifacts(targetDir);
         await mirrorDistToFoundrySystem(sourceDir, targetDir);

@@ -13,8 +13,14 @@ import type { CollapseRegistry } from "./helpers/collapse";
 // |       SHEET DATA TYPES                             |
 // ------------------------------------------------------
 
-// These single generic type should cover all basic sheet use cases
-export interface LancerItemSheetData<T extends LancerItemType> extends ItemSheet.Data<ItemSheet.Options> {
+/** Render context for Lancer item sheets (Application V2 / DocumentSheetV2–based). */
+export interface LancerItemSheetData<T extends LancerItemType> {
+  document: LancerItem;
+  item: LancerItem;
+  editable: boolean;
+  isEditable: boolean;
+  /** Merged sheet classes for the outer wrapper (from options.classes). */
+  cssClass?: string;
   // The license, if it could be recovered
   license: LancerLICENSE | null;
   system: Item.SystemOfType<T>;
@@ -22,6 +28,7 @@ export interface LancerItemSheetData<T extends LancerItemType> extends ItemSheet
   deployables: Record<string, LancerDEPLOYABLE>;
   org_types?: { [key: string]: string }; // Organization types, only provided on org sheets
   status_types?: { [key: string]: string }; // Status types, only provided on status sheets
+  [key: string]: unknown;
 }
 
 export type CachedCloudPilot = {
@@ -32,20 +39,27 @@ export type CachedCloudPilot = {
   cloudOwnerID: string;
 };
 
-export interface LancerActorSheetData<T extends LancerActorType> extends ActorSheet.Data<ActorSheet.Options> {
+/** Render context for Lancer actor sheets (Application V2 / ActorSheetV2–based). */
+export interface LancerActorSheetData<T extends LancerActorType> {
+  document: LancerActor;
+  actor: LancerActor;
+  editable: boolean;
+  isEditable: boolean;
+  cssClass?: string;
   // Store active mech/pilot at the root level
   active_mech?: LancerMECH;
   pilot?: LancerPILOT;
-  // Store cloud pilot cache and potential cloud ids at the root level
-  compConPilotList: Record<string, string>;
-  cleanedOwnerID: string;
-  vaultID: string;
-  rawID: string;
+  // Store cloud pilot cache and potential cloud ids at the root level (pilot sheet)
+  compConPilotList?: Record<string, string>;
+  cleanedOwnerID?: string;
+  vaultID?: string;
+  rawID?: string;
   effect_categories: ReturnType<(typeof LancerActiveEffect)["prepareActiveEffectCategories"]>;
   system: Actor.SystemOfType<T>;
   itemTypes: LancerActor["itemTypes"];
   collapse: CollapseRegistry;
   deployables: Record<string, LancerDEPLOYABLE>;
+  [key: string]: unknown;
 }
 
 export interface GenControlContext {

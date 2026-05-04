@@ -19,26 +19,25 @@ import { TargetedEditForm } from "./targeted-form-editor";
  * @extends {Dialog}
  */
 export class BonusEditDialog extends TargetedEditForm<BonusData> {
-  /** @override */
-  static get defaultOptions() {
-    return {
-      ...super.defaultOptions,
-      template: `systems/${game.system.id}/templates/window/bonus.hbs`,
-      classes: ["lancer", "bonus-editor"],
-      title: "Bonus Editing",
-    };
-  }
+  static PARTS = {
+    form: { template: "systems/lancer/templates/window/bonus.hbs" },
+  };
+
+  static DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+    classes: ["lancer", "bonus-editor"],
+    window: { title: "Bonus Editing" },
+  });
 
   /** @override
    * Expose our data
    */
-  getData(): any {
+  async _prepareContext(options: Record<string, unknown>): Promise<any> {
     let iconer = new IconFactory({
       size: "m",
     });
 
-    return {
-      ...super.getData(),
+    const context = await super._prepareContext(options);
+    return foundry.utils.mergeObject(context, {
       damages: Object.values(DamageType).map(dt => ({
         key: dt,
         label: iconer.r(Damage.IconFor(dt)),
@@ -59,7 +58,7 @@ export class BonusEditDialog extends TargetedEditForm<BonusData> {
         label: wt,
         val: this.value.weapon_types?.[wt] ?? false,
       })),
-    };
+    });
   }
 
   /** @override */

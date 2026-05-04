@@ -1,14 +1,26 @@
 import type SvelteComponent from "*.svelte";
 
-type SvelteAppOptions = Application.Options & {
+type SvelteAppOptions = foundry.applications.api.ApplicationV2.Configuration & {
+  window?: foundry.applications.api.ApplicationV2.Configuration["window"];
+  position?: foundry.applications.api.ApplicationV2.Configuration["position"];
   intro?: boolean;
 };
 
-export default class SvelteApp<DataModel> extends Application {
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+
+export default class SvelteApp<DataModel> extends HandlebarsApplicationMixin(ApplicationV2) {
+  static PARTS = {
+    body: { template: "systems/lancer/templates/window/svelte-host.hbs" },
+  };
+
+  static DEFAULT_OPTIONS = {
+    classes: ["lancer", "svelte-app-host"],
+  };
+
   klass: typeof SvelteComponent;
   data: DataModel;
   component?: SvelteComponent;
-  declare options: SvelteAppOptions;
+  declare options: SvelteAppOptions & { intro?: boolean };
 
   #resolve: ((data: DataModel) => void) | null = null;
   #reject: ((v: void) => void) | null = null;
@@ -45,10 +57,13 @@ export default class SvelteApp<DataModel> extends Application {
     }
   }
 
-  activateListeners(html: JQuery) {
-    if (!html.get(0)) return;
+  _onRender(_context: object, options: Record<string, unknown>) {
+    super._onRender(_context, options);
+    const html = this.element.querySelector<HTMLElement>("[data-svelte-root]");
+    if (!html) return;
+    this.component?.$destroy();
     let component = new this.klass({
-      target: html.get(0)!,
+      target: html,
       props: this.data as Record<string, unknown>,
       intro: !!this.options.intro,
     });
@@ -62,12 +77,10 @@ export default class SvelteApp<DataModel> extends Application {
     this.component = component;
   }
 
-  close() {
+  async close(options?: foundry.applications.api.ApplicationV2.CloseOptions) {
     this.rejectPromise();
-    return super.close();
-  }
-
-  async _renderInner(_data: any) {
-    return $("<div></div>");
+    this.component?.$destroy();
+    this.component = undefined;
+    return super.close(options);
   }
 }
