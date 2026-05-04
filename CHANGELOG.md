@@ -2,13 +2,28 @@
 
 ## Changed
 
+- `npm run build` mirrors `dist/` into `**F:/FoundryVTT/Data/systems/lancer**` by default; set `SKIP_FOUNDRY_DIST_MIRROR=1` to skip, or `FOUNDRY_SYSTEM_DIR` / `MIRROR_DIST_TO_FOUNDRY_DATA=1` to use another destination (see README).
 - Migrated all Lancer actor and item document sheets to Foundry Application Framework V2 (`ActorSheetV2`, `ItemSheetV2` / `DocumentSheetV2` with `HandlebarsApplicationMixin`), including `static PARTS`, `static TABS`, `_prepareContext`, and form `handler` submission instead of V1 `getData` / `_updateObject`.
 - Sheet registration now unregisters core V2 default sheets (with optional cleanup of legacy V1 registrations when still present).
 - Actor and item sheet Handlebars templates no longer nest a root `<form>` (outer form is supplied by the V2 app); tab navigation uses `data-action="tab"` and `tabs.<group>.<id>.cssClass` for active state.
 
 ## Fixed
 
+- Actor and item sheet overflow sizing no longer depends on `:has(...)`; host + `section.lancer-sheet` flex rules now apply consistently in Foundry/Electron so vertical scrollbars appear when content exceeds window height.
+- Mech header name input is larger by default and now allows full-name display with wrap-safe sizing instead of forced ellipsis truncation.
+- Actor sheets (`section.lancer-sheet`) use a **column flex** layout so `section.sheet-body.scroll-body` gets a bounded height and shows a **vertical scrollbar** when tab content (e.g. pilot tactical talents) overflows the window.
+- Actor sheet roll and flow delegated clicks use the **capture** phase on the app host so they still fire when Foundry’s V2 `data-action` layer stops propagation on the part root during the bubble phase.
+- When no COMP/CON Amplify session exists, pilot cloud cache initialization logs at **debug** instead of a noisy `AWS Auth failed` line that looked like a hard failure in the console.
 - Pilot callsign changes again propagate to `prototypeToken.name` via `_processFormData` under the V2 form pipeline.
+- Actor sheet roll and flow buttons (stats, attacks, tech, damage, basic flows) bind even when the sheet is not editable, so limited and observer views can still trigger rolls.
+- Action tracker default height matches the label and icon row so action buttons are no longer clipped.
+- Mech sheet stats tab uses a dedicated grid class so the multi-column stat layout applies reliably under Application V2; mech header nameplate has more room and larger name input styling.
+- Actor sheets use delegated click handlers for rolls and flow buttons (with `preventDefault`) so interactions survive re-renders; flow drag listeners are scoped to the sheet and rebound without stacking.
+- Actor sheet body scrolling no longer uses a legacy fixed `calc(100% - 168px)` height that clipped tab content; scroll areas use flex + `overflow-y: scroll`. NPC and deployable bodies use the same `scroll-body` region as pilot/mech.
+- Actor sheets are resizable by default; the action tracker uses a smaller default frame (300×112) with tighter padding so the HUD stays compact.
+- Actor and item sheets call `**super.activateListeners(html)`** for Foundry core `data-action` handling, while Lancer-specific listeners (tabs, rolls, flows, editors, drag-drop) delegate from `**this.element`** so clicks still reach handlers under Application V2.
+- Actor sheet flex and scroll rules also apply when the sheet `**form` / `application` host is a direct child of `.window-content`** (typical Foundry 14 layout), so tab bodies scroll instead of clipping.
+- After each render, actor and item sheets call `**changeTab`** with the group’s configured **initial** tab when no `.tab.active` panel exists for that group, avoiding a blank tab body when tab state desyncs.
 
 # 2.12.0 (2026-05-03)
 

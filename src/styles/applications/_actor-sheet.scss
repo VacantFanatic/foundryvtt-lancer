@@ -7,7 +7,7 @@
     }
   }
 
-  /* App V2: form is the app root — flex column so tab bodies and scroll regions fill the window */
+  /* App V2: two DOM shapes — (A) host wraps .window-content, (B) .window-content wraps form/application */
   application.lancer.sheet,
   .application.lancer.sheet {
     .window-content {
@@ -26,51 +26,309 @@
       overflow: hidden;
     }
 
-    .sheet-body.scroll-body {
-      flex: 1 1 auto;
+    /* Template root for actor sheets (direct or nested under a form wrapper). */
+    > section.lancer-sheet,
+    form > section.lancer-sheet,
+    /* App V2 default: form/application > .window-content > section.lancer-sheet (sheet template is not a direct child of the form). */
+    .window-content > section.lancer-sheet {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 0%;
       min-height: 0;
-      overflow: auto;
+      overflow-x: hidden;
+      /* Single scrollport: keep overflow on .sheet-body.scroll-body only (pilot/mech/NPC/deployable). */
+      overflow-y: hidden;
+    }
+
+    > section.lancer-sheet > :not(.sheet-body.scroll-body),
+    form > section.lancer-sheet > :not(.sheet-body.scroll-body),
+    .window-content > section.lancer-sheet > :not(.sheet-body.scroll-body) {
+      flex: 0 0 auto;
+    }
+
+    .sheet-body.scroll-body {
+      /* Keep the sheet body as the only vertical scrollport. */
+      display: block;
+      flex: 1 1 0%;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: scroll;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+      padding-bottom: 0.6rem;
+      box-sizing: border-box;
+      scrollbar-width: auto;
+      scrollbar-color: var(--secondary-color) transparent;
+
+      &::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--secondary-color);
+        border-radius: 8px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+      }
+
+      > .tab {
+        min-height: fit-content;
+      }
+
+      > .tab:not(.active) {
+        display: none !important;
+      }
+
+      > .tab.active {
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 auto;
+        min-height: min-content;
+      }
+
+      > .tab.flexcol {
+        flex-wrap: nowrap;
+        align-content: flex-start;
+      }
     }
   }
 
-  .lancer.actor.mech.sheet {
-    /* The main, top region */
-    .stat-grid {
-      display: grid;
-      grid-template: repeat(5, 3.75em) / repeat(5, 1fr);
+  .window-app .window-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
 
-      /* Most things auto-layout just fine */
+  .window-app .window-content > form.application.lancer.sheet,
+  .window-app .window-content > application.lancer.sheet {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
 
-      /* The pilot portrait slot */
-      .pilot-summary {
-        grid-column-start: 5;
-        grid-row: 1/3; // Double-height
+    > section.lancer-sheet,
+    .window-content > section.lancer-sheet {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 0%;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: hidden;
+    }
+
+    > section.lancer-sheet > :not(.sheet-body.scroll-body),
+    .window-content > section.lancer-sheet > :not(.sheet-body.scroll-body) {
+      flex: 0 0 auto;
+    }
+
+    .sheet-body.scroll-body {
+      display: block;
+      flex: 1 1 0%;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: scroll;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+      padding-bottom: 0.6rem;
+      box-sizing: border-box;
+      scrollbar-width: auto;
+      scrollbar-color: var(--secondary-color) transparent;
+
+      &::-webkit-scrollbar {
+        width: 10px;
       }
 
-      /* Hex size indicator */
-      .size-card {
-        grid-column-start: 5;
-        grid-row: 3 / 5; // Double-height
-        margin: auto;
+      &::-webkit-scrollbar-track {
+        background: transparent;
       }
 
-      /* Button to open inventory */
-      .inventory {
-        grid-column-start: 5;
-        grid-row: 5 / 6;
-        margin: auto;
+      &::-webkit-scrollbar-thumb {
+        background: var(--secondary-color);
+        border-radius: 8px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
       }
 
-      /* 2x2 HASE block */
-      .hase {
-        grid-row: -4/-2;
-        grid-column: 4/5;
-        margin: 0px 7px;
-        flex-grow: unset;
+      > .tab {
+        min-height: fit-content;
+      }
 
-        .stat-flow-container {
-          grid-template: auto / fit-content(75%) auto;
-        }
+      > .tab:not(.active) {
+        display: none !important;
+      }
+
+      > .tab.active {
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 auto;
+        min-height: min-content;
+      }
+
+      > .tab.flexcol {
+        flex-wrap: nowrap;
+        align-content: flex-start;
+      }
+    }
+  }
+
+  /* Mech stats: class on the grid so layout survives App V2 host/class quirks */
+  .lancer-mech-stat-grid {
+    display: grid;
+    /* Rows grow past 3.25em when stat-cards need header (~2em) + body space */
+    grid-template: repeat(5, minmax(3.25em, auto)) / repeat(5, 1fr);
+
+    > .stat-card {
+      grid-template: minmax(2em, auto) minmax(2.25em, auto) / 1fr;
+    }
+
+    .pilot-summary {
+      grid-column-start: 5;
+      grid-row: 1/3;
+    }
+
+    .size-card {
+      grid-column-start: 5;
+      grid-row: 3 / 5;
+      margin: auto;
+    }
+
+    .inventory {
+      grid-column-start: 5;
+      grid-row: 5 / 6;
+      margin: auto;
+    }
+
+    .hase {
+      grid-row: -4/-2;
+      grid-column: 4/5;
+      margin: 0px 7px;
+      flex-grow: unset;
+
+      .stat-flow-container {
+        grid-template: auto / fit-content(75%) auto;
+      }
+    }
+
+    /* Core energy: MDI glyph is only on ::before — avoid `mdi` on <input> (CDN .mdi::before is inline-block
+     * and fights layout). Fixed box + flex centers the icon; caps width if sheet flex stretches inputs. */
+    .core-power-stat-container {
+      justify-content: center;
+    }
+
+    input.core-power-toggle {
+      -webkit-appearance: none;
+      appearance: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
+      max-width: 30px;
+      flex: 0 0 auto;
+      margin: 0;
+      padding: 0;
+      cursor: pointer;
+      outline: 0;
+      border: none;
+      background: transparent;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: contain;
+      font: normal normal normal 24px/1 "Material Design Icons";
+      -webkit-filter: none !important;
+      filter: none !important;
+
+      &::before {
+        display: block;
+        line-height: 1;
+      }
+
+      &:checked::before {
+        content: "\F0079";
+        color: green;
+      }
+
+      &:not(:checked)::before {
+        content: "\F007A";
+        color: grey;
+      }
+    }
+  }
+
+  /* Flex-column cards in the mech grid: allow headers to shrink within fixed row tracks.
+   * Exclude .stat-card: those use an internal CSS grid (1fr / 1fr); min-height: 0 here lets
+   * the header track collapse (~8px) because .lancer-header's flex-basis does not apply to grid items. */
+  .lancer-mech-stat-grid > .card:not(.stat-card) > .lancer-header {
+    min-height: 0;
+    padding-top: 0.15em;
+    padding-bottom: 0.15em;
+  }
+
+  /* Mech nameplate: name uses remaining header width; minmax(0,1fr) avoids grid min-content blowout */
+  .lancer.sheet header.sheet-header.lancer-mech-sheet-header {
+    min-height: 5.9rem;
+    padding: 0.35em 0.5em 0.35em 0.75em;
+    grid-template-rows: minmax(3.25rem, auto) auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(112px, 170px);
+
+    .header-details {
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    h1.name {
+      display: flex;
+      align-items: stretch;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
+      align-self: stretch;
+    }
+
+    h1.name input.lancer-input {
+      flex: 1 1 auto;
+      box-sizing: border-box;
+      align-self: stretch;
+      font-size: clamp(1.25rem, 2.2vw, 2.15rem);
+      line-height: 1.35;
+      letter-spacing: 0.01em;
+      min-height: 2.75rem;
+      padding: 0.5rem 0.45rem;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      margin: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      text-overflow: clip;
+      white-space: nowrap;
+      text-align: left;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+
+      &:hover {
+        background: transparent;
+        filter: none;
+      }
+
+      &:focus:not(:focus-visible) {
+        outline: none;
+        box-shadow: none;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--light-text);
+        outline-offset: 2px;
       }
     }
   }

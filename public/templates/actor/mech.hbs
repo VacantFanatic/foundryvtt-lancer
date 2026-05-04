@@ -1,7 +1,7 @@
 <section class="{{cssClass}} lancer-sheet" autocomplete="off">
   {{! Sheet Header }}
   <div>
-    <header class="sheet-header card clipped-bot {{#if (not is_active)}}inactive-mech{{/if}}">
+    <header class="sheet-header lancer-mech-sheet-header card clipped-bot {{#if (not is_active)}}inactive-mech{{/if}}">
       <h1 class="name">
         <input class="lancer-input" name="name" type="text" value="{{actor.name}}" placeholder="{{localize "
           lancer.placeholder.name"}}" />
@@ -29,7 +29,7 @@
   {{!-- Sheet Body --}}
   <section class="sheet-body scroll-body">
     <div class="tab stats {{tabs.primary.stats.cssClass}}" data-group="primary" data-tab="stats">
-      <div class="stat-grid">
+      <div class="stat-grid lancer-mech-stat-grid">
         {{{stat-edit-max-card "HP" "mdi mdi-heart-outline" "system.hp.value" "system.hp.max"}}}
         {{{stat-edit-max-card "HEAT" "cci cci-heat" "system.heat.value" "system.heat.max"}}}
         {{{stat-view-card "EVASION" "cci cci-evasion" "system.evasion"}}}
@@ -58,9 +58,9 @@
               {{localize "lancer.mech-sheet.core.label"}}
             </span>
           </div>
-          <div class="flexrow stat-container">
-            <input name="system.core_energy" class="core-power-toggle mdi mdi-battery" style="margin: auto;"
-              type="checkbox" data-dtype="Boolean" {{checked system.core_energy}} />
+          <div class="flexrow stat-container core-power-stat-container">
+            <input name="system.core_energy" class="core-power-toggle" type="checkbox" data-dtype="Boolean"
+              {{checked system.core_energy}} />
           </div>
         </div>
         {{{stat-rollable-card "GRIT" "cci cci-armor" "system.grit"}}}

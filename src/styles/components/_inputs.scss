@@ -162,6 +162,25 @@
       justify-content: center;
       align-items: center;
       line-height: 0.8em;
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      padding: 0;
+    }
+
+    .overcharge-reset {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      justify-self: center;
+      width: 1.5rem;
+      height: 1.5rem;
+      line-height: 1;
+      font-size: 1.2rem;
+      cursor: pointer;
+      border: 0;
+      background: transparent;
+      padding: 0;
     }
   }
 

@@ -1,4 +1,6 @@
 // Import TypeScript modules
+import type { ActionType } from "../action";
+import { getActions, modAction } from "../action/action-tracker";
 import { LANCER } from "../config";
 import { LancerItem } from "../item/lancer-item";
 import type { LancerActor } from "../actor/lancer-actor";
@@ -16,6 +18,7 @@ const lp = LANCER.log_prefix;
 
 export function registerActivationSteps(flowSteps: Map<string, Step<any, any> | Flow<any>>) {
   flowSteps.set("initActivationData", initActivationData);
+  flowSteps.set("spendActivationActionTracker", spendActivationActionTracker);
   flowSteps.set("printActionUseCard", printActionUseCard);
 }
 
@@ -33,7 +36,7 @@ export class ActivationFlow extends Flow<LancerFlowState.ActionUseData> {
     // TODO: parse detail for save prompts?
     "applySelfHeat",
     "updateItemAfterAction",
-    // TODO: deduct action from actor's action tracker
+    "spendActivationActionTracker",
     "printActionUseCard",
   ];
 
@@ -119,6 +122,50 @@ export async function initActivationData(
 
     return true;
   }
+}
+
+function activationTypeToTrackerKind(activation: ActivationType): ActionType | null {
+  switch (activation) {
+    case ActivationType.Quick:
+    case ActivationType.QuickTech:
+    case ActivationType.Invade:
+      return "quick";
+    case ActivationType.Full:
+    case ActivationType.FullTech:
+      return "full";
+    case ActivationType.Reaction:
+      return "reaction";
+    case ActivationType.Protocol:
+      return "protocol";
+    default:
+      return null;
+  }
+}
+
+/** Actor whose mech/NPC action tracker should be updated (pilot talents use the pilot's active mech). */
+function resolveActionTrackerActor(actor: LancerActor): LancerActor | null {
+  if (getActions(actor)) return actor;
+  if (actor.is_pilot()) {
+    const mech = actor.system.active_mech?.value;
+    if (mech && getActions(mech)) return mech;
+  }
+  return null;
+}
+
+export async function spendActivationActionTracker(state: FlowState<LancerFlowState.ActionUseData>): Promise<boolean> {
+  if (!state.data?.action) return true;
+  const kind = activationTypeToTrackerKind(state.data.action.activation);
+  if (!kind) return true;
+
+  if (!game.user?.isGM && !game.settings.get(game.system.id, LANCER.setting_actionTracker).allowPlayers) {
+    return true;
+  }
+
+  const spendTarget = resolveActionTrackerActor(state.actor);
+  if (!spendTarget) return true;
+
+  await modAction(spendTarget, true, kind);
+  return true;
 }
 
 export async function printActionUseCard(

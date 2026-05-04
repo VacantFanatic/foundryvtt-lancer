@@ -22,14 +22,29 @@
 
   {{! Sheet Tab Navigation }}
   <nav class="tabs lancer-tabs" data-group="primary">
-    <a class="item lancer-tab medium {{tabs.primary.status.cssClass}}" data-action="tab" data-group="primary" data-tab="status">{{localize "lancer.deployable-sheet.tabs.status"}}</a>
-    <a class="item lancer-tab medium {{tabs.primary.config.cssClass}}" data-action="tab" data-group="primary" data-tab="config">{{localize "lancer.deployable-sheet.tabs.config"}}</a>
-    <a class="item lancer-tab medium {{tabs.primary.effects.cssClass}}" data-action="tab" data-group="primary" data-tab="effects">{{localize "lancer.mech-sheet.tabs.effects"}}</a>
+    <a
+      class="item lancer-tab medium {{tabs.primary.status.cssClass}}"
+      data-action="tab"
+      data-group="primary"
+      data-tab="status"
+    >{{localize "lancer.deployable-sheet.tabs.status"}}</a>
+    <a
+      class="item lancer-tab medium {{tabs.primary.config.cssClass}}"
+      data-action="tab"
+      data-group="primary"
+      data-tab="config"
+    >{{localize "lancer.deployable-sheet.tabs.config"}}</a>
+    <a
+      class="item lancer-tab medium {{tabs.primary.effects.cssClass}}"
+      data-action="tab"
+      data-group="primary"
+      data-tab="effects"
+    >{{localize "lancer.mech-sheet.tabs.effects"}}</a>
     <!--<a class="item lancer-tab medium" data-tab="mech">&lt;FRAME//LOADOUT&gt;</a>-->
   </nav>
 
   {{! Sheet Body }}
-  <section class="sheet-body">
+  <section class="sheet-body scroll-body">
     {{! Active Tab }}
     <div class="tab manage {{tabs.primary.status.cssClass}}" data-group="primary" data-tab="status">
       <div class="wraprow quadruple">

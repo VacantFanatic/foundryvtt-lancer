@@ -30,8 +30,9 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
   static DEFAULT_OPTIONS = {
     id: "action-manager",
     position: {
-      width: 310,
-      height: 70,
+      width: 300,
+      /* Height follows content (label + control row); see _action-manager.scss */
+      height: "auto",
       left: LancerActionManager.DEF_LEFT,
       top: LancerActionManager.DEF_TOP,
     },
@@ -128,6 +129,17 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
 
       // await ChatMessage.create({ user: game.userId, whisper: game.users!.contents.filter(u => u.isGM).map(u => u.id), content: `${this.target.name} has had their actions manually reset.` }, {})
     }
+  }
+
+  /**
+   * Foundry resolves `position.height: "auto"` to a measured pixel height on the host element.
+   * That leaves a fixed box taller than the header + icon row; drop the inline height so CSS
+   * (`#action-manager { height: fit-content }`) sizes the app to its content.
+   */
+  protected override _onPosition(position: foundry.applications.types.ApplicationPosition): void {
+    super._onPosition(position);
+    this.position.height = "auto";
+    this.element?.style.removeProperty("height");
   }
 
   // UI //

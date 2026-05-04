@@ -44,7 +44,9 @@ export class LancerFrameSheet extends LancerItemSheet<EntryType.FRAME> {
 
     if (!this.isEditable) return;
 
-    $(html).find(".mount-selector").on("change", e => this._onChangeMount(e));
+    $(html)
+      .find(".mount-selector")
+      .on("change", e => this._onChangeMount(e));
   }
 
   protected override async _prepareContext(

@@ -29,6 +29,18 @@ Simply search for Lancer in the Foundry system browser and install from there.
 
 How to use [Flows](docs/flow_api.md) to modify Lancer system automation.
 
+### Build output and Foundry path
+
+`npm run build` writes the runnable system into **`dist/`** in this repository, then **mirrors `dist/`** into **`F:/FoundryVTT/Data/systems/lancer`** by default so Foundry can load that folder directly. After each build, reload Foundry so it picks up `lancer.mjs` and `styles/lancer.css`.
+
+- Override the mirror destination with **`FOUNDRY_SYSTEM_DIR`** or **`VITE_FOUNDRY_SYSTEM_DIR`** (absolute path; highest priority).
+- Or set **`MIRROR_DIST_TO_FOUNDRY_DATA=1`** to copy into `Data/systems/lancer` under the `dataPath` from `fvttrc.yml` when `FOUNDRY_SYSTEM_DIR` is unset (see [vite.config.mts](vite.config.mts)).
+- Set **`SKIP_FOUNDRY_DIST_MIRROR=1`** to build **only** into `dist/` (e.g. CI or when using a symlink from `Data/systems/lancer` to `<repo>/dist` and you do not want a second copy).
+
+For a symlink-based setup without mirroring, see `npm install` / [scripts/symlink.mjs](scripts/symlink.mjs).
+
+If actor or item sheets misbehave in-game, see **[docs/troubleshooting-sheets.md](docs/troubleshooting-sheets.md)** (console capture, viewport, module isolation, benign COMP/CON messages).
+
 ## Legal
 
 "Lancer for FoundryVTT" is not an official _Lancer_ product; it is a third party work, and is not affiliated with Massif Press. "Lancer for FoundryVTT" is published via the _Lancer_ Third Party License.

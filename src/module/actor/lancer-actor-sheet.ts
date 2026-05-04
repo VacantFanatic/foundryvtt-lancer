@@ -44,6 +44,11 @@ const lp = LANCER.log_prefix;
 export class LancerActorSheet<T extends LancerActorType> extends HandlebarsApplicationMixin(ActorSheetV2) {
   declare document: LancerActor;
 
+  /** Stable dragstart handler so listeners can be rebound each render without stacking. */
+  private readonly _flowDragStartHandler = (e: DragEvent) => {
+    this._onFlowButtonDragStart(e);
+  };
+
   // Tracks collapse state between renders
   protected collapse_handler = new CollapseHandler();
 
@@ -63,6 +68,9 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     {
       tag: "form",
       scrollY: [".scroll-body"],
+      window: {
+        resizable: true,
+      },
       form: {
         closeOnSubmit: false,
         submitOnChange: true,
@@ -82,6 +90,80 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     const updateData = { ...formData.object };
     this._propagateData(updateData);
     await this.actor.update(updateData);
+  }
+
+  protected override _onRender(context: object, options: Record<string, unknown>): void {
+    super._onRender(context, options);
+    this._ensureDefaultTabsIfBlank();
+    this._bindActorSheetListenersFromRender();
+  }
+
+  private _coerceRootElement(value: unknown): HTMLElement | null {
+    if (value instanceof HTMLElement) return value;
+    if (value && typeof value === "object") {
+      const maybe = value as { 0?: unknown; element?: unknown };
+      if (maybe[0] instanceof HTMLElement) return maybe[0];
+      if (maybe.element instanceof HTMLElement) return maybe.element;
+      if (maybe.element && typeof maybe.element === "object") {
+        const nested = maybe.element as { 0?: unknown };
+        if (nested[0] instanceof HTMLElement) return nested[0];
+      }
+    }
+    return null;
+  }
+
+  protected _bindActorSheetListenersFromRender(): void {
+    const root = this._coerceRootElement(this.element) ?? this._coerceRootElement(this.form);
+    if (!root) return;
+    const $el = $(root);
+
+    initializeCollapses($el);
+    applyCollapseListeners($el);
+    this._activateActionGridListeners($el);
+    handleRefClickOpen($el);
+    handleRefDragging($el);
+    this._tabs?.forEach(t => t.bind(this.element));
+    this._activateFlowListeners($el);
+    this._activateFlowDragging($el);
+
+    if (!this.isEditable) return;
+
+    handleInputPlusMinusButtons($el, this.actor);
+    handleCounterInteraction($el, this.actor);
+    handleUsesInteraction($el, this.actor);
+    handleLoadedInteraction($el, this.actor);
+    handleChargedInteraction($el, this.actor);
+    handlePowerUsesInteraction($el, this.actor);
+    handleContextMenus($el, this.actor);
+    this._activateInventoryButton($el);
+    handleRefSlotDropping($el, this.actor, x => this.quickOwnDrop(x).then(v => v[0]));
+    handleGenControls($el, this.actor);
+    handlePopoutTextEditor($el, this.actor);
+    handleDocDropping(
+      $el,
+      async (entry, _dest, _event) => this.onRootDrop(entry, _event, _dest),
+      (entry, _dest, _event) => this.canRootDrop(entry)
+    );
+  }
+
+  /**
+   * If no content panel has `.active` for a tab group, activate `static TABS[group].initial`.
+   * Prevents a blank sheet body when tab state desyncs after migration or re-render.
+   */
+  protected _ensureDefaultTabsIfBlank(): void {
+    const ctor = this.constructor as unknown as {
+      TABS?: Record<string, { initial?: string }>;
+    };
+    const tabsCfg = ctor.TABS;
+    if (!tabsCfg) return;
+
+    const root = (this.form ?? this.element) as HTMLElement;
+    for (const [groupId, conf] of Object.entries(tabsCfg)) {
+      const initial = conf?.initial;
+      if (!initial) continue;
+      if (root.querySelector(`.tab.active[data-group="${groupId}"]`)) continue;
+      this.changeTab(initial, groupId, { force: true });
+    }
   }
 
   protected _onDetachSheet(event: Event): void {
@@ -211,78 +293,22 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
    * @param html {HTMLElement}   The prepared HTML object ready to be rendered into the DOM
    */
   override activateListeners(html: HTMLElement): void {
-    // App V2: core `data-action` / tab delegation is bound to the application root (`this.element`),
-    // not the partial render target passed as `html`. Use the root so tabs and sheet actions work.
-    void html;
-    super.activateListeners(this.element);
+    // Foundry core binds `data-action` / sheet chrome on the part root `html`.
+    super.activateListeners(html);
     this._injectHeaderDetachControl();
-
-    const $html = $(this.element);
-
-    initializeCollapses($html);
-    applyCollapseListeners($html);
-
-    this._activateActionGridListeners($html);
-
-    handleRefClickOpen($html);
-
-    handleRefDragging($html);
-
-    this._tabs?.forEach(t => t.bind(this.element));
-
-    if (!this.isEditable) return;
-
-    this._activateFlowListeners($html);
-
-    this._activateFlowDragging($html);
-
-    handleInputPlusMinusButtons($html, this.actor);
-
-    handleCounterInteraction($html, this.actor);
-
-    handleUsesInteraction($html, this.actor);
-
-    handleLoadedInteraction($html, this.actor);
-
-    handleChargedInteraction($html, this.actor);
-
-    handlePowerUsesInteraction($html, this.actor);
-
-    handleContextMenus($html, this.actor);
-
-    this._activateInventoryButton($html);
-
-    handleRefSlotDropping($html, this.actor, x => this.quickOwnDrop(x).then(v => v[0]));
-
-    handleGenControls($html, this.actor);
-
-    handlePopoutTextEditor($html, this.actor);
-
-    handleDocDropping(
-      $html,
-      async (entry, _dest, _event) => this.onRootDrop(entry, _event, _dest),
-      (entry, _dest, _event) => this.canRootDrop(entry)
-    );
+    // Listener wiring is done in `_bindActorSheetListenersFromRender`, called from `_onRender`,
+    // because runtime evidence showed `_onRender` fires reliably while `activateListeners`
+    // may not in every host path.
   }
 
   _activateFlowDragging(html: JQuery) {
-    const FlowDragHandler = (e: DragEvent) => this._onFlowButtonDragStart(e);
-
-    html
-      .find(".lancer-flow-button")
-      .add(".roll-stat")
-      .add(".roll-attack")
-      .add(".roll-tech")
-      .add(".roll-damage")
-      .add(".chat-flow-button")
-      .add(".skill-flow")
-      .add(".bond-power-flow")
-      .add(".effect-flow")
-      .add(".activation-flow")
-      .each((_i, item) => {
-        item.setAttribute("draggable", "true");
-        item.addEventListener("dragstart", FlowDragHandler, false);
-      });
+    const sel =
+      ".lancer-flow-button, .roll-stat, .roll-attack, .roll-tech, .roll-damage, .chat-flow-button, .skill-flow, .bond-power-flow, .effect-flow, .activation-flow";
+    html.find(sel).each((_i, item) => {
+      item.removeEventListener("dragstart", this._flowDragStartHandler);
+      item.setAttribute("draggable", "true");
+      item.addEventListener("dragstart", this._flowDragStartHandler, false);
+    });
   }
 
   _onFlowButtonDragStart(e: DragEvent) {
@@ -420,7 +446,7 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
 
   async _activateActionGridListeners(html: JQuery) {
     let elements = html.find(".lancer-action-button");
-    elements.on("click", async ev => {
+    elements.on("click", { capture: true }, async ev => {
       ev.stopPropagation();
 
       if (game.user?.isGM || game.settings.get(game.system.id, LANCER.setting_actionTracker).allowPlayers) {
@@ -441,13 +467,16 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     });
   }
 
-  _activateFlowListeners(html: JQuery) {
-    // Basic flow buttons
-    let actorFlows = html.find(".lancer-flow-button");
-    actorFlows.on("click", ev => {
-      if (!ev.currentTarget) return; // No target, let other handlers take care of it.
+  _activateFlowListeners($root: JQuery) {
+    $root.off(".lancerActorFlowUi");
+
+    // Delegated: survives tab switches / partial HTML replacement under Application V2.
+    // jQuery signature is .on(events, selector, data, handler); options like { capture: true } must not sit
+    // where `selector` is expected or Sizzle tries to parse "[object Object]" and throws.
+    $root.on("click.lancerActorFlowUi", ".lancer-flow-button", { capture: true }, ev => {
+      if (!ev.currentTarget) return;
+      ev.preventDefault();
       ev.stopPropagation();
-      // Check data-flow-type to pick which flow to trigger
       const flowElement = $(ev.currentTarget).closest("[data-flow-type]")[0] as HTMLElement;
       const flowType = flowElement.dataset.flowType;
       const flowArgs = JSON.parse(flowElement.dataset.flowArgs ?? "{}");
@@ -483,131 +512,112 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
       }
     });
 
-    // Stat rollers
-    let statRollers = html.find(".roll-stat");
-    statRollers.on("click", ev => {
-      ev.stopPropagation(); // Avoids triggering parent event handlers
-      const el = $(ev.currentTarget).closest("[data-uuid]")[0] as HTMLElement;
-
+    $root.on("click.lancerActorFlowUi", ".roll-stat", { capture: true }, ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const el = $(ev.currentTarget as HTMLElement).closest("[data-uuid]")[0] as HTMLElement;
       const statPath = el.dataset.path;
       if (!statPath) throw Error("No stat path found!");
-
-      const actor = this.actor as LancerActor;
-      actor.beginStatFlow(statPath);
+      (this.actor as LancerActor).beginStatFlow(statPath);
     });
 
-    // Weapon rollers
-    let weaponRollers = html.find(".roll-attack");
-    weaponRollers.on("click", ev => {
-      if (!ev.currentTarget) return; // No target, let other handlers take care of it.
+    $root.on("click.lancerActorFlowUi", ".roll-attack", { capture: true }, ev => {
+      if (!ev.currentTarget) return;
+      ev.preventDefault();
       ev.stopPropagation();
-
-      const weaponElement = $(ev.currentTarget).closest("[data-uuid]")[0] as HTMLElement;
+      const weaponElement = $(ev.currentTarget as HTMLElement).closest("[data-uuid]")[0] as HTMLElement;
       const weaponId = weaponElement.dataset.uuid;
       const weapon = LancerItem.fromUuidSync(weaponId ?? "", `Invalid weapon ID: ${weaponId}`);
       weapon.beginWeaponAttackFlow();
     });
 
-    let techRollers = html.find(".roll-tech");
-    techRollers.on("click", ev => {
-      if (!ev.currentTarget) return; // No target, let other handlers take care of it.
+    $root.on("click.lancerActorFlowUi", ".roll-tech", { capture: true }, ev => {
+      if (!ev.currentTarget) return;
+      ev.preventDefault();
       ev.stopPropagation();
-
-      const techElement = $(ev.currentTarget).closest("[data-uuid]")[0] as HTMLElement;
+      const techElement = $(ev.currentTarget as HTMLElement).closest("[data-uuid]")[0] as HTMLElement;
       const techId = techElement.dataset.uuid;
       const techItem = LancerItem.fromUuidSync(techId ?? "", `Invalid weapon ID: ${techId}`);
       techItem.beginTechAttackFlow();
     });
 
-    let damageRollers = html.find(".roll-damage");
-    damageRollers.on("click", ev => {
-      if (!ev.currentTarget) return; // No target, let other handlers take care of it.
+    $root.on("click.lancerActorFlowUi", ".roll-damage", { capture: true }, ev => {
+      if (!ev.currentTarget) return;
+      ev.preventDefault();
       ev.stopPropagation();
-
-      const el = $(ev.currentTarget).closest("[data-uuid]")[0] as HTMLElement;
+      const el = $(ev.currentTarget as HTMLElement).closest("[data-uuid]")[0] as HTMLElement;
       const itemId = el.dataset.uuid;
       const item = LancerItem.fromUuidSync(itemId ?? "", `Invalid item ID: ${itemId}`);
       item.beginDamageFlow();
     });
 
-    let itemFlows = html.find(".chat-flow-button");
-    itemFlows.on("click", async ev => {
-      ev.stopPropagation(); // Avoids triggering parent event handlers
-      const el = $(ev.currentTarget).closest("[data-uuid]")[0] as HTMLElement;
+    $root.on("click.lancerActorFlowUi", ".chat-flow-button", { capture: true }, async ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const el = $(ev.currentTarget as HTMLElement).closest("[data-uuid]")[0] as HTMLElement;
       if (!el || !el.dataset.uuid) throw Error(`No item UUID found!`);
       const item = await LancerItem.fromUuid(el.dataset.uuid);
       if (!item) throw Error(`UUID "${el.dataset.uuid}" does not resolve to an item!`);
       beginItemChatFlow(item, el.dataset);
     });
 
-    let skillFlows = html.find(".skill-flow");
-    skillFlows.on("click", ev => {
-      ev.stopPropagation(); // Avoids triggering parent event handlers
-
-      const el = $(ev.currentTarget).closest("[data-uuid]")[0] as HTMLElement;
+    $root.on("click.lancerActorFlowUi", ".skill-flow", { capture: true }, ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const el = $(ev.currentTarget as HTMLElement).closest("[data-uuid]")[0] as HTMLElement;
       const skillId = el.dataset.uuid;
       const skill = LancerItem.fromUuidSync(skillId ?? "", `Invalid skill ID: ${skillId}`);
       skill.beginSkillFlow();
     });
 
-    // Bond Power flow
-    let powerFlows = html.find(".bond-power-flow");
-    powerFlows.on("click", ev => {
-      if (!ev.currentTarget) return; // No target, let other handlers take care of it.
+    $root.on("click.lancerActorFlowUi", ".bond-power-flow", { capture: true }, ev => {
+      if (!ev.currentTarget) return;
+      ev.preventDefault();
       ev.stopPropagation();
-
-      const powerElement = $(ev.currentTarget).closest("[data-uuid]")[0] as HTMLElement;
+      const powerElement = $(ev.currentTarget as HTMLElement).closest("[data-uuid]")[0] as HTMLElement;
       const bondId = powerElement.dataset.uuid;
       const bond = LancerItem.fromUuidSync(bondId ?? "", `Invalid bond ID: ${bondId}`);
       const powerIndex = parseInt(powerElement.dataset.powerIndex ?? "-1");
       bond.beginBondPowerFlow(powerIndex);
     });
 
-    // Bond XP
-    let bondXp = html.find(".bond-xp-button");
-    bondXp.on("click", ev => {
-      if (!ev.currentTarget) return; // No target, let other handlers take care of it.
+    $root.on("click.lancerActorFlowUi", ".bond-xp-button", { capture: true }, ev => {
+      if (!ev.currentTarget) return;
+      ev.preventDefault();
       ev.stopPropagation();
-
       const actor = this.actor as LancerActor;
       if (!actor.is_pilot() || !actor.system.bond) return;
       actor.tallyBondXP();
     });
 
-    // Refresh Bond powers
-    let bondRefresh = html.find(".refresh-powers-button");
-    bondRefresh.on("click", ev => {
-      if (!ev.currentTarget) return; // No target, let other handlers take care of it.
+    $root.on("click.lancerActorFlowUi", ".refresh-powers-button", { capture: true }, ev => {
+      if (!ev.currentTarget) return;
+      ev.preventDefault();
       ev.stopPropagation();
-
       const actor = this.actor as LancerActor;
       if (!actor.is_pilot() || !actor.system.bond) return;
       actor.system.bond.refreshPowers();
     });
 
-    // Non-action system use flows
-    html.find(".effect-flow").on("click", ev => {
+    $root.on("click.lancerActorFlowUi", ".effect-flow", { capture: true }, ev => {
+      ev.preventDefault();
       ev.stopPropagation();
-      const el = ev.currentTarget.closest("[data-uuid]") as HTMLElement;
+      const el = (ev.currentTarget as HTMLElement).closest("[data-uuid]") as HTMLElement;
       const itemId = el.dataset.uuid;
       const item = LancerItem.fromUuidSync(itemId ?? "", `Invalid item ID: ${itemId}`);
       item.beginSystemFlow();
     });
 
-    // Action-chip flows
-    html.find(".activation-flow").on("click", ev => {
+    $root.on("click.lancerActorFlowUi", ".activation-flow", { capture: true }, ev => {
+      ev.preventDefault();
       ev.stopPropagation();
-
-      const el = ev.currentTarget;
-
+      const el = ev.currentTarget as HTMLElement;
       const itemId = el.dataset.uuid;
       const path = el.dataset.path;
       if (!itemId || !path) throw Error("No item ID from activation chip");
-
-      let isDeployable = path.includes("deployable");
-      let isAction = !isDeployable && path.includes("action");
-      let isCoreSystem = !isDeployable && path.includes("core_system");
-
+      const isDeployable = path.includes("deployable");
+      const isAction = !isDeployable && path.includes("action");
+      const isCoreSystem = !isDeployable && path.includes("core_system");
       const item = LancerItem.fromUuidSync(itemId ?? "", `Invalid item ID: ${itemId}`);
       if (isAction) {
         item.beginActivationFlow(path);
@@ -620,10 +630,9 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
       }
     });
 
-    let ChargeMacro = html.find(".charge-macro");
-    ChargeMacro.on("click", ev => {
-      ev.stopPropagation(); // Avoids triggering parent event handlers
-
+    $root.on("click.lancerActorFlowUi", ".charge-macro", { capture: true }, ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
       this.actor.beginRechargeFlow();
     });
   }
@@ -712,7 +721,10 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
         if (!Array.isArray(value)) continue;
         (data.system.loadout as Record<string, unknown>)[key] = (
           value as { id: string; status: string; value: LancerItem }[]
-        ).sort((a: { value?: { sort?: number } }, b: { value?: { sort?: number } }) => (a?.value?.sort ?? 0) - (b?.value?.sort ?? 0));
+        ).sort(
+          (a: { value?: { sort?: number } }, b: { value?: { sort?: number } }) =>
+            (a?.value?.sort ?? 0) - (b?.value?.sort ?? 0)
+        );
       }
     }
     data.itemTypes = this.actor.itemTypes;

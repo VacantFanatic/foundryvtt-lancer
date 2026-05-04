@@ -59,8 +59,10 @@ export async function populatePilotCache(): Promise<CachedCloudPilot[]> {
   const { Storage } = await import("@aws-amplify/storage");
   try {
     await Auth.currentSession(); // refresh the token if we need to
-  } catch (e) {
-    console.warn(`AWS Auth failed: ${e}`);
+  } catch {
+    // Expected when the user is not signed into COMP/CON in Foundry; do not use console.warn
+    // (some hosts surface that at error severity). Pilot cloud list stays empty until login.
+    console.debug(`${LANCER.log_prefix} COMP/CON pilot cloud cache skipped (no Amplify session).`);
     return [];
   }
   const res = await Storage.list("pilot", {

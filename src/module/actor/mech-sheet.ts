@@ -38,7 +38,7 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
 
     if (!this.isEditable) return;
 
-    const $html = $(html);
+    const $html = $(this.element);
     this._activateOverchargeControls($html);
     this._activateLoadoutControls($html);
     this._activateMountContextMenus($html);
@@ -123,18 +123,17 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
    * Handles actions in the overcharge panel
    */
   _activateOverchargeControls(html: JQuery<HTMLElement>) {
-    // Overcharge text
-    let overchargeText = html.find(".overcharge-text");
-
-    overchargeText.on("click", ev => {
+    html.off("click.lancerOverchargeControls");
+    html.on("click.lancerOverchargeControls", ".overcharge-text", ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
       if (!this.actor.is_mech()) return;
       this._setOverchargeLevel(ev, Math.min(this.actor.system.overcharge + 1, 3));
     });
-
-    // Overcharge reset
-    let overchargeReset = html.find(".overcharge-reset");
-
-    overchargeReset.on("click", ev => {
+    html.on("click.lancerOverchargeControls", ".overcharge-reset", ev => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (!this.actor.is_mech()) return;
       this._setOverchargeLevel(ev, 0);
     });
   }
@@ -220,8 +219,8 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
     mount_options.push({
       name: "Superheavy Bracing",
       icon: "",
-        callback: async (target: HTMLElement) => {
-          let mountPath = target.dataset.path ?? "";
+      callback: async (target: HTMLElement) => {
+        let mountPath = target.dataset.path ?? "";
 
         // Get the current mount
         let mount = resolveDotpath(this.actor, mountPath) as Actor.OfType<"mech">["loadout"]["weapon_mounts"][0];

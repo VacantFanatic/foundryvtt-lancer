@@ -49,7 +49,7 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
 
     if (!this.isEditable) return;
 
-    const $html = $(html);
+    const $html = $(this.element);
     if (this.actor.isOwner) {
       let pilot = this.actor as LancerPILOT;
       // Item/Macroable Dragging
@@ -318,7 +318,6 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
     //   this._onSortItem(event, drop.document.toObject());
     // }
   }
-
 }
 
 export function pilotCounters(pilot: LancerPILOT, _options: HelperOptions): string {

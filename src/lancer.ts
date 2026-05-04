@@ -385,6 +385,54 @@ Hooks.once("setup", () => {
 /* ------------------------------------ */
 // Make an awaitable for when this shit is done
 Hooks.once("ready", async function () {
+  const debugCssLog = (hypothesisId: string, message: string, data: Record<string, unknown>) => {
+    // Paste-friendly single line when ingest (127.0.0.1) is unreachable from the Foundry browser host.
+    console.warn(`${lp} [04ebbd:${hypothesisId}] ${message} ${JSON.stringify(data)}`);
+    // #region agent log
+    fetch("http://127.0.0.1:7777/ingest/8de7fe5e-b66f-46b3-834a-869605e8207d", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "04ebbd" },
+      body: JSON.stringify({
+        sessionId: "04ebbd",
+        runId: "post-fix-1",
+        hypothesisId,
+        location: "src/lancer.ts:ready-hooks",
+        message,
+        data,
+        timestamp: Date.now(),
+      }),
+    }).catch(err => {
+      console.warn(`${lp} debug log send failed`, err);
+    });
+    // #endregion
+  };
+  // #region agent log
+  window.addEventListener("error", ev => {
+    const msg = String(ev.message ?? "");
+    if (!msg.includes("unrecognized expression")) return;
+    const h11Data = {
+      errorMessage: msg,
+      filename: ev.filename ?? null,
+      lineno: ev.lineno ?? null,
+      colno: ev.colno ?? null,
+      stack: (ev.error as { stack?: string } | undefined)?.stack ?? null,
+    };
+    console.warn(`${lp} [04ebbd:H11_selector-stack] Captured selector parse runtime error ${JSON.stringify(h11Data)}`);
+    fetch("http://127.0.0.1:7777/ingest/8de7fe5e-b66f-46b3-834a-869605e8207d", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "04ebbd" },
+      body: JSON.stringify({
+        sessionId: "04ebbd",
+        runId: "post-fix-1",
+        hypothesisId: "H11_selector-stack",
+        location: "src/lancer.ts:window-error",
+        message: "Captured selector parse runtime error",
+        data: h11Data,
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+  });
+  // #endregion
   // Register sheet application classes
   setupSheets();
 
@@ -407,6 +455,88 @@ Hooks.once("ready", async function () {
   await registerAutoAnimationsHooks();
   await applyLancerAutorecMenuIfConfigured();
 
+  Hooks.on("renderActorSheet", (app: unknown, html: HTMLElement) => {
+    const sheetRoot = html as HTMLElement;
+    const appAny = app as { actor?: { type?: string; uuid?: string }; constructor?: { name?: string } };
+    const windowContent = sheetRoot.querySelector(".window-content") as HTMLElement | null;
+    const lancerSheet = sheetRoot.querySelector("section.lancer-sheet") as HTMLElement | null;
+    const scrollBody = sheetRoot.querySelector(".sheet-body.scroll-body") as HTMLElement | null;
+    const firstControl = sheetRoot.querySelector("input, select, textarea") as HTMLElement | null;
+    const rootStyle = getComputedStyle(document.documentElement);
+    const bodyStyle = getComputedStyle(document.body);
+    const rootFontPx = Number.parseFloat(rootStyle.fontSize || "0");
+    const bodyFontPx = Number.parseFloat(bodyStyle.fontSize || "0");
+    const scrollStyle = scrollBody ? getComputedStyle(scrollBody) : null;
+    const controlStyle = firstControl ? getComputedStyle(firstControl) : null;
+    const scaleAncestor =
+      (sheetRoot.closest("[style*='transform']") as HTMLElement | null) ??
+      (sheetRoot.parentElement?.closest("[style*='transform']") as HTMLElement | null);
+
+    debugCssLog("H1_font-scale", "Actor sheet render baseline", {
+      actorType: appAny.actor?.type ?? null,
+      actorUuid: appAny.actor?.uuid ?? null,
+      appName: appAny.constructor?.name ?? null,
+      rootFontPx,
+      bodyFontPx,
+      viewport: { width: window.innerWidth, height: window.innerHeight, dpr: window.devicePixelRatio },
+      sheetRootClass: sheetRoot.className,
+    });
+
+    debugCssLog("H2_scroll-overflow", "Actor sheet scroll container metrics", {
+      hasWindowContent: Boolean(windowContent),
+      hasLancerSheet: Boolean(lancerSheet),
+      hasScrollBody: Boolean(scrollBody),
+      sheet: {
+        clientHeight: sheetRoot.clientHeight,
+        scrollHeight: sheetRoot.scrollHeight,
+        overflowY: getComputedStyle(sheetRoot).overflowY,
+      },
+      windowContent: windowContent
+        ? {
+            clientHeight: windowContent.clientHeight,
+            scrollHeight: windowContent.scrollHeight,
+            overflowY: getComputedStyle(windowContent).overflowY,
+            minHeight: getComputedStyle(windowContent).minHeight,
+          }
+        : null,
+      scrollBody: scrollBody
+        ? {
+            clientHeight: scrollBody.clientHeight,
+            scrollHeight: scrollBody.scrollHeight,
+            overflowY: scrollStyle?.overflowY ?? null,
+            scrollbarGutter: scrollStyle?.scrollbarGutter ?? null,
+            minHeight: scrollStyle?.minHeight ?? null,
+          }
+        : null,
+    });
+
+    debugCssLog("H3_control-size", "Actor sheet first control computed style", {
+      controlTag: firstControl?.tagName ?? null,
+      controlClass: firstControl?.className ?? null,
+      controlRect: firstControl?.getBoundingClientRect() ?? null,
+      controlFontSize: controlStyle?.fontSize ?? null,
+      controlLineHeight: controlStyle?.lineHeight ?? null,
+      controlPadding: controlStyle?.padding ?? null,
+      controlBoxSizing: controlStyle?.boxSizing ?? null,
+      transformAncestor: scaleAncestor
+        ? {
+            className: scaleAncestor.className,
+            transform: getComputedStyle(scaleAncestor).transform,
+          }
+        : null,
+    });
+
+    sheetRoot.addEventListener(
+      "click",
+      ev => {
+        const target = ev.target as HTMLElement | null;
+        const match = target?.closest(".roll-stat, .roll-attack, .roll-tech, .roll-damage, .lancer-flow-button");
+        if (!match) return;
+      },
+      { capture: true }
+    );
+  });
+
   Hooks.on("updateCompendium", async collection => {
     if (collection?.metadata?.id == get_pack_id(EntryType.STATUS)) {
       await LancerActiveEffect.updateIcons();
@@ -419,6 +549,161 @@ Hooks.once("ready", async function () {
   Hooks.on("createItem", _updateIcons);
   Hooks.on("deleteItem", _updateIcons);
   Hooks.on("updateItem", _updateIcons);
+  Hooks.on("createChatMessage", (msg: unknown) => {
+    void msg;
+  });
+
+  Hooks.on("renderApplication", (app: unknown, _html: unknown) => {
+    const ctor = (app as { constructor?: { name?: string } })?.constructor?.name ?? "";
+    if (!ctor.toLowerCase().includes("sheet")) return;
+    debugCssLog("H4_sheet-host", "Sheet host renderApplication fired", {
+      ctor,
+      appId: (app as { id?: string })?.id ?? null,
+    });
+  });
+
+  Hooks.on("renderActorDirectory", (_app: unknown, html: HTMLElement) => {
+    const root = html as HTMLElement;
+    const list = root.querySelector("ol.directory-list") as HTMLOListElement | null;
+    const firstItem = list?.querySelector("li") as HTMLLIElement | null;
+    const rootStyle = getComputedStyle(root);
+    const firstStyle = firstItem ? getComputedStyle(firstItem) : null;
+    debugCssLog("H12_sidebar-dimensions", "Actor directory metrics", {
+      rootRect: root.getBoundingClientRect(),
+      rootDisplay: rootStyle.display,
+      rootOverflow: rootStyle.overflow,
+      rootFontSize: rootStyle.fontSize,
+      listRect: list?.getBoundingClientRect() ?? null,
+      firstItemRect: firstItem?.getBoundingClientRect() ?? null,
+      firstItemDisplay: firstStyle?.display ?? null,
+      firstItemPosition: firstStyle?.position ?? null,
+      firstItemFontSize: firstStyle?.fontSize ?? null,
+      firstItemLineHeight: firstStyle?.lineHeight ?? null,
+    });
+  });
+
+  window.addEventListener(
+    "click",
+    ev => {
+      const target = ev.target as HTMLElement | null;
+      const match = target?.closest(".roll-stat, .roll-attack, .roll-tech, .roll-damage, .lancer-flow-button");
+      if (!match) return;
+      if (!(match.closest(".application.sheet.lancer.actor, application.sheet.lancer.actor") as HTMLElement | null)) return;
+
+      try {
+        const uuidContainer = match.closest("[data-uuid]") as HTMLElement | null;
+        const pathContainer = match.closest("[data-path]") as HTMLElement | null;
+        const docUuid = uuidContainer?.dataset?.uuid ?? null;
+        const statPath = pathContainer?.dataset?.path ?? null;
+
+        if (match.classList.contains("roll-stat")) {
+          if (!docUuid || !statPath) return;
+          const actor = fromUuidSync(docUuid) as LancerActor | null;
+          actor?.beginStatFlow?.(statPath);
+          ev.preventDefault();
+          ev.stopPropagation();
+        } else if (match.classList.contains("roll-attack")) {
+          if (!docUuid) return;
+          const item = LancerItem.fromUuidSync(docUuid, `Invalid weapon ID: ${docUuid}`);
+          item.beginWeaponAttackFlow();
+          ev.preventDefault();
+          ev.stopPropagation();
+        } else if (match.classList.contains("roll-tech")) {
+          if (!docUuid) return;
+          const item = LancerItem.fromUuidSync(docUuid, `Invalid tech ID: ${docUuid}`);
+          item.beginTechAttackFlow();
+          ev.preventDefault();
+          ev.stopPropagation();
+        } else if (match.classList.contains("roll-damage")) {
+          if (!docUuid) return;
+          const item = LancerItem.fromUuidSync(docUuid, `Invalid item ID: ${docUuid}`);
+          item.beginDamageFlow();
+          ev.preventDefault();
+          ev.stopPropagation();
+        } else {
+          return;
+        }
+
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    { capture: true }
+  );
+
+  window.addEventListener(
+    "click",
+    ev => {
+      const target = ev.target as HTMLElement | null;
+      const match = target?.closest(
+        ".lancer-flow-button, .chat-flow-button, .bond-power-flow, .bond-xp-button, .refresh-powers-button, .skill-flow"
+      );
+      if (!match) return;
+
+      try {
+        if (match.classList.contains("chat-flow-button")) {
+          const el = match.closest("[data-uuid]") as HTMLElement | null;
+          const itemUuid = el?.dataset?.uuid ?? null;
+          if (!itemUuid) return;
+          void LancerItem.fromUuid(itemUuid).then(item => {
+            if (!item) return;
+            beginItemChatFlow(item, el?.dataset ?? {});
+          });
+          ev.preventDefault();
+          ev.stopPropagation();
+          return;
+        }
+
+        if (match.classList.contains("bond-xp-button")) {
+          const host = match.closest(".application.sheet.lancer.actor, application.sheet.lancer.actor") as HTMLElement | null;
+          const actorUuid = host?.dataset?.documentUuid ?? host?.dataset?.uuid ?? null;
+          if (!actorUuid) return;
+          const actor = LancerActor.fromUuidSync(actorUuid, `Invalid actor UUID: ${actorUuid}`);
+          if (actor.is_pilot()) actor.tallyBondXP();
+          ev.preventDefault();
+          ev.stopPropagation();
+          return;
+        }
+
+        if (match.classList.contains("refresh-powers-button")) {
+          const host = match.closest(".application.sheet.lancer.actor, application.sheet.lancer.actor") as HTMLElement | null;
+          const actorUuid = host?.dataset?.documentUuid ?? host?.dataset?.uuid ?? null;
+          if (!actorUuid) return;
+          const actor = LancerActor.fromUuidSync(actorUuid, `Invalid actor UUID: ${actorUuid}`);
+          if (actor.is_pilot() && actor.system.bond) actor.system.bond.refreshPowers();
+          ev.preventDefault();
+          ev.stopPropagation();
+          return;
+        }
+
+        if (match.classList.contains("bond-power-flow")) {
+          const el = match.closest("[data-uuid]") as HTMLElement | null;
+          const bondUuid = el?.dataset?.uuid ?? null;
+          const powerIndex = Number(el?.dataset?.powerIndex ?? "-1");
+          if (!bondUuid || Number.isNaN(powerIndex)) return;
+          const bond = LancerItem.fromUuidSync(bondUuid, `Invalid bond ID: ${bondUuid}`);
+          bond.beginBondPowerFlow(powerIndex);
+          ev.preventDefault();
+          ev.stopPropagation();
+          return;
+        }
+
+        if (match.classList.contains("skill-flow")) {
+          const el = match.closest("[data-uuid]") as HTMLElement | null;
+          const skillUuid = el?.dataset?.uuid ?? null;
+          if (!skillUuid) return;
+          const skill = LancerItem.fromUuidSync(skillUuid, `Invalid skill ID: ${skillUuid}`);
+          skill.beginSkillFlow();
+          ev.preventDefault();
+          ev.stopPropagation();
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    { capture: true }
+  );
 });
 
 Hooks.once("ready", () => {

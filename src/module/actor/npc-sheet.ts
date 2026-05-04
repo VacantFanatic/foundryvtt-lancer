@@ -22,7 +22,7 @@ export class LancerNPCSheet extends LancerActorSheet<EntryType.NPC> {
 
     if (!this.isEditable) return;
 
-    const $html = $(html);
+    const $html = $(this.element);
     if (this.actor.isOwner) {
       // Macros that can be handled via the generic item interface
       let itemMacros = $html.find(".item-macro");
@@ -35,17 +35,7 @@ export class LancerNPCSheet extends LancerActorSheet<EntryType.NPC> {
         // });
       });
 
-      // Tech rollers
-      let techMacro = $html.find(".roll-tech");
-      techMacro.on("click", ev => {
-        if (!ev.currentTarget) return; // No target, let other handlers take care of it.
-        ev.stopPropagation();
-        const techElement = $(ev.currentTarget).closest("[data-uuid]")[0] as HTMLElement;
-        let techId = techElement.dataset.uuid;
-        // prepareItemMacro(techId!);
-      });
-
-      // Item/Macroable Dragging
+      // Item/Macroable Dragging (.roll-tech clicks are handled in LancerActorSheet._activateFlowListeners)
       $html
         .find('li[class*="item"]')
         .add('span[class*="item"]')

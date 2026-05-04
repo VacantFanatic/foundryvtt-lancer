@@ -27,9 +27,7 @@ const sheets = foundry.applications.sheets as typeof foundry.applications.sheets
   ItemSheetV2?: typeof foundry.applications.sheets.DocumentSheetV2;
 };
 const ItemSheetV2Base =
-  "ItemSheetV2" in sheets && sheets.ItemSheetV2
-    ? sheets.ItemSheetV2
-    : foundry.applications.sheets.DocumentSheetV2;
+  "ItemSheetV2" in sheets && sheets.ItemSheetV2 ? sheets.ItemSheetV2 : foundry.applications.sheets.DocumentSheetV2;
 
 const lp = LANCER.log_prefix;
 
@@ -100,6 +98,37 @@ export class LancerItemSheet<T extends LancerItemType> extends HandlebarsApplica
     await this.item.update(formData.object);
   }
 
+  protected override _onRender(context: object, options: Record<string, unknown>): void {
+    super._onRender(context, options);
+    this._ensureDefaultTabsIfBlank();
+  }
+
+  /**
+   * If no content panel has `.active` for a tab group, activate the configured initial tab
+   * (`static TABS` and/or `_getTabsConfig` for dynamic profile tabs).
+   */
+  protected _ensureDefaultTabsIfBlank(): void {
+    const root = (this.form ?? this.element) as HTMLElement;
+    const groups = new Map<string, string>();
+
+    const ctor = this.constructor as unknown as { TABS?: Record<string, { initial?: string }> };
+    if (ctor.TABS) {
+      for (const [groupId, conf] of Object.entries(ctor.TABS)) {
+        if (conf?.initial) groups.set(groupId, conf.initial);
+      }
+    }
+
+    if (typeof this._getTabsConfig === "function") {
+      const primary = this._getTabsConfig("primary");
+      if (primary?.initial) groups.set("primary", primary.initial);
+    }
+
+    for (const [groupId, initial] of groups) {
+      if (root.querySelector(`.tab.active[data-group="${groupId}"]`)) continue;
+      this.changeTab(initial, groupId, { force: true });
+    }
+  }
+
   protected collapse_handler = new CollapseHandler();
 
   protected override _configureRenderParts(options: Partial<foundry.applications.types.ApplicationRenderOptions>) {
@@ -130,16 +159,15 @@ export class LancerItemSheet<T extends LancerItemType> extends HandlebarsApplica
   }
 
   override activateListeners(html: HTMLElement): void {
-    void html;
-    super.activateListeners(this.element);
-    const $html = $(this.element);
+    super.activateListeners(html);
+    const $el = $(this.element);
 
-    initializeCollapses($html);
-    applyCollapseListeners($html);
+    initializeCollapses($el);
+    applyCollapseListeners($el);
 
-    $html.find(".ref.set.click-open").on("click", click_evt_open_ref);
-    handleRefDragging($html);
-    this._activateContextListeners($html);
+    $el.find(".ref.set.click-open").on("click", click_evt_open_ref);
+    handleRefDragging($el);
+    this._activateContextListeners($el);
 
     this._tabs?.forEach(t => t.bind(this.element));
 
@@ -147,16 +175,16 @@ export class LancerItemSheet<T extends LancerItemType> extends HandlebarsApplica
       return;
     }
 
-    handleInputPlusMinusButtons($html, this.item);
-    handleCounterInteraction($html, this.item);
-    handleUsesInteraction($html, this.item);
-    handleDocListDropping($html, this.item);
-    handleLIDListDropping($html, this.item);
-    handleRefSlotDropping($html, this.item, null);
-    BonusEditDialog.handle($html, ".editable.bonus", this.item);
-    ActionEditDialog.handle($html, ".action-editor", this.item);
-    handlePopoutTextEditor($html, this.item);
-    handleGenControls($html, this.item);
+    handleInputPlusMinusButtons($el, this.item);
+    handleCounterInteraction($el, this.item);
+    handleUsesInteraction($el, this.item);
+    handleDocListDropping($el, this.item);
+    handleLIDListDropping($el, this.item);
+    handleRefSlotDropping($el, this.item, null);
+    BonusEditDialog.handle($el, ".editable.bonus", this.item);
+    ActionEditDialog.handle($el, ".action-editor", this.item);
+    handlePopoutTextEditor($el, this.item);
+    handleGenControls($el, this.item);
   }
 
   protected override async _prepareContext(

@@ -4,6 +4,7 @@
   #action-manager {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     position: fixed;
     z-index: 100;
     background-color: transparent;
@@ -11,24 +12,38 @@
     padding: 0;
     min-width: 0;
     min-height: 0;
+    height: fit-content;
+    max-height: none;
+    overflow: visible;
   }
 
   #action-manager .window-content {
-    flex: 1;
+    flex: 0 0 auto;
+    align-self: stretch;
+    width: 100%;
+    height: auto;
     min-height: 0;
     min-width: 0;
     padding: 0;
     overflow: visible;
+    overflow-y: visible;
   }
 
   #action-manager .lancer-action-manager-surface {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
     min-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
     background-color: #eaeaea;
     border: 1px solid #5d5d5d;
     box-sizing: border-box;
+    /* .clipped dogears cut off the circular action row; keep the card look without clip-path */
+    clip-path: none;
+    -webkit-clip-path: none;
   }
 
   #action-manager.hidden,
@@ -37,8 +52,8 @@
   }
   #action-manager-drag {
     cursor: move;
-    font-size: 1.5em;
-    padding: 12px 4px 0px 8px;
+    font-size: 1.35em;
+    padding: 8px 2px 0 6px;
   }
   #action-manager-reset {
     display: inline-flex;
@@ -51,31 +66,42 @@
 
   .action-bar {
     display: flex;
+    flex: 1 1 0;
+    flex-wrap: nowrap;
     align-items: center;
+    justify-content: flex-start;
+    min-width: 0;
+    overflow-x: auto;
+    /* overflow-x: auto + overflow-y: visible often resolves to auto-y in UAs → bogus vertical scrollbar */
+    overflow-y: hidden;
   }
   .action-label {
     display: flex;
     flex: 0 0 auto;
+    flex-shrink: 0;
     align-items: center;
-    min-height: 2rem;
-    padding-left: 12px;
+    min-height: 1.75rem;
+    padding-left: 8px;
     border-bottom: 1px solid black;
     background-color: var(--primary-color);
     color: var(--light-text);
     font-style: italic;
+    font-size: 0.95em;
   }
 
   #action-manager .action-manager-controls {
     flex: 0 0 auto;
+    flex-shrink: 0;
     align-items: stretch;
+    min-height: 0;
   }
 
   a.action {
-    font-size: 36px;
-    margin: 4px;
-    border-radius: 20px;
-    height: 40px;
-    width: 40px;
+    font-size: 32px;
+    margin: 3px;
+    border-radius: 18px;
+    height: 36px;
+    width: 36px;
     background-color: #616161;
 
     i {
@@ -115,7 +141,7 @@
     max-width: 0;
     width: 0;
     vertical-align: text-bottom;
-    margin: 0 8px;
+    margin: 0 4px;
     padding: 4px;
     color: #888888;
   }

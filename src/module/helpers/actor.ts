@@ -400,8 +400,8 @@ export function overchargeButton(actor: LancerMECH, overcharge_path: string, opt
       </div>
       <div class="overcharge-container">
         ${flowButton}
-        <a class="overcharge-text">${overchargeValue}</a>
-        <a class="overcharge-reset mdi mdi-restore"></a>
+        <button type="button" class="overcharge-text">${overchargeValue}</button>
+        <button type="button" class="overcharge-reset mdi mdi-restore" aria-label="Reset overcharge"></button>
       </div>
     </div>`;
 }
