@@ -9,6 +9,7 @@ import Invisibility from "./invisibility";
 import Spotter from "./spotter";
 import { LancerToken } from "../../token";
 import { Tag } from "../../models/bits/tag";
+import { NpcFeatureType, WeaponType } from "../../enums";
 
 export enum Cover {
   None = 0,
@@ -24,6 +25,9 @@ export class AccDiffHudWeapon {
   accurate: boolean;
   inaccurate: boolean;
   seeking: boolean;
+  tech: boolean;
+  melee: boolean;
+  thrown: boolean;
   engaged: boolean;
   #data!: AccDiffHudData; // never use this class before calling hydrate
   plugins: { [k: string]: AccDiffHudPluginData };
@@ -35,6 +39,9 @@ export class AccDiffHudWeapon {
       accurate: t.boolean,
       inaccurate: t.boolean,
       seeking: t.boolean,
+      tech: t.boolean,
+      melee: t.boolean,
+      thrown: t.boolean,
       engaged: t.boolean,
       plugins: t.type(this.pluginSchema),
     };
@@ -51,6 +58,9 @@ export class AccDiffHudWeapon {
     this.accurate = obj.accurate;
     this.inaccurate = obj.inaccurate;
     this.seeking = obj.seeking;
+    this.tech = obj.tech;
+    this.melee = obj.melee;
+    this.thrown = obj.thrown;
     this.engaged = obj.engaged;
     this.plugins = obj.plugins;
   }
@@ -60,6 +70,9 @@ export class AccDiffHudWeapon {
       accurate: this.accurate,
       inaccurate: this.inaccurate,
       seeking: this.seeking,
+      tech: this.tech,
+      melee: this.melee,
+      thrown: this.thrown,
       engaged: this.engaged,
       plugins: this.plugins,
     };
@@ -77,9 +90,10 @@ export class AccDiffHudWeapon {
     return (
       (this.accurate ? 1 : 0) -
       (this.inaccurate ? 1 : 0) -
-      (this.seeking ? 0 : cover) -
       (this.impaired ? 1 : 0) -
-      (this.engaged ? 1 : 0)
+      (this.engaged ? 1 : 0) -
+      // Seeking, tech attacks, and non-thrown melee ignore cover
+      (this.seeking || this.tech || (this.melee && !this.thrown) ? 0 : cover)
     );
   }
 
@@ -386,10 +400,27 @@ export class AccDiffHudData {
     flat?: number,
     starting?: [number, number] | number
   ): AccDiffHudData {
-    let weapon = {
+    const weaponItem =
+      runtimeData instanceof LancerItem &&
+      (runtimeData.is_mech_weapon() ||
+        runtimeData.is_pilot_weapon() ||
+        (runtimeData.is_npc_feature() && runtimeData.system.type === NpcFeatureType.Weapon))
+        ? runtimeData
+        : null;
+    const techItem =
+      runtimeData instanceof LancerItem &&
+      !runtimeData.is_mech_weapon() &&
+      !runtimeData.is_pilot_weapon() &&
+      !(runtimeData.is_npc_feature() && runtimeData.system.type === NpcFeatureType.Weapon)
+        ? runtimeData
+        : null;
+    const weapon = {
       accurate: false,
       inaccurate: false,
       seeking: false,
+      tech: !!(title?.toLowerCase() === "tech attack" || techItem),
+      melee: weaponItem?.currentProfile().type === WeaponType.Melee || false,
+      thrown: false,
       engaged: false,
       plugins: {} as { [k: string]: any },
     };
@@ -401,7 +432,7 @@ export class AccDiffHudData {
       starting = starting >= 0 ? [starting, 0] : [0, -starting];
     }
 
-    for (let tag of tags || []) {
+    for (const tag of tags || []) {
       switch (tag.lid) {
         case "tg_accurate":
           weapon.accurate = true;
@@ -411,6 +442,9 @@ export class AccDiffHudData {
           break;
         case "tg_seeking":
           weapon.seeking = true;
+          break;
+        case "tg_thrown":
+          weapon.thrown = true;
           break;
       }
     }

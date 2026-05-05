@@ -31,9 +31,9 @@ If sheets work with modules off, re-enable modules in halves to find the conflic
 
 ## 4. Messages that are usually harmless
 
-| Message | Meaning |
-|--------|---------|
-| **`AWS Auth failed: No current user`** (or debug-level COMP/CON skip) | Pilot **cloud** cache could not authenticate to AWS Amplify. Expected when not logged into COMP/CON in Foundry. Does **not** block local mech/pilot sheets by itself. |
+| Message                                                                        | Meaning                                                                                                                                                                       |
+| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`AWS Auth failed: No current user`** (or debug-level COMP/CON skip)          | Pilot **cloud** cache could not authenticate to AWS Amplify. Expected when not logged into COMP/CON in Foundry. Does **not** block local mech/pilot sheets by itself.         |
 | **CORS / failed fetch** for external URLs (e.g. `cloudfront.net` frame images) | Scene or token texture from the internet blocked by CORS or network. Fix or replace the asset; unrelated to Lancer templates unless the sheet explicitly depends on that URL. |
 
 ## 5. System path and build

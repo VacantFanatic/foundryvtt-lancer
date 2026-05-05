@@ -14,7 +14,7 @@
   import { fade } from "../slidinghud";
 
   import type { LancerItem, LancerMECH_WEAPON, LancerNPC_FEATURE, LancerPILOT_WEAPON } from "../../item/lancer-item";
-  import { NpcFeatureType, RangeType } from "../../enums";
+  import { NpcFeatureType, RangeType, WeaponType } from "../../enums";
   import { WeaponRangeTemplate } from "../../canvas/weapon-range-template";
   import { targetsFromTemplate } from "../../flows/_template";
   import type { LancerActor } from "../../actor/lancer-actor";
@@ -39,6 +39,7 @@
   $: targets = (weapon, base, targets);
   $: profile = lancerItem ? findProfile() : null;
   $: ranges = lancerItem ? findRanges() : null;
+  $: useCover = !(isTech() || (isMelee() && !weapon.thrown));
   $: flatTotal = kind === "attack" ? base.grit + base.flatBonus : 0;
 
   $: accWeaponPlugins = Object.values(weapon.plugins).filter(plugin => plugin.category === "acc");
@@ -136,6 +137,13 @@
     if (lancerItem.is_pilot_weapon()) return false;
     if (lancerItem.is_npc_feature() && lancerItem.system.type === NpcFeatureType.Weapon) return false;
     return true;
+  }
+
+  function isMelee() {
+    if (!lancerItem || isTech()) return false;
+    const result = lancerItem.currentProfile().type === WeaponType.Melee;
+    console.log("isMelee?", result);
+    return result;
   }
 
   function gritLabel() {
@@ -283,6 +291,9 @@
         <HudCheckbox label="Inaccurate (-1)" bind:value={weapon.inaccurate} />
         <HudCheckbox label="Impaired (-1)" value={!!weapon.impaired} disabled />
         {#if kind == "attack" && !isTech()}
+          {#if isMelee()}
+            <HudCheckbox label="Thrown (*)" bind:value={weapon.thrown} />
+          {/if}
           <HudCheckbox label="Engaged (-1)" bind:value={weapon.engaged} />
           {#each diffWeaponPlugins as plugin}
             <Plugin data={plugin} />
@@ -317,7 +328,7 @@
             <Plugin data={plugin} />
           {/each}
           <!-- Cover -->
-          {#if !isTech()}
+          {#if useCover}
             <div class="grid-enforcement">
               {#if targets.length == 0}
                 <div transition:slide>
@@ -416,7 +427,7 @@
                         <i class="cci cci-accuracy i--4" style="border: none" />
                       </button>
                       <input style="display: none" type="number" bind:value={data.accuracy} min="0" />
-                      {#if !isTech()}
+                      {#if useCover}
                         <Cover
                           bind:cover={data.cover}
                           disabled={weapon.seeking}

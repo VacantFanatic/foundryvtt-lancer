@@ -123,7 +123,7 @@
         <i
           in:fly={{ y: -50, duration: 200 }}
           out:fly={{ y: 50, duration: 200 }}
-          class="cci i--4 i--dark white--text middle"
+          class="cci i--4 i--dark middle"
           class:cci-accuracy={total >= 0}
           class:cci-difficulty={total < 0}
         />

@@ -313,7 +313,9 @@ export function handleRefClickOpen(html: JQuery) {
       error: err instanceof Error ? err.message : String(err),
       stack: err instanceof Error ? err.stack : null,
     };
-    console.warn(`${LANCER.log_prefix} [04ebbd:H13_ref-click-root-shape] handleRefClickOpen failed ${JSON.stringify(h13Data)}`);
+    console.warn(
+      `${LANCER.log_prefix} [04ebbd:H13_ref-click-root-shape] handleRefClickOpen failed ${JSON.stringify(h13Data)}`
+    );
     fetch("http://127.0.0.1:7777/ingest/8de7fe5e-b66f-46b3-834a-869605e8207d", {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "04ebbd" },
