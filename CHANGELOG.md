@@ -1,3 +1,11 @@
+# 2.12.3 (2026-05-05)
+
+## Fixed
+
+- Restored damage card Handlebars helper syntax for `lancer-dice-roll` so damage rolls no longer fail with parse errors during card rendering.
+- Updated chat visibility application to use the available Foundry API (`applyMode` / `applyMessageMode` / `applyRollMode`) to avoid runtime failures and v14 deprecation issues.
+- Restored accuracy/difficulty total icon coloring in the Acc/Diff HUD.
+
 # 2.12.1 (2026-05-04)
 
 ## Fixed
