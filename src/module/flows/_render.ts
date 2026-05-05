@@ -53,8 +53,20 @@ export async function createChatMessageStep(
     flags: flags ? { lancer: flags } : undefined,
   };
 
-  // Respect the chat visibility setting
-  ChatMessage.applyRollMode(chat_data, game.settings.get("core", "rollMode"));
+  // Respect chat visibility across Foundry versions.
+  const mode = (game.settings.get("core", "messageMode") ?? game.settings.get("core", "rollMode")) as number | string;
+  const chatMessageClass = ChatMessage as typeof ChatMessage & {
+    applyMode?: (data: Record<string, unknown>, mode: number | string) => void;
+    applyMessageMode?: (data: Record<string, unknown>, mode: number | string) => void;
+    applyRollMode?: (data: Record<string, unknown>, mode: number | string) => void;
+  };
+  if (typeof chatMessageClass.applyMode === "function") {
+    chatMessageClass.applyMode(chat_data, mode);
+  } else if (typeof chatMessageClass.applyMessageMode === "function") {
+    chatMessageClass.applyMessageMode(chat_data, mode);
+  } else if (typeof chatMessageClass.applyRollMode === "function") {
+    chatMessageClass.applyRollMode(chat_data, mode);
+  }
 
   if (!rolls) delete chat_data.rolls;
   const cm = await ChatMessage.implementation.create(chat_data);

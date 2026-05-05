@@ -588,7 +588,8 @@ Hooks.once("ready", async function () {
       const target = ev.target as HTMLElement | null;
       const match = target?.closest(".roll-stat, .roll-attack, .roll-tech, .roll-damage, .lancer-flow-button");
       if (!match) return;
-      if (!(match.closest(".application.sheet.lancer.actor, application.sheet.lancer.actor") as HTMLElement | null)) return;
+      if (!(match.closest(".application.sheet.lancer.actor, application.sheet.lancer.actor") as HTMLElement | null))
+        return;
 
       try {
         const uuidContainer = match.closest("[data-uuid]") as HTMLElement | null;
@@ -623,7 +624,6 @@ Hooks.once("ready", async function () {
         } else {
           return;
         }
-
       } catch (err) {
         console.error(err);
       }
@@ -655,7 +655,9 @@ Hooks.once("ready", async function () {
         }
 
         if (match.classList.contains("bond-xp-button")) {
-          const host = match.closest(".application.sheet.lancer.actor, application.sheet.lancer.actor") as HTMLElement | null;
+          const host = match.closest(
+            ".application.sheet.lancer.actor, application.sheet.lancer.actor"
+          ) as HTMLElement | null;
           const actorUuid = host?.dataset?.documentUuid ?? host?.dataset?.uuid ?? null;
           if (!actorUuid) return;
           const actor = LancerActor.fromUuidSync(actorUuid, `Invalid actor UUID: ${actorUuid}`);
@@ -666,7 +668,9 @@ Hooks.once("ready", async function () {
         }
 
         if (match.classList.contains("refresh-powers-button")) {
-          const host = match.closest(".application.sheet.lancer.actor, application.sheet.lancer.actor") as HTMLElement | null;
+          const host = match.closest(
+            ".application.sheet.lancer.actor, application.sheet.lancer.actor"
+          ) as HTMLElement | null;
           const actorUuid = host?.dataset?.documentUuid ?? host?.dataset?.uuid ?? null;
           if (!actorUuid) return;
           const actor = LancerActor.fromUuidSync(actorUuid, `Invalid actor UUID: ${actorUuid}`);
