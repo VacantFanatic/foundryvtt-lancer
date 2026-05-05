@@ -44,101 +44,80 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
     },
   };
 
-  override activateListeners(html: HTMLElement): void {
-    super.activateListeners(html);
+  protected override _bindActorSheetListenersFromRender(): void {
+    super._bindActorSheetListenersFromRender();
+    if (!this.isEditable || !this.actor.isOwner) return;
 
-    if (!this.isEditable) return;
+    const root = this._coerceRootElement(this.element) ?? this._coerceRootElement(this.form);
+    if (!root) return;
+    const $el = $(root);
+    const pilot = this.actor as LancerPILOT;
 
-    const $html = $(this.element);
-    if (this.actor.isOwner) {
-      let pilot = this.actor as LancerPILOT;
-      // Item/Macroable Dragging
+    $el.find('select[name="selectCloudId"]').on("change", evt => {
+      evt.stopPropagation();
+      pilot.update({ "system.cloud_id": (evt.target as HTMLSelectElement).value });
+    });
 
-      // Cloud id select
-      let cloudSelect = $html.find('select[name="selectCloudId"]');
-      cloudSelect.on("change", evt => {
-        evt.stopPropagation();
-        pilot.update({ "system.cloud_id": (evt.target as HTMLSelectElement).value });
-      });
+    const download = $el.find('.cloud-control[data-action*="download"]');
+    if (pilot.system.cloud_id) {
+      download.on("click", async ev => {
+        ev.stopPropagation();
 
-      // Cloud download
-      let download = $html.find('.cloud-control[data-action*="download"]');
-      if (pilot.system.cloud_id) {
-        download.on("click", async ev => {
-          ev.stopPropagation();
+        let raw_pilot_data = null;
+        const cloudId = pilot.system.cloud_id?.trim();
+        if (!cloudId) {
+          ui.notifications!.error(
+            "Could not find character to import! No pilot selected via dropdown and no share code entered."
+          );
+          return;
+        }
 
-          // Fetch data to sync
-          let raw_pilot_data = null;
-          const cloudId = pilot.system.cloud_id?.trim();
-          if (!cloudId) {
+        const cachedPilot = pilotCache().find(p => p.cloudID == cloudId);
+        if (cachedPilot != undefined) {
+          ui.notifications!.info("Importing character from COMP/CON account...");
+          try {
+            raw_pilot_data = await fetchPilotViaCache(cachedPilot);
+          } catch (error) {
             ui.notifications!.error(
-              "Could not find character to import! No pilot selected via dropdown and no share code entered."
+              "Failed to import from COMP/CON account. Try refreshing the page to reload pilot list."
             );
+            console.error(`Failed to import vaultID ${cloudId} via pilot list, error:`, error);
             return;
           }
-
-          // If this ID is present in the account cache, treat it as account-backed import.
-          // Otherwise treat it as a share code and query the share endpoint.
-          const cachedPilot = pilotCache().find(p => p.cloudID == cloudId);
-          if (cachedPilot != undefined) {
-            ui.notifications!.info("Importing character from COMP/CON account...");
-            try {
-              raw_pilot_data = await fetchPilotViaCache(cachedPilot);
-            } catch (error) {
-              ui.notifications!.error(
-                "Failed to import from COMP/CON account. Try refreshing the page to reload pilot list."
-              );
-              console.error(`Failed to import vaultID ${cloudId} via pilot list, error:`, error);
-              return;
-            }
-          } else {
-            ui.notifications!.info("Importing character from share code...");
-            console.log(`Attempting import with share code: ${cloudId}`);
-            try {
-              raw_pilot_data = await fetchPilotViaShareCode(cloudId);
-            } catch (error) {
-              const errMessage = error instanceof Error ? error.message : String(error);
-              ui.notifications!.error(`Error importing from share code. ${errMessage}`);
-              console.error(`Failed import with share code ${cloudId}, error:`, error);
-              return;
-            }
+        } else {
+          ui.notifications!.info("Importing character from share code...");
+          console.log(`Attempting import with share code: ${cloudId}`);
+          try {
+            raw_pilot_data = await fetchPilotViaShareCode(cloudId);
+          } catch (error) {
+            const errMessage = error instanceof Error ? error.message : String(error);
+            ui.notifications!.error(`Error importing from share code. ${errMessage}`);
+            console.error(`Failed import with share code ${cloudId}, error:`, error);
+            return;
           }
-          await importCC(this.actor as LancerPILOT, raw_pilot_data);
-        });
-      } else {
-        download.addClass("disabled-cloud");
-      }
-
-      // JSON Import
-      $html.find<HTMLInputElement>("input#pilot-json-import").on("change", ev => this._onPilotJsonUpload(ev));
-
-      // editing rawID clears vaultID
-      // (other way happens automatically because we prioritise vaultID in commit)
-      let rawInput = $html.find('input[name="rawID"]');
-      rawInput.on("input", async ev => {
-        if ((ev.target as any).value != "") {
-          ($html.find('select[name="vaultID"]')[0] as any).value = "";
         }
+        await importCC(this.actor as LancerPILOT, raw_pilot_data);
       });
-
-      // Mech swapping
-      let mechActivators = $html.find(".activate-mech");
-      mechActivators.on("click", async ev => {
-        ev.stopPropagation();
-        let mech = (await resolve_ref_element(ev.currentTarget.parentElement!)) as LancerActor | null;
-
-        if (!mech || !mech.is_mech()) return;
-
-        this.activateMech(mech);
-      });
-
-      let mechDeactivator = $html.find(".deactivate-mech");
-      mechDeactivator.on("click", async ev => {
-        ev.stopPropagation();
-
-        this.deactivateMech();
-      });
+    } else {
+      download.addClass("disabled-cloud");
     }
+
+    $el.find<HTMLInputElement>("input#pilot-json-import").on("change", ev => this._onPilotJsonUpload(ev));
+
+    $el.find(".activate-mech").on("click", async ev => {
+      ev.stopPropagation();
+      const mech = (await resolve_ref_element(ev.currentTarget.parentElement!)) as LancerActor | null;
+
+      if (!mech || !mech.is_mech()) return;
+
+      this.activateMech(mech);
+    });
+
+    $el.find(".deactivate-mech").on("click", async ev => {
+      ev.stopPropagation();
+
+      this.deactivateMech();
+    });
   }
 
   _onPilotJsonUpload(ev: JQuery.ChangeEvent<HTMLInputElement, undefined, HTMLInputElement, HTMLInputElement>) {

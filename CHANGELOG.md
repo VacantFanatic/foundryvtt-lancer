@@ -1,3 +1,9 @@
+# 2.12.1 (2026-05-04)
+
+## Fixed
+
+- Pilot sheet COMP/CON cloud sync (download), cloud ID dropdown, JSON import, and mech activate/deactivate controls bind during `_onRender` like other actor sheet listeners, so they work reliably under Application V2 when `activateListeners` does not run on every path.
+
 # 2.12.0 (2026-05-03)
 
 ## Changed
