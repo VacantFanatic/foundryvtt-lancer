@@ -98,7 +98,7 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     this._bindActorSheetListenersFromRender();
   }
 
-  private _coerceRootElement(value: unknown): HTMLElement | null {
+  protected _coerceRootElement(value: unknown): HTMLElement | null {
     if (value instanceof HTMLElement) return value;
     if (value && typeof value === "object") {
       const maybe = value as { 0?: unknown; element?: unknown };
