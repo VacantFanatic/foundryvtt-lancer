@@ -5,6 +5,7 @@ import type { UUIDRef } from "../source-template";
 import { renderTemplateStep } from "./_render";
 import { Flow, type FlowState, type Step } from "./flow";
 import { LancerFlowState } from "./interfaces";
+import { openSlidingHud } from "../apps/slidinghud";
 
 const lp = LANCER.log_prefix;
 
@@ -69,9 +70,8 @@ export async function preOverheatRollChecks(state: FlowState<LancerFlowState.Ove
       ui.notifications!.info("No stress remaining. Reactor damage cannot be rolled.");
       return false;
     }
-    const { openSlidingHud: open } = await import("../apps/slidinghud");
     try {
-      await open("stress", { stat: "stress", title: "Stress Damage", lancerActor: actor });
+      await openSlidingHud("stress", { stat: "stress", title: "Stress Damage", lancerActor: actor });
     } catch (_e) {
       // User hit cancel, abort the flow.
       return false;

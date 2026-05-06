@@ -8,6 +8,7 @@ import { Flow, type FlowState, type Step } from "./flow";
 import { LancerFlowState } from "./interfaces";
 import { DamageRollFlow } from "./damage";
 import { DamageType } from "../enums";
+import { openSlidingHud } from "../apps/slidinghud";
 
 const lp = LANCER.log_prefix;
 
@@ -77,9 +78,8 @@ export async function preStructureRollChecks(
       ui.notifications!.info("Token has hp remaining. No need to roll structure.");
       return false;
     }
-    const { openSlidingHud: open } = await import("../apps/slidinghud");
     try {
-      await open("struct", { stat: "structure", title: "Structure Damage", lancerActor: actor });
+      await openSlidingHud("struct", { stat: "structure", title: "Structure Damage", lancerActor: actor });
     } catch (_e) {
       // User hit cancel, abort the flow.
       return false;

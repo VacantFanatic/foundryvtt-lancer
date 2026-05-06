@@ -1,5 +1,7 @@
 // No layer in this file because no actual styles are defined here, only variables
 
+@use "sass:list";
+
 /* prettier-ignore */
 $theme-types: "primary"
   "secondary"
@@ -52,7 +54,7 @@ $item-types: core_bonus
   talent
   quirk;
 $actor-types: npc pilot mech deployable;
-$document-types: join($item-types, $actor-types);
+$document-types: list.join($item-types, $actor-types);
 
 $icon-size-1: 15px;
 $icon-size-2: 20px;

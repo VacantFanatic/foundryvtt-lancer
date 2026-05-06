@@ -24,6 +24,8 @@ import type {
   PackedEnvironmentData,
 } from "./unpacking/packed-types";
 import { EntryType, EntryTypeLidPrefix } from "../enums";
+import * as staticLancerCoreData from "@massif/lancer-data";
+import { version as lancerCoreDataPackageVersion } from "@massif/lancer-data/package.json";
 
 export const CORE_BREW_ID = "core";
 
@@ -378,11 +380,10 @@ function convertNpmDataToContentPack(data: NpmLancerData, id: string, manifest?:
  * @returns The base content pack for the Lancer Core Book, i.e. lancer-data.
  */
 export async function getBaseContentPack(): Promise<LCPData> {
-  const lancerDataPackage = await import("@massif/lancer-data/package.json");
-  const lancerData = (await import("@massif/lancer-data")) as NpmLancerData;
+  const lancerData = staticLancerCoreData as unknown as NpmLancerData;
   const author = "Massif Press";
   const name = "Lancer Core Book Data";
-  const version = lancerDataPackage.version;
+  const version = lancerCoreDataPackageVersion;
   const url = "https://massif-press.itch.io/corebook-pdf-free";
   const manifest = {
     author,

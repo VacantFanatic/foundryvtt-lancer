@@ -1,3 +1,15 @@
+# 2.12.4 (2026-05-06)
+
+## Fixed
+
+- Actor sheet window overflow menu no longer lists duplicate entries for core actions (prototype token, artwork, token controls) when header controls are merged repeatedly from the Application V2 inheritance chain.
+- Production build no longer warns about Sass `join()` deprecation (`list.join` in variables).
+- Resolved Vite/Rollup warnings from mixing static and dynamic imports for `@massif/lancer-data` and `slidinghud` (core LCP data and stress/structure HUD entry now use consistent static imports).
+
+## Changed
+
+- Vite Svelte plugin filters known cosmetic compiler warnings (internal HUD/LCP markup and unused selectors/props) so `npm run build` stays quiet; behaviour is unchanged.
+
 # 2.12.3 (2026-05-05)
 
 ## Fixed
