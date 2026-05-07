@@ -1,3 +1,9 @@
+# 2.12.5 (2026-05-07)
+
+## Changed
+
+- Pilot sheet tab navigation now places `RM-4://SYNC` after Effects, matching the intended Comp/Con-style tab order.
+
 # 2.12.4 (2026-05-06)
 
 ## Fixed

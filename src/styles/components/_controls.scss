@@ -19,6 +19,7 @@
   -webkit-clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
   padding: 0 10px;
   min-height: 2em;
+  font-size: 12px;
   font-family: var(--header-font-family);
   @include mixins.vert-mid();
   @include mixins.horiz-mid();
@@ -32,6 +33,11 @@
     color: var(--light-text, fuchsia);
     background-color: var(--primary-highlight, fuchsia);
   }
+}
+
+// Explicitly override Foundry's generic a.item font sizing for lancer tab links.
+a.item.lancer-tab {
+  font-size: 12px;
 }
 
 .hex {
