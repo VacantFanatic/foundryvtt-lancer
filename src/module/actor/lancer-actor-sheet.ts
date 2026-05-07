@@ -36,6 +36,7 @@ import { LancerActor, type LancerActorType } from "./lancer-actor";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
+type HeaderControlsEntry = foundry.applications.api.ApplicationV2.HeaderControlsEntry;
 const lp = LANCER.log_prefix;
 
 /**
@@ -61,6 +62,23 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
 
   get actor(): LancerActor {
     return this.document;
+  }
+
+  /**
+   * Foundry can accumulate duplicate header control entries (e.g. repeated overflow actions)
+   * when Application options merge across the inheritance chain. De-duplicate by stable key.
+   */
+  protected override _getHeaderControls(): HeaderControlsEntry[] {
+    const controls = super._getHeaderControls();
+    const seen = new Set<string>();
+    const out: HeaderControlsEntry[] = [];
+    for (const c of controls) {
+      const key = c.action ? String(c.action) : `${c.label}:${c.icon}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(c);
+    }
+    return out;
   }
 
   static override DEFAULT_OPTIONS = foundry.utils.mergeObject(

@@ -128,7 +128,21 @@ export default defineConfig({
   },
   plugins: [
     checker({ typescript: true, enableBuild: false }),
-    svelte({ preprocess: sveltePreprocess() }),
+    svelte({
+      preprocess: sveltePreprocess(),
+      onwarn(warning, defaultHandler) {
+        // HUD / LCP Svelte surfaces: silence repetitive compiler noise (icons, internal hover chrome).
+        const ignored = new Set([
+          "a11y_consider_explicit_label",
+          "a11y_no_static_element_interactions",
+          "css_unused_selector",
+          "element_invalid_self_closing_tag",
+          "export_let_unused",
+        ]);
+        if (warning.code && ignored.has(warning.code)) return;
+        defaultHandler(warning);
+      },
+    }),
     foundryvtt(systemJson),
     {
       name: "aws-global-fix",
