@@ -3,7 +3,11 @@
     font-family: var(--main-font-family);
 
     header.sheet-header input {
-      text-align: center;
+      text-align: left;
+    }
+
+    header.sheet-header input.lancer-input {
+      height: 50px;
     }
   }
 
