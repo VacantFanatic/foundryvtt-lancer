@@ -1,3 +1,9 @@
+# 2.12.6 (2026-05-09)
+
+## Changed
+
+- Pilot sheet header: `h1.pilot-callsign` (license level and callsign) uses an explicit **36px** font size instead of Foundry’s default heading size.
+
 # 2.12.5 (2026-05-07)
 
 ## Changed
