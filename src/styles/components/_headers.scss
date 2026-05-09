@@ -28,6 +28,7 @@
       "detail1 detail2 detail3 img";
     position: relative;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
     background-color: var(--primary-color, fuchsia);
     margin: 0 0 0.5em 0;
@@ -118,6 +119,10 @@
         font-weight: bold;
       }
 
+      h1.pilot-callsign {
+        font-size: 36px;
+      }
+
       & + .details {
         padding-right: 10px;
       }
@@ -129,9 +134,35 @@
   }
 
   .lancer.sheet.npc header.sheet-header .name {
-    display: grid;
-    grid-template-columns: $tier-icon-size auto;
-    grid-template-rows: auto;
+    box-sizing: content-box;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 0;
+    text-align: left;
+
+    .tier-icon {
+      flex: 0 0 auto;
+    }
+
+    input.lancer-input {
+      flex: 1 1 auto;
+      align-self: stretch;
+      min-width: 0;
+      width: 800px;
+      max-width: 100%;
+      height: 50px;
+      box-sizing: content-box;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      vertical-align: middle;
+      text-align: left;
+      font-size: 52px;
+      margin: 0;
+    }
   }
 
   .header-icon {
@@ -201,7 +232,7 @@
 
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     align-self: stretch;
 

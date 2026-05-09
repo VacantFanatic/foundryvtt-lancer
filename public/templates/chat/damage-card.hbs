@@ -14,7 +14,9 @@
   {{/if}}
   <div>
     {{#each reliable_results as |damage key|}}
-      {{{lancer-dice-roll damage.roll damage.tt (concat "cci cci-" (lower-case damage.d_type) " i--4 damage--" (lower-case damage.d_type))}}}
+      {{
+        {lancer-dice-roll damage.roll damage.tt (concat "cci cci-" (lower-case damage.d_type) " i--4 damage--" (lower-case damage.d_type))}
+      }}
     {{/each}}
   </div>
   {{!-- Miss/reliable damage targets only --}}
@@ -39,7 +41,9 @@
           {{#if damage.bonus}}
             <span class="lancer-damage-tag" style="flex-grow: 0" data-tooltip="This row is bonus damage">BONUS</span>
           {{/if}}
-          {{{lancer-dice-roll damage.roll damage.tt (concat "cci cci-" (lower-case damage.d_type) " i--4 damage--" (lower-case damage.d_type))}}}
+          {{
+            {lancer-dice-roll damage.roll damage.tt (concat "cci cci-" (lower-case damage.d_type) " i--4 damage--" (lower-case damage.d_type))}
+          }}
         </div>
       {{/if}}
     {{/each}}
@@ -65,7 +69,9 @@
             {{#if damage.bonus}}
               <span class="lancer-damage-tag" style="flex-grow: 0" data-tooltip="This row is bonus damage">BONUS</span>
             {{/if}}
-            {{{lancer-dice-roll damage.roll damage.tt (concat "cci cci-" (lower-case damage.d_type) " i--4 damage--" (lower-case damage.d_type))}}}
+            {{
+              {lancer-dice-roll damage.roll damage.tt (concat "cci cci-" (lower-case damage.d_type) " i--4 damage--" (lower-case damage.d_type))}
+            }}
           </div>
         {{/if}}
       {{/each}}

@@ -5,6 +5,12 @@
     header.sheet-header input {
       text-align: center;
     }
+
+    /* NPC nameplate: applications layer beats components for header input alignment */
+    &.npc header.sheet-header h1.name input.lancer-input {
+      text-align: left;
+      vertical-align: middle;
+    }
   }
 
   /* App V2: two DOM shapes — (A) host wraps .window-content, (B) .window-content wraps form/application */
