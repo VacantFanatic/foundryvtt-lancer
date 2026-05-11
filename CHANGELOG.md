@@ -1,3 +1,9 @@
+# 2.12.8 (2026-06-05)
+
+## Added
+
+- Ported upstream COMP/CON **v3 pilot import** (Eranziel [#934](https://github.com/Eranziel/foundryvtt-lancer/pull/934)): `importCCv3` / `importCCv2` routing, updated packed types, v3/v2 share-code detection on the pilot sheet, and official `api.compcon.app` v3 share fetch (with share-proxy and legacy API fallback).
+
 # 2.12.7 (2026-06-05)
 
 ## Fixed
