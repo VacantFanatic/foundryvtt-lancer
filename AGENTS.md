@@ -29,16 +29,34 @@ Handled by the VM update script: `CI=1 npm ci` from repo root (skips `postinstal
 | Foundry VTT | 30000 | **Yes** for in-browser testing |
 | Vite (`npm run serve`) | 30001 | Optional HMR; proxies non-`/systems/lancer` to Foundry |
 
-**Foundry is not bundled.** Install Node Foundry under `installPath` and set `dataPath` via `fvttrc.yml` (gitignored) or `~/.fvttrc.yml`, then `npx fvtt --config ./fvttrc.yml launch` (or Docker `felddy/foundryvtt` with `FOUNDRY_USERNAME` / `FOUNDRY_PASSWORD` or `FOUNDRY_RELEASE_URL`).
+**Foundry is not bundled.** Install Node Foundry under `installPath` and set `dataPath` via `fvttrc.yml` (gitignored) or `~/.fvttrc.yml`, then `npx fvtt --config ./fvttrc.yml launch`.
 
-Example `fvttrc.yml` (local only):
+**Cursor Cloud / Docker (verified):** use `felddy/foundryvtt:release` with secrets `FOUNDRY_USERNAME` (FoundryVTT.com **email**), `FOUNDRY_PASSWORD`, and optionally `FOUNDRY_LICENSE_KEY`. When using `sudo docker run`, pass env vars explicitly (`-e "FOUNDRY_USERNAME=${FOUNDRY_USERNAME}"`) — bare `-e FOUNDRY_USERNAME` does not forward host secrets.
+
+```bash
+SKIP_FOUNDRY_DIST_MIRROR=1 npm run build
+sudo docker rm -f foundry 2>/dev/null
+sudo docker run -d --name foundry -p 30000:30000 \
+  -v /home/ubuntu/foundry-data:/data \
+  -v "$(pwd)/dist:/data/Data/systems/lancer:ro" \
+  -e "FOUNDRY_USERNAME=${FOUNDRY_USERNAME}" \
+  -e "FOUNDRY_PASSWORD=${FOUNDRY_PASSWORD}" \
+  -e "FOUNDRY_LICENSE_KEY=${FOUNDRY_LICENSE_KEY}" \
+  -e FOUNDRY_HOSTNAME=localhost \
+  -e FOUNDRY_ADMIN_KEY=devadmin \
+  felddy/foundryvtt:release
+```
+
+Do **not** symlink `dist` to a host path outside the container (e.g. `/workspace/dist`) — mount `dist` directly as above. First launch may redirect to `/license` (accept EULA / enter license), then `/auth` (admin password `devadmin` if set).
+
+Example `fvttrc.yml` (non-Docker local):
 
 ```yaml
 installPath: /home/ubuntu/FoundryVTT
 dataPath: /home/ubuntu/foundry-data/Data
 ```
 
-Symlink built system: `ln -sfn "$(pwd)/dist" "$dataPath/systems/lancer"`.
+Symlink built system (host-only Foundry): `ln -sfn "$(pwd)/dist" "$dataPath/systems/lancer"`.
 
 ### Hello-world / E2E in Foundry
 
@@ -53,6 +71,6 @@ COMP/CON cloud features need network access to AWS/COMP/CON; JSON import works o
 
 - Default `npm run build` mirror target is `F:/FoundryVTT/...` on Windows-oriented machines; on Linux cloud VMs use **`SKIP_FOUNDRY_DIST_MIRROR=1`** unless you set `FOUNDRY_SYSTEM_DIR`.
 - `npm run serve` returns **500** for most routes if Foundry is not running on 30000 (Vite proxies to it).
-- Vite may bind **`[::1]:30001`** only; use IPv6 localhost or configure `server.host` if needed.
+- Prefer `npm run serve -- --host 127.0.0.1` so Vite listens on IPv4; default may bind `[::1]:30001` only.
 - Pack updates can fail with `EBUSY` while Foundry holds LevelDB locks — close Foundry before rebuilding packs.
 - Node **22** matches `.github/workflows/release.yml`.
