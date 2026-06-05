@@ -459,7 +459,6 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     }
     if (!data) return;
     e.dataTransfer?.setData("text/plain", JSON.stringify(data));
-    console.log("Flow drag data:", data, e.dataTransfer?.getData("text/plain"));
   }
 
   async _activateActionGridListeners(html: JQuery) {
@@ -480,7 +479,7 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
           modAction(this.actor as LancerActor, spend, action);
         }
       } else {
-        console.log(`${game.user?.name} :: Users currently not allowed to toggle actions through action manager.`);
+        ui.notifications?.warn(`${game.user?.name} cannot toggle actions via the action tracker.`, { localize: false });
       }
     });
   }
@@ -753,7 +752,6 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     }
     data.effect_categories = LancerActiveEffect.prepareActiveEffectCategories(this.actor);
     data.deployables = lookupOwnedDeployables(this.actor);
-    console.log(`${lp} Rendering with following actor ctx: `, data);
     return data;
   }
 }

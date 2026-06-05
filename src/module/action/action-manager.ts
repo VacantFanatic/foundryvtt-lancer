@@ -123,7 +123,6 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
    */
   private async resetActions() {
     if (this.target) {
-      console.log("Resetting " + this.target.name);
       await modAction(this.target, false);
       await this.update();
 
@@ -157,7 +156,7 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
       if (this.canMod()) {
         await this.resetActions();
       } else {
-        console.log(`${game.user?.name} :: Users currently not allowed to reset actions through action manager.`);
+        ui.notifications?.warn(`${game.user?.name} cannot reset actions via the action tracker.`, { localize: false });
       }
     });
 
@@ -172,7 +171,9 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
             await this.update();
           }
         } else {
-          console.log(`${game.user?.name} :: Users currently not allowed to toggle actions through action manager.`);
+          ui.notifications?.warn(`${game.user?.name} cannot toggle actions via the action tracker.`, {
+            localize: false,
+          });
         }
       })
     );
@@ -274,7 +275,6 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
             elmnt.style.top = yPos + "px";
             elmnt.style.left = xPos + "px";
           }
-          console.log(`Action Manager | CACHING: ${xPos} || ${yPos}.`);
           game.user?.update({ flags: { lancer: { "action-manager": { pos: { top: yPos, left: xPos } } } } });
           appPos.top = yPos;
           appPos.left = xPos;
