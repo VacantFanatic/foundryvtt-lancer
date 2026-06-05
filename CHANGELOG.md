@@ -1,3 +1,10 @@
+# 2.12.7 (2026-06-05)
+
+## Fixed
+
+- Removed temporary agent debug instrumentation that spammed the browser console (`console.warn`, failed `127.0.0.1:7777` ingest requests) on every actor sheet render.
+- Removed stray debug `console.log` calls from the accuracy/diff HUD, action tracker, and actor sheet data prep.
+
 # 2.12.6 (2026-05-09)
 
 ## Changed
