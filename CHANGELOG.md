@@ -1,3 +1,9 @@
+# Unreleased
+
+## Fixed
+
+- CI **Verify git remote** no longer fails on `AGENTS.md` fork-policy text; doc-link scanning moved to `scripts/assert-no-eranziel-doc-links.sh` (excludes agent docs that describe forbidden upstream targets).
+
 # 2.12.8 (2026-06-05)
 
 ## Added

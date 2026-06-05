@@ -18,6 +18,7 @@
     "postinstall": "./scripts/symlink.mjs",
     "prepare": "husky install",
     "verify:git-remote": "sh ./scripts/assert-safe-git-remote.sh",
+    "verify:doc-links": "sh ./scripts/assert-no-eranziel-doc-links.sh",
     "serve": "vite",
     "version": "./scripts/version.mjs && git add src/system.json",
     "watch": "vite build --watch"
