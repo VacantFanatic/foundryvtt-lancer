@@ -317,11 +317,11 @@ export async function importCC(
   importedData: PackedPilotData | PackedPilotWrapper,
   clearFirst = true
 ) {
-  // CCv3 JSON exports have a wrapper that is missing in sharecode/cloud fetching
-  // `originId` is some arbitrary V3 exclusive data; it can be anything else.
-  // `EXPORT_TYPE` is exclusive to V3 and only in JSON exports.
-  if ("originId" in importedData || "EXPORT_TYPE" in importedData) {
-    await importCCv3(pilot, importedData, clearFirst);
+  // CCv3 JSON exports use a wrapper; share codes and cloud fetches return pilot fields at the top level.
+  if ("EXPORT_TYPE" in importedData && "data" in importedData && importedData.data) {
+    await importCCv3(pilot, importedData as PackedPilotWrapper, clearFirst);
+  } else if (("originId" in importedData || "EXPORT_TYPE" in importedData) && "callsign" in importedData) {
+    await importCCv3(pilot, { EXPORT_TYPE: "pilot", data: importedData as PackedPilotData }, clearFirst);
   } else if ("data" in importedData && importedData.data && !("callsign" in importedData)) {
     await importCCv3(pilot, { EXPORT_TYPE: "pilot", data: importedData.data }, clearFirst);
   } else {
