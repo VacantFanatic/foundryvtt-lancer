@@ -1,5 +1,17 @@
 # AGENTS.md
 
+## Git / fork policy (required)
+
+This repository is **`VacantFanatic/foundryvtt-lancer`**. **Never push** to **`Eranziel/foundryvtt-lancer`** (any branch, including `master`).
+
+- **`origin`** must stay `https://github.com/VacantFanatic/foundryvtt-lancer` (or SSH equivalent).
+- Do **not** add an `upstream` remote pointing at Eranziel, and do not `git push` a URL under `github.com/Eranziel/foundryvtt-lancer`.
+- Cloud agents: use feature branches `cursor/<name>-f727` and open PRs against **`VacantFanatic`** `master` only.
+- **Pre-push hook** (`scripts/assert-safe-git-remote.sh`) and CI workflow **Verify git remote** block Eranziel remotes and accidental push targets.
+- Manual check: `REQUIRE_ALLOWED_ORIGIN=1 sh ./scripts/assert-safe-git-remote.sh`
+
+Reading Eranziel’s wiki or citing upstream authors in docs is fine; **git writes** stay on this fork only.
+
 ## Cursor Cloud specific instructions
 
 ### What this repo is

@@ -1,0 +1,25 @@
+name: Verify git remote (fork-only)
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  assert-safe-remote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Block Eranziel upstream remote URLs
+        run: REQUIRE_ALLOWED_ORIGIN=1 sh ./scripts/assert-safe-git-remote.sh
+
+      - name: Fail if workflow targets Eranziel for deploy
+        run: |
+          for f in .github/workflows/*.yml; do
+            case "$(basename "$f")" in verify-git-remote.yml) continue ;; esac
+            if grep -qE 'github\.com[:/]Eranziel/foundryvtt-lancer' "$f"; then
+              echo "Workflow must not target Eranziel/foundryvtt-lancer: $f"
+              exit 1
+            fi
+          done
