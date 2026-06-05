@@ -10,7 +10,7 @@ This repository is **`VacantFanatic/foundryvtt-lancer`**. **Never push** to **`E
 - **Pre-push hook** (`scripts/assert-safe-git-remote.sh`) and CI workflow **Verify git remote** block Eranziel remotes and accidental push targets.
 - Manual check: `REQUIRE_ALLOWED_ORIGIN=1 sh ./scripts/assert-safe-git-remote.sh`
 
-Reading Eranziel’s wiki or citing upstream authors in docs is fine; **git writes** stay on this fork only.
+Docs, wiki links, and in-app URLs must use **`VacantFanatic/foundryvtt-lancer`**. Author credits in `system.json` (e.g. Eranziel) are attribution only, not repo links.
 
 ## Cursor Cloud specific instructions
 
@@ -25,7 +25,7 @@ Handled by the VM update script: `CI=1 npm ci` from repo root (skips `postinstal
 ### Build
 
 - **Production build (CI / headless):** `SKIP_FOUNDRY_DIST_MIRROR=1 npm run build` — writes only to `dist/` (avoids mirroring to a Windows default path).
-- **Local with Foundry data dir:** set `FOUNDRY_SYSTEM_DIR` or `MIRROR_DIST_TO_FOUNDRY_DATA=1` with `fvttrc.yml` `dataPath`, or use `npm run link` after configuring `@foundryvtt/foundryvtt-cli` (see [Development Setup wiki](https://github.com/Eranziel/foundryvtt-lancer/wiki/Development-Setup)).
+- **Local with Foundry data dir:** set `FOUNDRY_SYSTEM_DIR` or `MIRROR_DIST_TO_FOUNDRY_DATA=1` with `fvttrc.yml` `dataPath`, or use `npm run link` after configuring `@foundryvtt/foundryvtt-cli` (see [Development Setup wiki](https://github.com/VacantFanatic/foundryvtt-lancer/wiki/Development-Setup)).
 - **Watch:** `npm run watch` or `npm run build:watch`.
 
 ### Lint / format

@@ -23,3 +23,10 @@ jobs:
               exit 1
             fi
           done
+
+      - name: Fail if tracked sources link to Eranziel repo
+        run: |
+          if grep -rE 'github\.com/Eranziel/foundryvtt-lancer' README.md docs src public .github/ISSUE_TEMPLATE AGENTS.md 2>/dev/null; then
+            echo "Tracked docs and UI must use VacantFanatic/foundryvtt-lancer URLs."
+            exit 1
+          fi
