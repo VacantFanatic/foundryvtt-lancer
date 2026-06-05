@@ -1,0 +1,4 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+sh "$(dirname "$0")/../scripts/assert-safe-git-remote.sh" "$@"
