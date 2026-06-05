@@ -1,8 +1,17 @@
-# Unreleased
+# 2.12.9 (2026-06-05)
 
 ## Fixed
 
-- CI **Verify git remote** no longer fails on `AGENTS.md` fork-policy text; doc-link scanning moved to `scripts/assert-no-eranziel-doc-links.sh` (excludes agent docs that describe forbidden upstream targets).
+- COMP/CON **v3 import** hardening: validate payload before clearing pilot data, require LCP/core data (matching v2), optional portrait/`img` fields, flat `bondId` bond powers, license stub guards, and safer mech loadout/frame/weapon/mod handling.
+- **Share import:** Download always binds at render time (reads `cloud_id` on click), normalizes share codes to uppercase, and falls back to `fetchPilotViaShareCode` for unknown IDs; JSON import reports failures correctly.
+- **V3 share API:** Validates response count/URI; legacy fallback accepts array or object code lookup responses.
+- Pilot sheet tab bar scrolls horizontally so **RM-4://SYNC** stays reachable on narrow windows.
+- CI **Verify git remote** no longer fails on `AGENTS.md` fork-policy text (`scripts/assert-no-eranziel-doc-links.sh`).
+- Release workflow publishes GitHub releases directly (no draft prerelease step).
+
+## Added
+
+- `resolveImportCCPayload` routing helper with `npm run test` coverage.
 
 # 2.12.8 (2026-06-05)
 

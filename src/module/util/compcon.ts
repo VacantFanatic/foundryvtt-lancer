@@ -136,11 +136,20 @@ export async function fetchV3PilotViaShareCodes(sharecodes: string[]): Promise<P
   }
 
   const sourceObjs: { uri: string }[] = await shareCodeResponse.json();
-  const sources = sourceObjs.map(o => o.uri);
+  if (!Array.isArray(sourceObjs) || sourceObjs.length !== sharecodes.length) {
+    throw new Error(
+      `V3 share endpoint returned ${Array.isArray(sourceObjs) ? sourceObjs.length : 0} entries for ${sharecodes.length} code(s)`
+    );
+  }
+  for (const entry of sourceObjs) {
+    if (!entry?.uri) {
+      throw new Error("V3 share endpoint returned an entry without a downloadable uri");
+    }
+  }
 
   return Promise.all(
-    sources.map(source =>
-      fetchWithOptionalShareProxy(`${CC_BUCKET_URI}/${source}`, { cache: "no-cache" }).then(res => {
+    sourceObjs.map(entry =>
+      fetchWithOptionalShareProxy(`${CC_BUCKET_URI}/${entry.uri}`, { cache: "no-cache" }).then(res => {
         if (!res.ok) throw new Error(`V3 pilot fetch returned HTTP ${res.status}`);
         return res.json();
       })
@@ -153,7 +162,12 @@ export async function fetchV3PilotViaShareCodes(sharecodes: string[]): Promise<P
  */
 export async function fetchV3PilotViaShareCode(sharecode: string): Promise<PackedPilotData> {
   try {
-    return (await fetchV3PilotViaShareCodes([sharecode]))[0];
+    const pilots = await fetchV3PilotViaShareCodes([sharecode]);
+    const pilot = pilots[0];
+    if (!pilot) {
+      throw new Error("V3 share endpoint returned no pilot data");
+    }
+    return pilot;
   } catch (officialErr) {
     return await fetchPilotViaLegacyV3ShareCode(sharecode, officialErr);
   }
@@ -180,11 +194,13 @@ async function fetchPilotViaLegacyV3ShareCode(sharecode: string, officialErr: un
   }
 
   const codeLookupJson = await codeLookupResponse.json();
-  if (!codeLookupJson?.uri) {
+  const codeEntry = Array.isArray(codeLookupJson) ? codeLookupJson[0] : codeLookupJson;
+  const uri = codeEntry?.uri;
+  if (!uri) {
     throw new Error("V3 legacy share endpoint did not return a downloadable URI");
   }
 
-  const pilotResponse = await fetchWithOptionalShareProxy(`${CC_BUCKET_URI}/${codeLookupJson.uri}`, {
+  const pilotResponse = await fetchWithOptionalShareProxy(`${CC_BUCKET_URI}/${uri}`, {
     cache: "no-cache",
   });
   if (!pilotResponse.ok) {
