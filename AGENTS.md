@@ -10,7 +10,7 @@ This repository is **`VacantFanatic/foundryvtt-lancer`**. **Never push** to **`E
 - **Pre-push hook** (`scripts/assert-safe-git-remote.sh`) and CI workflow **Verify git remote** block Eranziel remotes and accidental push targets.
 - Manual check: `REQUIRE_ALLOWED_ORIGIN=1 sh ./scripts/assert-safe-git-remote.sh`
 
-Reading Eranziel’s wiki or citing upstream authors in docs is fine; **git writes** stay on this fork only.
+Docs, wiki links, and in-app URLs must use **`VacantFanatic/foundryvtt-lancer`**. Author credits in `system.json` (e.g. Eranziel) are attribution only, not repo links.
 
 ## Cursor Cloud specific instructions
 
