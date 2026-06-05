@@ -8,10 +8,13 @@ import type { PackedPilotData } from "./unpacking/packed-types";
 // (they could also re-login, we initiate a cache refresh there)
 
 let _cache: CachedCloudPilot[] = [];
-const CC_V2_SHARE_ENDPOINT = "https://api.compcon.app/share";
-const CC_V3_API_ENDPOINT = "https://idu55qr85i.execute-api.us-east-1.amazonaws.com/prod";
-const CC_V3_CLOUDFRONT_BASE = "https://ds69h3g1zxwgy.cloudfront.net";
-const CC_V3_API_KEY = "Y5DnZ4miJi30iazqn9VV73A253Db7HRxamHEQeMr";
+const CC_API_KEY = "fcFvjjrnQy2hypelJQi4X9dRI55r5KuI4bC07Maf";
+const CC_API_URI = "https://api.compcon.app";
+const CC_BUCKET_URI = "https://ds69h3g1zxwgy.cloudfront.net";
+
+/** Alternate v3 code API used before official compcon.app v3 routes were wired in Foundry. */
+const CC_V3_LEGACY_API_ENDPOINT = "https://idu55qr85i.execute-api.us-east-1.amazonaws.com/prod";
+const CC_V3_LEGACY_API_KEY = "Y5DnZ4miJi30iazqn9VV73A253Db7HRxamHEQeMr";
 
 type ProxyRequestPayload = {
   url: string;
@@ -89,34 +92,75 @@ export function pilotCache(): CachedCloudPilot[] {
   return _cache;
 }
 
-async function fetchPilotViaLegacyShareCode(sharecode: string): Promise<PackedPilotData> {
+export async function fetchV2PilotViaShareCode(sharecode: string): Promise<PackedPilotData> {
   const shareCodeResponse = await fetchWithOptionalShareProxy(
-    `${CC_V2_SHARE_ENDPOINT}?code=${encodeURIComponent(sharecode)}`,
+    `${CC_API_URI}/share?code=${encodeURIComponent(sharecode)}`,
     {
       headers: {
-        "x-api-key": "fcFvjjrnQy2hypelJQi4X9dRI55r5KuI4bC07Maf",
+        "x-api-key": CC_API_KEY,
       },
     }
   );
 
   if (!shareCodeResponse.ok) {
-    throw new Error(`Legacy share endpoint returned HTTP ${shareCodeResponse.status}`);
+    throw new Error(`V2 share endpoint returned HTTP ${shareCodeResponse.status}`);
   }
 
   const shareObj = await shareCodeResponse.json();
   if (!shareObj?.presigned) {
-    throw new Error("Legacy share endpoint did not return a presigned URL");
+    throw new Error("V2 share endpoint did not return a presigned URL");
   }
 
   const pilotResponse = await fetchWithOptionalShareProxy(shareObj["presigned"]);
   if (!pilotResponse.ok) {
-    throw new Error(`Legacy presigned pilot fetch returned HTTP ${pilotResponse.status}`);
+    throw new Error(`V2 presigned pilot fetch returned HTTP ${pilotResponse.status}`);
   }
   return await pilotResponse.json();
 }
 
-async function fetchPilotViaV3ShareCode(sharecode: string): Promise<PackedPilotData> {
-  const query = new URL(`${CC_V3_API_ENDPOINT}/code`);
+/**
+ * Fetches multiple pilot share codes from CCv3 at once (official compcon.app API).
+ */
+export async function fetchV3PilotViaShareCodes(sharecodes: string[]): Promise<PackedPilotData[]> {
+  const shareCodeResponse = await fetchWithOptionalShareProxy(
+    `${CC_API_URI}/v3/code?codes=${encodeURIComponent(JSON.stringify(sharecodes))}&scope=items`,
+    {
+      headers: {
+        "x-api-key": CC_API_KEY,
+      },
+    }
+  );
+
+  if (!shareCodeResponse.ok) {
+    throw new Error(`V3 share endpoint returned HTTP ${shareCodeResponse.status}`);
+  }
+
+  const sourceObjs: { uri: string }[] = await shareCodeResponse.json();
+  const sources = sourceObjs.map(o => o.uri);
+
+  return Promise.all(
+    sources.map(source =>
+      fetchWithOptionalShareProxy(`${CC_BUCKET_URI}/${source}`, { cache: "no-cache" }).then(res => {
+        if (!res.ok) throw new Error(`V3 pilot fetch returned HTTP ${res.status}`);
+        return res.json();
+      })
+    )
+  );
+}
+
+/**
+ * Wrapper for `fetchV3PilotViaShareCodes`
+ */
+export async function fetchV3PilotViaShareCode(sharecode: string): Promise<PackedPilotData> {
+  try {
+    return (await fetchV3PilotViaShareCodes([sharecode]))[0];
+  } catch (officialErr) {
+    return await fetchPilotViaLegacyV3ShareCode(sharecode, officialErr);
+  }
+}
+
+async function fetchPilotViaLegacyV3ShareCode(sharecode: string, officialErr: unknown): Promise<PackedPilotData> {
+  const query = new URL(`${CC_V3_LEGACY_API_ENDPOINT}/code`);
   query.searchParams.append("scope", "download");
   query.searchParams.append("codes", JSON.stringify([sharecode]));
 
@@ -124,41 +168,44 @@ async function fetchPilotViaV3ShareCode(sharecode: string): Promise<PackedPilotD
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": CC_V3_API_KEY,
+      "x-api-key": CC_V3_LEGACY_API_KEY,
     },
   });
 
   if (!codeLookupResponse.ok) {
-    throw new Error(`V3 share endpoint returned HTTP ${codeLookupResponse.status}`);
+    const legacyMsg = officialErr instanceof Error ? officialErr.message : String(officialErr);
+    throw new Error(
+      `V3 share import failed (official API and legacy API). Official: ${legacyMsg}; legacy HTTP ${codeLookupResponse.status}`
+    );
   }
 
   const codeLookupJson = await codeLookupResponse.json();
   if (!codeLookupJson?.uri) {
-    throw new Error("V3 share endpoint did not return a downloadable URI");
+    throw new Error("V3 legacy share endpoint did not return a downloadable URI");
   }
 
-  const pilotResponse = await fetchWithOptionalShareProxy(`${CC_V3_CLOUDFRONT_BASE}/${codeLookupJson.uri}`, {
+  const pilotResponse = await fetchWithOptionalShareProxy(`${CC_BUCKET_URI}/${codeLookupJson.uri}`, {
     cache: "no-cache",
   });
   if (!pilotResponse.ok) {
-    throw new Error(`V3 cloudfront pilot fetch returned HTTP ${pilotResponse.status}`);
+    throw new Error(`V3 legacy cloudfront pilot fetch returned HTTP ${pilotResponse.status}`);
   }
 
-  const pilotData = (await pilotResponse.json()) as PackedPilotData;
-  return pilotData;
+  return (await pilotResponse.json()) as PackedPilotData;
 }
 
+/** Tries v3 then v2 share endpoints when code format is unknown. */
 export async function fetchPilotViaShareCode(sharecode: string): Promise<PackedPilotData> {
   const trimmedCode = sharecode.trim();
   let v3Error: unknown = null;
   try {
-    return await fetchPilotViaV3ShareCode(trimmedCode);
+    return await fetchV3PilotViaShareCode(trimmedCode);
   } catch (err) {
     v3Error = err;
   }
 
   try {
-    return await fetchPilotViaLegacyShareCode(trimmedCode);
+    return await fetchV2PilotViaShareCode(trimmedCode);
   } catch (legacyErr) {
     const v3Message = v3Error instanceof Error ? v3Error.message : String(v3Error);
     const legacyMessage = legacyErr instanceof Error ? legacyErr.message : String(legacyErr);
@@ -168,7 +215,7 @@ export async function fetchPilotViaShareCode(sharecode: string): Promise<PackedP
         "All share-code import paths failed with browser fetch errors. This is usually CORS blocking for localhost origins. Use JSON import, or set a COMP/CON Share Import Proxy URL in System Settings."
       );
     }
-    throw new Error(`All share-code import paths failed. v3: ${v3Message}; legacy: ${legacyMessage}`);
+    throw new Error(`All share-code import paths failed. v3: ${v3Message}; v2: ${legacyMessage}`);
   }
 }
 
