@@ -17,7 +17,7 @@ Additionally, a huge thank you and shout out to Animu36, Staubz, and Grygon for 
 
 ## Setup and FAQ
 
-Please see [our wiki](https://github.com/Eranziel/foundryvtt-lancer/wiki) for guides and commonly asked questions.
+Please see [our wiki](https://github.com/VacantFanatic/foundryvtt-lancer/wiki) for guides and commonly asked questions.
 
 ## System Installation
 
@@ -25,7 +25,7 @@ Simply search for Lancer in the Foundry system browser and install from there.
 
 ## Developer Resources
 
-[Setting up a development environment](https://github.com/Eranziel/foundryvtt-lancer/wiki/Development-Setup)
+[Setting up a development environment](https://github.com/VacantFanatic/foundryvtt-lancer/wiki/Development-Setup)
 
 How to use [Flows](docs/flow_api.md) to modify Lancer system automation.
 

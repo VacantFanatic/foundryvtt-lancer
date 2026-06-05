@@ -20,11 +20,11 @@ export function WELCOME(): string {
     </a>
   </div>
 
-  <p><a href="https://github.com/Eranziel/foundryvtt-lancer/blob/master/CHANGELOG.md">CHANGELOG</a></p>
+  <p><a href="https://github.com/VacantFanatic/foundryvtt-lancer/blob/master/CHANGELOG.md">CHANGELOG</a></p>
 
   <p>Check out the project wiki for
-  <a href="https://github.com/Eranziel/foundryvtt-lancer/wiki/FAQ">FAQ</a>,
-  <a href="https://github.com/Eranziel/foundryvtt-lancer/wiki/Resources">recommended modules</a>,
+  <a href="https://github.com/VacantFanatic/foundryvtt-lancer/wiki/FAQ">FAQ</a>,
+  <a href="https://github.com/VacantFanatic/foundryvtt-lancer/wiki/Resources">recommended modules</a>,
   and other information about how to use the system.</p>
 
   <p>@UUID[Compendium.lancer.lancer_info.JournalEntry.JDfVPzoWPOLyhCCa.JournalEntryPage.LVsmG9EfKH9VpVJX]{Legal & Acknowlegements}</p>

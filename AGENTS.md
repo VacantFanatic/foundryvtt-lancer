@@ -13,7 +13,7 @@ Handled by the VM update script: `CI=1 npm ci` from repo root (skips `postinstal
 ### Build
 
 - **Production build (CI / headless):** `SKIP_FOUNDRY_DIST_MIRROR=1 npm run build` — writes only to `dist/` (avoids mirroring to a Windows default path).
-- **Local with Foundry data dir:** set `FOUNDRY_SYSTEM_DIR` or `MIRROR_DIST_TO_FOUNDRY_DATA=1` with `fvttrc.yml` `dataPath`, or use `npm run link` after configuring `@foundryvtt/foundryvtt-cli` (see [Development Setup wiki](https://github.com/Eranziel/foundryvtt-lancer/wiki/Development-Setup)).
+- **Local with Foundry data dir:** set `FOUNDRY_SYSTEM_DIR` or `MIRROR_DIST_TO_FOUNDRY_DATA=1` with `fvttrc.yml` `dataPath`, or use `npm run link` after configuring `@foundryvtt/foundryvtt-cli` (see [Development Setup wiki](https://github.com/VacantFanatic/foundryvtt-lancer/wiki/Development-Setup)).
 - **Watch:** `npm run watch` or `npm run build:watch`.
 
 ### Lint / format

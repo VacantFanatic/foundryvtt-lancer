@@ -35,4 +35,4 @@ Add any other context about the problem here.
 
 **Discord contact info**
 If you are willing to answer questions regarding this bug report on Discord, or if you want to be notified when it is fixed, please leave your Discord ID here.
-e.g. Eranziel#1234
+e.g. VacantFanatic#1234
