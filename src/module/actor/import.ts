@@ -36,8 +36,10 @@ import type {
   PackedMechWeaponSaveData,
   PackedMechEquipmentData,
   PackedMountData,
+  PackedBondPowerData,
 } from "../util/unpacking/packed-types";
 import { LancerActor, type LancerMECH, type LancerPILOT } from "./lancer-actor";
+import { resolveImportCCPayload } from "./import-routing";
 import { frameToPath } from "./retrograde-map";
 import { unpackPilotArmor } from "../models/items/pilot_armor";
 import type { UnpackContext } from "../models/shared";
@@ -70,7 +72,7 @@ async function updatePilot(
   gear?: string[],
   weapons?: string[]
 ) {
-  const portrait = data.cloud_portrait ?? data.img.cloud_portrait;
+  const portrait = data.cloud_portrait ?? data.img?.cloud_portrait ?? data.portrait;
   const unpackClock = (clock: PackedClockBurdenData) => {
     return {
       lid: clock.id,
@@ -110,20 +112,21 @@ async function updatePilot(
       player_name: data.player_name,
       status: data.status,
       text_appearance: data.text_appearance,
-      bond_state: data.bond
-        ? {
-            xp: {
-              value: data.xp ?? data.bond.xp,
-            },
-            stress: {
-              value: data.stress ?? data.bond.stress,
-            },
-            answers: data.bondAnswers ?? data.bond.bondAnswers,
-            minor_ideal: data.minorIdeal ?? data.bond.minorIdeal,
-            burdens: (data.burdens ?? data.bond.burdens).map(b => unpackClock(b)),
-            clocks: (data.clocks ?? data.bond.clocks).map(c => unpackClock(c)),
-          }
-        : undefined,
+      bond_state:
+        data.bond || data.bondId
+          ? {
+              xp: {
+                value: data.xp ?? data.bond?.xp ?? 0,
+              },
+              stress: {
+                value: data.stress ?? data.bond?.stress ?? 0,
+              },
+              answers: data.bondAnswers ?? data.bond?.bondAnswers ?? [],
+              minor_ideal: data.minorIdeal ?? data.bond?.minorIdeal ?? "",
+              burdens: (data.burdens ?? data.bond?.burdens ?? []).map(b => unpackClock(b)),
+              clocks: (data.clocks ?? data.bond?.clocks ?? []).map(c => unpackClock(c)),
+            }
+          : undefined,
     },
     prototypeToken: {
       name: data.name,
@@ -164,7 +167,7 @@ async function updateMech(
       texture: {
         src: replaceDefaultResource(
           mech.prototypeToken?.texture?.src,
-          data.img.cloud_portrait,
+          data.img?.cloud_portrait ?? data.portrait,
           frame ? frameToPath(frame.name) : null
         ),
       },
@@ -224,6 +227,66 @@ async function clearPilotEmbeddedDocuments(pilot: LancerPILOT) {
   for (let m of existing_mechs) {
     await m.deleteEmbeddedDocuments("Item", Array.from(m.items.keys()));
   }
+}
+
+function requireCoreDataForImport(): boolean {
+  const coreVersion = game.settings.get(game.system.id, LANCER.setting_core_data);
+  if (!coreVersion) {
+    ui.notifications!.warn(
+      "You must import the Core Book Data in the Lancer Compendium Manager before importing a pilot.",
+      { permanent: true }
+    );
+    return false;
+  }
+  return true;
+}
+
+async function applyImportedBondPowers(bond: LancerBOND, bondPowers: PackedBondPowerData[]) {
+  bond.system.powers.forEach(p => {
+    p.unlocked = false;
+  });
+
+  const bondPack = game.packs.get(get_pack_id(EntryType.BOND));
+  await bondPack?.getIndex();
+  const bonds: LancerItem[] | null =
+    ((await bondPack?.getDocuments({ type: EntryType.BOND })) as unknown as LancerItem[]) ?? null;
+
+  const unlockAndRefill = (power: PowerData) => {
+    power.unlocked = true;
+    if (power.uses) {
+      power.uses.value = power.uses.max;
+    }
+  };
+
+  for (const p of bondPowers) {
+    let i = bond.system.powers.findIndex(x => x.name == p.name);
+    if (i != undefined && i != -1) {
+      unlockAndRefill(bond.system.powers[i]);
+      continue;
+    }
+
+    let found = false;
+    for (const b of bonds ?? []) {
+      if (!b.is_bond()) continue;
+      const newPower = b.system.powers.find(x => x.name == p.name);
+      if (newPower) {
+        found = true;
+        unlockAndRefill(newPower);
+        bond.system.powers.push(newPower);
+
+        i = bond.system.powers.findIndex(x => x.veteran);
+        if (i != undefined && i != -1) {
+          unlockAndRefill(bond.system.powers[i]);
+        }
+        break;
+      }
+    }
+    if (!found) {
+      console.warn(`${lp} Bond power not found during import: ${p.name}`);
+    }
+  }
+
+  await bond.update({ "system.powers": bond.system.powers });
 }
 
 /**
@@ -317,15 +380,16 @@ export async function importCC(
   importedData: PackedPilotData | PackedPilotWrapper,
   clearFirst = true
 ) {
-  // CCv3 JSON exports use a wrapper; share codes and cloud fetches return pilot fields at the top level.
-  if ("EXPORT_TYPE" in importedData && "data" in importedData && importedData.data) {
-    await importCCv3(pilot, importedData as PackedPilotWrapper, clearFirst);
-  } else if (("originId" in importedData || "EXPORT_TYPE" in importedData) && "callsign" in importedData) {
-    await importCCv3(pilot, { EXPORT_TYPE: "pilot", data: importedData as PackedPilotData }, clearFirst);
-  } else if ("data" in importedData && importedData.data && !("callsign" in importedData)) {
-    await importCCv3(pilot, { EXPORT_TYPE: "pilot", data: importedData.data }, clearFirst);
+  const resolved = resolveImportCCPayload(importedData);
+  if (!resolved) {
+    ui.notifications!.error("Could not determine COMP/CON import format for this pilot data.", { permanent: true });
+    console.error(`${lp} Unrecognized COMP/CON import payload`, importedData);
+    return;
+  }
+  if (resolved.route === "v3") {
+    await importCCv3(pilot, resolved.wrapper, clearFirst);
   } else {
-    await importCCv2(pilot, importedData as PackedPilotData, clearFirst);
+    await importCCv2(pilot, resolved.data, clearFirst);
   }
 }
 
@@ -334,12 +398,25 @@ export async function importCC(
  * Minimum import version: CCv3.0.4
  */
 export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWrapper, clearFirst = true) {
+  if (!requireCoreDataForImport()) return;
+
   console.log(`${lp} Importing v3 Pilot`, pilot, importedData);
-  if (!pilot.is_pilot()) console.error(`${lp} Actor was not a pilot type`, pilot);
-  if (!importedData) console.error(`${lp} Imported data is missing`, importedData);
+  if (!pilot.is_pilot()) {
+    ui.notifications!.error("COMP/CON import target is not a pilot actor.", { permanent: true });
+    return;
+  }
+  if (!importedData) {
+    ui.notifications!.error("COMP/CON import data is missing.", { permanent: true });
+    return;
+  }
+
   const data = importedData.data;
-  if (!data) {
-    console.error(`${lp} Tried using CCv3 importer on CCv2 data`, importedData);
+  if (!data?.name || !data?.callsign) {
+    ui.notifications!.warn("COMP/CON v3 import data is missing required pilot fields (name/callsign).", {
+      permanent: true,
+    });
+    console.error(`${lp} Invalid v3 import payload`, importedData);
+    return;
   }
 
   if (clearFirst) {
@@ -476,7 +553,7 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
     }
 
     // Core Bonuses
-    for (const item of data.core_bonuses as PackedCoreBonusData[]) {
+    for (const item of (data.core_bonuses ?? []) as PackedCoreBonusData[]) {
       const compendiumItem = (await getActorItemByLid(
         item.id,
         pilot,
@@ -502,9 +579,9 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
     }
 
     // Skills
-    for (const item of data.skills) {
+    for (const item of data.skills ?? []) {
       if ("custom" in item && item.custom) {
-        pilot.createEmbeddedDocuments("Item", [
+        await pilot.createEmbeddedDocuments("Item", [
           {
             type: EntryType.SKILL,
             name: item.id ?? "Custom Skill",
@@ -541,7 +618,11 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
     }
 
     // Talents
-    for (const item of data.talents) {
+    for (const item of data.talents ?? []) {
+      if (!item.data?.name) {
+        _missingItems.push({ actor: pilot.name, lid: item.id ?? "unknown-talent" });
+        continue;
+      }
       const compendiumItem = (await getActorItemByLid(
         item.id,
         pilot,
@@ -573,6 +654,7 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
     // Bonds
     if (data.bond) {
       const item = data.bond;
+      const bondName = item.data?.name ?? "Bond";
       const bond = (await getActorItemByLid(item.bondId, pilot, pilotItemPool, _missingItems)) as LancerBOND | null;
       const id =
         bond?.id ??
@@ -580,20 +662,36 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
           await pilot.createEmbeddedDocuments("Item", [
             {
               type: EntryType.BOND,
-              name: item.data.name,
+              name: bondName,
             },
           ])
         )[0].id;
 
-      const ccData = unpackBond(item.data);
-      pilotItemUpdates.push({
-        ...ccData,
-        _id: id,
-      });
+      if (item.data) {
+        const ccData = unpackBond(item.data);
+        pilotItemUpdates.push({
+          ...ccData,
+          _id: id,
+        });
+      }
+
+      const bondDoc = bond ?? (pilot.items.get(id) as LancerBOND | undefined);
+      if (bondDoc?.is_bond() && data.bondPowers?.length) {
+        await applyImportedBondPowers(bondDoc, data.bondPowers);
+      }
+    } else if (data.bondId) {
+      const bondDoc = (await getActorItemByLid(data.bondId, pilot, pilotItemPool, _missingItems)) as LancerBOND | null;
+      if (bondDoc?.is_bond() && data.bondPowers?.length) {
+        await applyImportedBondPowers(bondDoc, data.bondPowers);
+      }
     }
 
     // Licenses
-    for (const item of data.licenses) {
+    for (const item of data.licenses ?? []) {
+      if (!item.stub?.name) {
+        _missingItems.push({ actor: pilot.name, lid: item.id ?? "unknown-license" });
+        continue;
+      }
       const lid = EntryTypeLidPrefix(EntryType.LICENSE) + item.id;
       const compendiumItem = (await getActorItemByLid(
         lid,
@@ -620,7 +718,7 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
     }
 
     // Reserves
-    for (const item of data.reserves) {
+    for (const item of data.reserves ?? []) {
       const compendiumItem = (await getActorItemByLid(
         item.id,
         pilot,
@@ -680,7 +778,7 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
       }
     };
 
-    for (const importedMech of data.mechs) {
+    for (const importedMech of data.mechs ?? []) {
       // Find the existing mech, or create one as necessary
       let mech = game.actors!.find((m: LancerActor) => m.is_mech() && m.system.lid == importedMech.id) as LancerMECH;
       if (!mech) {
@@ -698,7 +796,20 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
 
       const mechItemPool = [...mech.items.contents];
       const mechItemUpdates: any = [];
-      const loadout = importedMech.loadouts[importedMech.active_loadout_index];
+      const mechLoadouts = importedMech.loadouts ?? [];
+      const loadoutIndex = importedMech.active_loadout_index ?? 0;
+      const loadout = mechLoadouts[loadoutIndex];
+      if (!loadout) {
+        ui.notifications!.warn(
+          `Could not import mech '${importedMech.name ?? importedMech.id}': loadout data is missing.`,
+          { permanent: true }
+        );
+        _missingActors.push({
+          name: importedMech.name ?? "Mech",
+          lid: importedMech.frameData?.id ?? importedMech.frame,
+        });
+        continue;
+      }
       const populatedMounts: SourceData.Mech["loadout"]["weapon_mounts"] = [];
       const populatedSystems: string[] = [];
 
@@ -715,10 +826,17 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
           await mech.createEmbeddedDocuments("Item", [
             {
               type: EntryType.FRAME,
-              name: importedMech.frameData.name,
+              name: importedMech.frameData?.name ?? importedMech.frame ?? "Frame",
             },
           ])
         )[0].id;
+
+      if (!importedMech.frameData) {
+        ui.notifications!.warn(`Could not import frame for mech '${importedMech.name ?? importedMech.id}'.`, {
+          permanent: true,
+        });
+        continue;
+      }
 
       const ccData = unpackFrame(importedMech.frameData, _context);
       mechItemUpdates.push({
@@ -801,10 +919,15 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
               await mech.createEmbeddedDocuments("Item", [
                 {
                   type: EntryType.MECH_WEAPON,
-                  name: weaponSlot.data.name,
+                  name: weaponSlot.data?.name ?? weaponSlot.id ?? "Mech Weapon",
                 },
               ])
             )[0].id;
+
+          if (!weaponSlot.data) {
+            console.warn(`${lp} Weapon data missing for ${weaponSlot.id}`);
+            return { weapon, weaponId, mod, modId };
+          }
 
           const ccData = unpackMechWeapon(weaponSlot.data, _context);
           mechItemUpdates.push({
@@ -829,10 +952,15 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
                 await mech.createEmbeddedDocuments("Item", [
                   {
                     type: EntryType.WEAPON_MOD,
-                    name: weaponSlot.mod.data.name,
+                    name: weaponSlot.mod.data?.name ?? "Weapon Mod",
                   },
                 ])
               )[0].id;
+
+            if (!weaponSlot.mod.data) {
+              console.warn(`${lp} Weapon mod data missing for ${weaponSlot.id}`);
+              return { weapon, weaponId, mod, modId };
+            }
 
             const ccData = unpackWeaponMod(weaponSlot.mod.data, _context);
             mechItemUpdates.push({
@@ -907,14 +1035,7 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
 
 // Imports packed pilot data, from either a vault id or gist id
 export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clearFirst = true) {
-  const coreVersion = game.settings.get(game.system.id, LANCER.setting_core_data);
-  if (!coreVersion) {
-    ui.notifications!.warn(
-      "You must import the Core Book Data in the Lancer Compendium Manager before importing a pilot.",
-      { permanent: true }
-    );
-    return;
-  }
+  if (!requireCoreDataForImport()) return;
   console.log(`${lp} Importing v2 Pilot`, pilot, data);
   if (!pilot.is_pilot() || !data) return;
   if (clearFirst) {
@@ -1047,52 +1168,8 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
 
       // Populate bond data
       bond = (data.bondId ? await getPilotItemByLid(data.bondId) : null) as LancerBOND | null;
-      if (bond && data.bondPowers) {
-        // Disable all powers, in case the pilot already had this bond
-        bond.system.powers.forEach(p => {
-          p.unlocked = false;
-        });
-
-        const bondPack = game.packs.get(get_pack_id(EntryType.BOND));
-        await bondPack?.getIndex();
-        const bonds: LancerItem[] | null =
-          ((await bondPack?.getDocuments({ type: EntryType.BOND })) as unknown as LancerItem[]) ?? null;
-        const unlockAndRefill = function (power: PowerData) {
-          power.unlocked = true;
-          if (power.uses) {
-            power.uses.value = power.uses.max;
-          }
-        };
-        data.bondPowers.forEach(p => {
-          // Find and unlock the power on the bond
-          let i = bond!.system.powers.findIndex(x => x.name == p.name);
-          if (i != undefined && i != -1) {
-            const power = bond!.system.powers[i];
-            unlockAndRefill(power);
-            return;
-          }
-          // The power isn't from this bond - look for it in the compendium
-          let found = false;
-          for (const b of bonds) {
-            if (found || !b.is_bond()) return;
-            const newPower = b.system.powers.find(x => x.name == p.name);
-            if (newPower) {
-              found = true;
-              unlockAndRefill(newPower);
-              bond!.system.powers.push(newPower);
-
-              // The pilot has a power from another bond - unlock the veteran power
-              i = bond!.system.powers.findIndex(x => x.veteran);
-              if (i != undefined && i != -1) {
-                const power = bond!.system.powers[i];
-                unlockAndRefill(power);
-              }
-              break;
-            }
-          }
-        });
-        // Commit the updates
-        await bond.update({ "system.powers": bond.system.powers });
+      if (bond && data.bondPowers?.length) {
+        await applyImportedBondPowers(bond, data.bondPowers);
       }
 
       // Do licenses

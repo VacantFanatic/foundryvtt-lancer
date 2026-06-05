@@ -7,7 +7,13 @@ import { buildCounterHeader, buildCounterHTML } from "../helpers/item";
 import { ref_params, resolve_ref_element } from "../helpers/refs";
 import { inc_if, resolveDotpath } from "../helpers/commons";
 import { LancerActor, type LancerMECH, type LancerPILOT } from "./lancer-actor";
-import { fetchPilotViaCache, fetchV2PilotViaShareCode, fetchV3PilotViaShareCode, pilotCache } from "../util/compcon";
+import {
+  fetchPilotViaCache,
+  fetchPilotViaShareCode,
+  fetchV2PilotViaShareCode,
+  fetchV3PilotViaShareCode,
+  pilotCache,
+} from "../util/compcon";
 import type { LancerFRAME } from "../item/lancer-item";
 import { clicker_num_input } from "../helpers/actor";
 import type { ResolvedDropData } from "../helpers/dragdrop";
@@ -15,9 +21,18 @@ import { EntryType } from "../enums";
 import type { PackedPilotData } from "../util/unpacking/packed-types";
 import { importCC } from "./import";
 
-const shareCodeMatcherV2 = /^[A-Z0-9\d]{6}$/;
+const shareCodeMatcherV2 = /^[A-Z0-9]{6}$/;
 const shareCodeMatcherV3 = /^[A-Z0-9]{12}$/;
 const COUNTER_MAX = 8;
+
+function normalizeCloudImportId(cloudId: string): string {
+  const trimmed = cloudId.trim();
+  const upper = trimmed.toUpperCase();
+  if (shareCodeMatcherV3.test(upper) || shareCodeMatcherV2.test(upper)) {
+    return upper;
+  }
+  return trimmed;
+}
 
 /**
  * Extend the basic ActorSheet
@@ -55,69 +70,81 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
     const $el = $(root);
     const pilot = this.actor as LancerPILOT;
 
-    $el.find('select[name="selectCloudId"]').on("change", evt => {
-      evt.stopPropagation();
-      pilot.update({ "system.cloud_id": (evt.target as HTMLSelectElement).value });
-    });
+    $el
+      .find('select[name="selectCloudId"]')
+      .off("change.lancerCloudSelect")
+      .on("change.lancerCloudSelect", evt => {
+        evt.stopPropagation();
+        pilot.update({ "system.cloud_id": (evt.target as HTMLSelectElement).value });
+      });
 
     const download = $el.find('.cloud-control[data-action*="download"]');
-    if (pilot.system.cloud_id) {
-      download.on("click", async ev => {
-        ev.stopPropagation();
+    download.removeClass("disabled-cloud");
+    download.off("click.lancerCloudDownload").on("click.lancerCloudDownload", async ev => {
+      ev.stopPropagation();
 
-        let raw_pilot_data: PackedPilotData | null = null;
-        const cloudId = pilot.system.cloud_id?.trim();
-        if (!cloudId) {
-          ui.notifications!.error(
-            "Could not find character to import! No pilot selected via dropdown and no share code entered."
-          );
+      let raw_pilot_data: PackedPilotData | null = null;
+      const cloudId = normalizeCloudImportId(pilot.system.cloud_id ?? "");
+      if (!cloudId) {
+        ui.notifications!.error(
+          "Could not find character to import! No pilot selected via dropdown and no share code entered."
+        );
+        return;
+      }
+
+      if (shareCodeMatcherV3.test(cloudId)) {
+        ui.notifications!.info("Importing character from V3 share code...");
+        try {
+          raw_pilot_data = await fetchV3PilotViaShareCode(cloudId);
+        } catch (error) {
+          ui.notifications!.error("Error importing from V3 share code.");
+          console.error(`Failed import with V3 share code ${cloudId}, error:`, error);
           return;
         }
-
-        if (shareCodeMatcherV3.test(cloudId)) {
-          ui.notifications!.info("Importing character from V3 share code...");
+      } else if (shareCodeMatcherV2.test(cloudId)) {
+        ui.notifications!.info("Importing character from V2 share code...");
+        try {
+          raw_pilot_data = await fetchV2PilotViaShareCode(cloudId);
+        } catch (error) {
+          ui.notifications!.error("Error importing from V2 share code. Share code may need to be refreshed.");
+          console.error(`Failed import with V2 share code ${cloudId}, error:`, error);
+          return;
+        }
+      } else {
+        const cachedPilot = pilotCache().find(p => p.cloudID == cloudId);
+        if (cachedPilot != undefined) {
+          ui.notifications!.info("Importing character from COMP/CON account...");
           try {
-            raw_pilot_data = await fetchV3PilotViaShareCode(cloudId);
+            raw_pilot_data = await fetchPilotViaCache(cachedPilot);
           } catch (error) {
-            ui.notifications!.error("Error importing from V3 share code.");
-            console.error(`Failed import with V3 share code ${cloudId}, error:`, error);
-            return;
-          }
-        } else if (shareCodeMatcherV2.test(cloudId)) {
-          ui.notifications!.info("Importing character from V2 share code...");
-          try {
-            raw_pilot_data = await fetchV2PilotViaShareCode(cloudId);
-          } catch (error) {
-            ui.notifications!.error("Error importing from V2 share code. Share code may need to be refreshed.");
-            console.error(`Failed import with V2 share code ${cloudId}, error:`, error);
-            return;
-          }
-        } else {
-          const cachedPilot = pilotCache().find(p => p.cloudID == cloudId);
-          if (cachedPilot != undefined) {
-            ui.notifications!.info("Importing character from COMP/CON account...");
-            try {
-              raw_pilot_data = await fetchPilotViaCache(cachedPilot);
-            } catch (error) {
-              ui.notifications!.error(
-                "Failed to import from COMP/CON account. Try refreshing the page to reload pilot list."
-              );
-              console.error(`Failed to import vaultID ${cloudId} via pilot list, error:`, error);
-              return;
-            }
-          } else {
             ui.notifications!.error(
               "Failed to import from COMP/CON account. Try refreshing the page to reload pilot list."
             );
-            console.error(`Failed to find pilot in cache, vaultID: ${cloudId}`);
+            console.error(`Failed to import vaultID ${cloudId} via pilot list, error:`, error);
+            return;
+          }
+        } else {
+          ui.notifications!.info("Importing character from share code...");
+          try {
+            raw_pilot_data = await fetchPilotViaShareCode(cloudId);
+          } catch (error) {
+            ui.notifications!.error(
+              "Failed to import from COMP/CON. Check the share code, vault selection, or try JSON import."
+            );
+            console.error(`Failed import for cloud id ${cloudId}, error:`, error);
             return;
           }
         }
+      }
+
+      try {
         await importCC(this.actor as LancerPILOT, raw_pilot_data);
-      });
-    } else {
-      download.addClass("disabled-cloud");
-    }
+        this.render();
+      } catch (error) {
+        ui.notifications!.error("COMP/CON import failed. See the console for details.");
+        console.error(`${lp} COMP/CON import failed for cloud id ${cloudId}:`, error);
+      }
+    });
 
     $el.find<HTMLInputElement>("input#pilot-json-import").on("change", ev => this._onPilotJsonUpload(ev));
 
@@ -151,7 +178,16 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
 
   async _onPilotJsonParsed(fileData: string | null) {
     if (!fileData) return;
-    const parsed = JSON.parse(fileData) as PackedPilotData & { data?: PackedPilotData };
+
+    let parsed: PackedPilotData & { data?: PackedPilotData };
+    try {
+      parsed = JSON.parse(fileData) as PackedPilotData & { data?: PackedPilotData };
+    } catch (error) {
+      ui.notifications!.error("Selected file is not valid JSON.");
+      console.error(`${lp} Failed to parse pilot JSON:`, error);
+      return;
+    }
+
     console.log(`${lp} Pilot Data of selected JSON:`, parsed);
 
     if (!parsed) return;
@@ -159,9 +195,14 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
     const displayCallsign = parsed.callsign ?? parsed.data?.callsign ?? "";
     ui.notifications!.info(`Starting import of ${displayName}, Callsign ${displayCallsign}. Please wait.`);
 
-    await importCC(this.actor as LancerPILOT, parsed as PackedPilotData);
-    ui.notifications!.info(`Import of ${displayName}, Callsign ${displayCallsign} complete.`);
-    this.render();
+    try {
+      await importCC(this.actor as LancerPILOT, parsed as PackedPilotData);
+      ui.notifications!.info(`Import of ${displayName}, Callsign ${displayCallsign} complete.`);
+      this.render();
+    } catch (error) {
+      ui.notifications!.error(`Import of ${displayName} failed. See the console for details.`);
+      console.error(`${lp} JSON pilot import failed:`, error);
+    }
   }
 
   activateMech(mech: LancerMECH) {

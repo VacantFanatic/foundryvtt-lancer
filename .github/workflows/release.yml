@@ -98,8 +98,8 @@ jobs:
         with:
           allowUpdates: true
           name: ${{ steps.vars.outputs.tag_name }}
-          draft: true
-          prerelease: true
+          draft: false
+          prerelease: false
           omitDraftDuringUpdate: true
           omitPrereleaseDuringUpdate: true
           token: ${{ secrets.GITHUB_TOKEN }}
