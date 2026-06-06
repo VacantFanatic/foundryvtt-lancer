@@ -172,6 +172,9 @@ function weaponMount(mount_path: string, options: HelperOptions): string {
     <div class="mount card" >
       <div class="lancer-header lancer-primary mount-type-ctx-root" data-path="${mount_path}">
         <span>${mount.type} Weapon Mount</span>
+        <button type="button" class="reset-weapon-mount-button lancer-button lancer-secondary" data-path="${mount_path}" title="${game.i18n.localize("lancer.mech-sheet.loadout.reset-mount")}" aria-label="${game.i18n.localize("lancer.mech-sheet.loadout.reset-mount")}">
+          <i class="fas fa-redo" aria-hidden="true"></i>
+        </button>
         <a class="gen-control fas fa-trash" data-action="splice" data-path="${mount_path}"></a>
       </div>
       ${inc_if(`<span class="lancer-header lancer-primary error">${err.toUpperCase()}</span>`, err)}
@@ -195,9 +198,11 @@ function allWeaponMountView(loadout_path: string, options: HelperOptions) {
       </button>
       <span>MOUNTED WEAPONS</span>
       <a class="gen-control fas fa-plus" data-action="append" data-path="${loadout_path}.weapon_mounts" data-action-value="(struct)wep_mount"></a>
-      <a class="reset-all-weapon-mounts-button fas fa-redo" data-path="${loadout_path}.weapon_mounts"></a>
+      <button type="button" class="reset-all-weapon-mounts-button lancer-button lancer-secondary" data-path="${loadout_path}.weapon_mounts" title="${game.i18n.localize("lancer.mech-sheet.loadout.reset-all-mounts")}" aria-label="${game.i18n.localize("lancer.mech-sheet.loadout.reset-all-mounts")}">
+        <i class="fas fa-redo" aria-hidden="true"></i>
+      </button>
     </div>
-    <div class="wraprow double collapse" data-collapse-id="weapons" style="margin-bottom: 0.75em">
+    <div class="wraprow double collapse loadout-mounts-grid" data-collapse-id="weapons">
       ${weapon_mounts.join("")}
     </div>
     `;
@@ -218,10 +223,13 @@ function allMechSystemsView(loadout_path: string, options: HelperOptions) {
         <i class="mdi mdi-unfold-less-horizontal" aria-hidden="true"></i>
       </button>
       <span>MOUNTED SYSTEMS</span>
-      <span style="flex-grow: 0">
+      <span class="loadout-sp-counter">
         <i class="cci cci-system-point i--4"></i>
         ${loadout.sp.value} / ${loadout.sp.max} SP USED
       </span>
+      <button type="button" class="reset-system-mount-button lancer-button lancer-secondary" data-path="${loadout_path}" title="${game.i18n.localize("lancer.mech-sheet.loadout.reset-systems")}" aria-label="${game.i18n.localize("lancer.mech-sheet.loadout.reset-systems")}">
+        <i class="fas fa-redo" aria-hidden="true"></i>
+      </button>
     </div>
     <div class="flexcol collapse" data-collapse-id="systems">
       ${system_views.join("")}

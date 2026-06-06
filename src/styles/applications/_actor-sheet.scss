@@ -184,6 +184,30 @@
     }
   }
 
+  .pilot-sync-banner-row {
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .mech-sp-counter {
+    flex-grow: 0;
+  }
+
+  .loadout-mounts-grid {
+    margin-bottom: 0.75em;
+  }
+
+  .loadout-sp-counter {
+    flex-grow: 0;
+  }
+
+  .lancer-async-loading,
+  .lancer-async-ref {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
   .pilot-sync-banner {
     margin-bottom: 0.5rem;
   }

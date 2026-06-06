@@ -134,7 +134,36 @@
       },
       "inventory": {
         "label": "View Inventory"
+      },
+      "loadout": {
+        "reset-mount": "Reset mount weapons",
+        "reset-mount-confirm": "Clear all weapons and mods from this mount?",
+        "reset-all-mounts": "Reset all weapon mounts",
+        "reset-all-mounts-confirm": "Reset every weapon mount to frame defaults? This cannot be undone.",
+        "reset-systems": "Clear mounted systems",
+        "reset-systems-confirm": "Remove all mounted systems from this mech?"
       }
+    },
+    "loadout-editor": {
+      "title": "Loadout overview",
+      "experimental": "(experimental)",
+      "hint": "Visual summary of this mech's loadout. Drag-and-drop editing remains on the legacy loadout view.",
+      "mounts": "Weapon mounts",
+      "systems": "Systems",
+      "sp": "System points",
+      "legacy-hint": "Disable the experimental loadout editor in client settings to return to the full legacy editor.",
+      "setting": {
+        "name": "Experimental loadout editor",
+        "hint": "Show a Svelte loadout overview on the mech Loadout tab instead of the legacy HTML editor."
+      }
+    },
+    "async-ui": {
+      "loading": "Loading…",
+      "refresh-license": "Refresh unlock list"
+    },
+    "combat-tracker": {
+      "toggle-target": "Toggle target",
+      "your-targets": "Your current targets"
     },
     "npc-sheet": {
       "tabs": {

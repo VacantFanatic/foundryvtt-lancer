@@ -64,6 +64,7 @@ export const LANCER = {
   setting_accdiff_remember_advanced: "accdiffRememberAdvanced",
   setting_accdiff_advanced_expanded: "accdiffAdvancedExpanded",
   setting_help_seen_accdiff: "helpSeenAccdiff",
+  setting_experimental_loadout_editor: "experimentalLoadoutEditor",
   // setting_120: "warningFor120", // Old setting, currently unused.
   // setting_beta_warning: "warningForBeta", // Old setting, currently unused.
 } as const;

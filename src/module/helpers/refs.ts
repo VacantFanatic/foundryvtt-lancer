@@ -1,4 +1,5 @@
 import type { HelperOptions } from "handlebars";
+import { asyncLoadingHtml } from "./async-ui";
 import { LANCER, TypeIcon } from "../config";
 import {
   LancerItem,
@@ -91,7 +92,7 @@ export function simple_ref_slot(path: string = "", accept_types: string | EntryT
           ${refSlotEmptyHintHtml()}
       </div>`;
   } else if (doc.then !== undefined) {
-    return `<span>ASYNC not handled yet</span>`;
+    return `<div class="ref ref-card slot lancer-async-ref" data-path="${path}">${asyncLoadingHtml()}</div>`;
   } else {
     // The data-type
     return `<div class="ref ref-card set click-open"

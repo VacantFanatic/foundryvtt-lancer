@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "foundryvtt-lancer",
-  "version": "2.17.0",
+  "version": "2.20.0",
   "description": "",
   "sideEffects": [
     "src/lancer.scss",
@@ -20,8 +20,8 @@
     "verify:git-remote": "sh ./scripts/assert-safe-git-remote.sh",
     "verify:doc-links": "sh ./scripts/assert-no-eranziel-doc-links.sh",
     "test": "node --import tsx --test scripts/import-routing.test.ts",
-    "test:e2e": "playwright test -c e2e/playwright.config.ts e2e/regression",
-    "test:e2e:bootstrap": "playwright test -c e2e/playwright.config.ts e2e/setup/bootstrap.spec.ts",
+    "test:e2e": "playwright test -c e2e/playwright.config.ts regression",
+    "test:e2e:bootstrap": "playwright test -c e2e/playwright.config.ts setup",
     "test:e2e:install": "playwright install firefox",
     "test:e2e:report": "playwright show-report e2e/report",
     "serve": "vite",

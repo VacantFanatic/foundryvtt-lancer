@@ -78,6 +78,15 @@ export const registerSettings = function () {
     default: false,
   });
 
+  game.settings.register(game.system.id, LANCER.setting_experimental_loadout_editor, {
+    name: "lancer.loadout-editor.setting.name",
+    hint: "lancer.loadout-editor.setting.hint",
+    scope: "client",
+    config: true,
+    type: Boolean,
+    default: false,
+  });
+
   game.settings.register(game.system.id, LANCER.setting_autoanimations_enabled, {
     name: "lancer.autoAnimations.enabled.name",
     hint: "lancer.autoAnimations.enabled.hint",

@@ -23,6 +23,8 @@ import { EntryType } from "../enums";
 import type { PackedPilotData } from "../util/unpacking/packed-types";
 import { importCC, showImportResultDialog } from "./import";
 import { bindContextualHelpActions, renderContextualHelp } from "../helpers/help";
+import { mountPilotCloudWizard } from "../apps/pilot-cloud/mount";
+import { unmount } from "svelte";
 
 const shareCodeMatcherV2 = /^[A-Z0-9]{6}$/;
 const shareCodeMatcherV3 = /^[A-Z0-9]{12}$/;
@@ -47,6 +49,7 @@ function cloudImportError(prefix: string, error: unknown): string {
 
 export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
   private _cloudDownloadInFlight = false;
+  private _cloudComponent: object | null = null;
 
   static override DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
     classes: ["lancer", "sheet", "actor", "pilot"],
@@ -71,130 +74,116 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
     },
   };
 
+  private _setCloudDownloading(downloading: boolean): void {
+    this._cloudDownloadInFlight = downloading;
+    const root = this._coerceRootElement(this.element) ?? this._coerceRootElement(this.form);
+    if (root) void this._mountCloudWizard($(root));
+  }
+
+  private async _runCloudDownload(): Promise<void> {
+    const pilot = this.actor as LancerPILOT;
+    if (this._cloudDownloadInFlight) return;
+
+    let raw_pilot_data: PackedPilotData | null = null;
+    const cloudId = normalizeCloudImportId(pilot.system.cloud_id ?? "");
+    if (!cloudId) {
+      ui.notifications!.error(
+        "Could not find character to import! No pilot selected via dropdown and no share code entered."
+      );
+      return;
+    }
+
+    this._setCloudDownloading(true);
+    try {
+      if (shareCodeMatcherV3.test(cloudId)) {
+        ui.notifications!.info("Importing character from V3 share code...");
+        raw_pilot_data = await fetchV3PilotViaShareCode(cloudId);
+      } else if (shareCodeMatcherV2.test(cloudId)) {
+        ui.notifications!.info("Importing character from V2 share code...");
+        raw_pilot_data = await fetchV2PilotViaShareCode(cloudId);
+      } else {
+        const cachedPilot = pilotCache().find(p => p.cloudID == cloudId);
+        if (cachedPilot != undefined) {
+          ui.notifications!.info("Importing character from COMP/CON account...");
+          raw_pilot_data = await fetchPilotViaCache(cachedPilot);
+        } else {
+          ui.notifications!.info("Importing character from share code...");
+          raw_pilot_data = await fetchPilotViaShareCode(cloudId);
+        }
+      }
+
+      await importCC(this.actor as LancerPILOT, raw_pilot_data!, true, "cloud");
+      this.render();
+    } catch (error) {
+      ui.notifications!.error(cloudImportError("COMP/CON import failed.", error));
+      console.error(`${lp} COMP/CON import failed for cloud id ${cloudId}:`, error);
+    } finally {
+      this._setCloudDownloading(false);
+    }
+  }
+
+  private async _mountCloudWizard($el: JQuery): Promise<void> {
+    const target = $el.find("[data-pilot-cloud-mount]")[0] as HTMLElement | undefined;
+    if (!target) return;
+
+    const pilot = this.actor as LancerPILOT;
+    const props = {
+      compConLoggedIn: await isCompconLoggedIn(),
+      compConPilotCount: pilotCache().length,
+      compConPilotList: pilotCache()
+        .sort((p1, p2) => p1.callsign.localeCompare(p2.callsign) || p1.name.localeCompare(p2.name))
+        .reduce(
+          (acc, p) => {
+            acc[`${p.callsign} // ${p.name}`] = p.cloudID;
+            return acc;
+          },
+          {} as Record<string, string>
+        ),
+      cloudId: pilot.system.cloud_id ?? "",
+      lastCloudUpdate: pilot.system.last_cloud_update,
+      downloading: this._cloudDownloadInFlight,
+    };
+
+    if (this._cloudComponent) {
+      unmount(this._cloudComponent);
+      this._cloudComponent = null;
+    }
+
+    this._cloudComponent = await mountPilotCloudWizard(target, props, {
+      compconLogin: async () => {
+        const app = new CompconLoginForm();
+        app.addEventListener("close", () => this.render(), { once: true });
+        await app.render(true);
+      },
+      download: () => void this._runCloudDownload(),
+      startTour: async () => {
+        const tour = game.tours.get(`${game.system.id}.pilot-import`);
+        if (tour) await tour.start();
+        else ui.notifications!.warn(game.i18n.localize("lancer.pilot-sheet.cloud-wizard.tour-missing"));
+      },
+      selectCloudId: (ev: CustomEvent<{ value: string }>) => {
+        void pilot.update({ "system.cloud_id": ev.detail.value });
+      },
+      cloudIdInput: (ev: CustomEvent<{ value: string }>) => {
+        void pilot.update({ "system.cloud_id": ev.detail.value });
+      },
+      jsonFile: (ev: CustomEvent<{ file: File }>) => {
+        void this._onPilotJsonFile(ev.detail.file);
+      },
+    });
+  }
+
   protected override _bindActorSheetListenersFromRender(): void {
     super._bindActorSheetListenersFromRender();
-    if (!this.isEditable || !this.actor.isOwner) return;
 
     const root = this._coerceRootElement(this.element) ?? this._coerceRootElement(this.form);
     if (!root) return;
     const $el = $(root);
+    void this._mountCloudWizard($el);
+
+    if (!this.isEditable || !this.actor.isOwner) return;
+
     const pilot = this.actor as LancerPILOT;
-
-    $el
-      .find('select[name="selectCloudId"]')
-      .off("change.lancerCloudSelect")
-      .on("change.lancerCloudSelect", evt => {
-        evt.stopPropagation();
-        pilot.update({ "system.cloud_id": (evt.target as HTMLSelectElement).value });
-      });
-
-    const download = $el.find('.cloud-control[data-action*="download"]');
-    const status = $el.find(".cloud-download-status");
-    const setCloudDownloading = (downloading: boolean) => {
-      this._cloudDownloadInFlight = downloading;
-      download.toggleClass("disabled-cloud cloud-downloading", downloading);
-      download.attr("aria-busy", downloading ? "true" : "false");
-      download.find(".cloud-download-idle").prop("hidden", downloading);
-      download.find(".cloud-download-spinner").prop("hidden", !downloading);
-      if (downloading) {
-        status.text(game.i18n.localize("lancer.pilot-sheet.cloud-download.syncing"));
-      }
-    };
-    if (!this._cloudDownloadInFlight) {
-      download.removeClass("disabled-cloud cloud-downloading");
-    }
-    download.off("click.lancerCloudDownload").on("click.lancerCloudDownload", async ev => {
-      ev.stopPropagation();
-      if (this._cloudDownloadInFlight) return;
-
-      let raw_pilot_data: PackedPilotData | null = null;
-      const cloudId = normalizeCloudImportId(pilot.system.cloud_id ?? "");
-      if (!cloudId) {
-        ui.notifications!.error(
-          "Could not find character to import! No pilot selected via dropdown and no share code entered."
-        );
-        return;
-      }
-
-      const lastSyncText = status.text();
-      setCloudDownloading(true);
-      try {
-        if (shareCodeMatcherV3.test(cloudId)) {
-          ui.notifications!.info("Importing character from V3 share code...");
-          try {
-            raw_pilot_data = await fetchV3PilotViaShareCode(cloudId);
-          } catch (error) {
-            ui.notifications!.error(cloudImportError("Error importing from V3 share code.", error));
-            console.error(`Failed import with V3 share code ${cloudId}, error:`, error);
-            return;
-          }
-        } else if (shareCodeMatcherV2.test(cloudId)) {
-          ui.notifications!.info("Importing character from V2 share code...");
-          try {
-            raw_pilot_data = await fetchV2PilotViaShareCode(cloudId);
-          } catch (error) {
-            ui.notifications!.error(
-              cloudImportError("Error importing from V2 share code. Share code may need to be refreshed.", error)
-            );
-            console.error(`Failed import with V2 share code ${cloudId}, error:`, error);
-            return;
-          }
-        } else {
-          const cachedPilot = pilotCache().find(p => p.cloudID == cloudId);
-          if (cachedPilot != undefined) {
-            ui.notifications!.info("Importing character from COMP/CON account...");
-            try {
-              raw_pilot_data = await fetchPilotViaCache(cachedPilot);
-            } catch (error) {
-              ui.notifications!.error(
-                cloudImportError(
-                  "Failed to import from COMP/CON account. Try refreshing the page to reload pilot list.",
-                  error
-                )
-              );
-              console.error(`Failed to import vaultID ${cloudId} via pilot list, error:`, error);
-              return;
-            }
-          } else {
-            ui.notifications!.info("Importing character from share code...");
-            try {
-              raw_pilot_data = await fetchPilotViaShareCode(cloudId);
-            } catch (error) {
-              ui.notifications!.error(
-                cloudImportError(
-                  "Failed to import from COMP/CON. Check the share code, vault selection, or try JSON import.",
-                  error
-                )
-              );
-              console.error(`Failed import for cloud id ${cloudId}, error:`, error);
-              return;
-            }
-          }
-        }
-
-        await importCC(this.actor as LancerPILOT, raw_pilot_data, true, "cloud");
-        this.render();
-      } catch (error) {
-        ui.notifications!.error(cloudImportError("COMP/CON import failed.", error));
-        console.error(`${lp} COMP/CON import failed for cloud id ${cloudId}:`, error);
-      } finally {
-        setCloudDownloading(false);
-        if (!this._cloudDownloadInFlight) {
-          status.text(lastSyncText);
-        }
-      }
-    });
-
-    $el
-      .find('[data-action="compconLogin"]')
-      .off("click.lancerCompconLogin")
-      .on("click.lancerCompconLogin", async ev => {
-        ev.preventDefault();
-        ev.stopPropagation();
-        const app = new CompconLoginForm();
-        app.addEventListener("close", () => this.render(), { once: true });
-        await app.render(true);
-      });
 
     $el
       .find('[data-action="goCloudTab"]')
@@ -215,20 +204,7 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
         this.render();
       });
 
-    $el
-      .find('[data-action="startPilotImportTour"]')
-      .off("click.lancerPilotImportTour")
-      .on("click.lancerPilotImportTour", async ev => {
-        ev.preventDefault();
-        ev.stopPropagation();
-        const tour = game.tours.get(`${game.system.id}.pilot-import`);
-        if (tour) await tour.start();
-        else ui.notifications!.warn(game.i18n.localize("lancer.pilot-sheet.cloud-wizard.tour-missing"));
-      });
-
     bindContextualHelpActions($el);
-
-    $el.find<HTMLInputElement>("input#pilot-json-import").on("change", ev => this._onPilotJsonUpload(ev));
 
     $el.find(".activate-mech").on("click", async ev => {
       ev.stopPropagation();
@@ -246,16 +222,20 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
     });
   }
 
-  _onPilotJsonUpload(ev: JQuery.ChangeEvent<HTMLInputElement, undefined, HTMLInputElement, HTMLInputElement>) {
-    const jsonFile = ev.target.files?.[0];
-    if (!jsonFile) return;
-
-    console.log(`${lp} Selected file changed`, jsonFile);
+  _onPilotJsonFile(jsonFile: File): void {
     const fr = new FileReader();
     fr.addEventListener("load", ev => {
-      this._onPilotJsonParsed(ev.target?.result as string);
+      void this._onPilotJsonParsed(ev.target?.result as string);
     });
     fr.readAsText(jsonFile);
+  }
+
+  override async close(options?: foundry.applications.api.ApplicationV2.CloseOptions): Promise<this> {
+    if (this._cloudComponent) {
+      unmount(this._cloudComponent);
+      this._cloudComponent = null;
+    }
+    return super.close(options);
   }
 
   async _onPilotJsonParsed(fileData: string | null) {

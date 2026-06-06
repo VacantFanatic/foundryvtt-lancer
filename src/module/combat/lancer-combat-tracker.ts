@@ -13,6 +13,7 @@ export class LancerCombatTracker extends foundry.applications.sidebar.tabs.Comba
     actions: {
       activateCombatantTurn: LancerCombatTracker.#activateCombatantTurn,
       deactivateCombatantTurn: LancerCombatTracker.#deactivateCombatantTurn,
+      toggleCombatantTarget: LancerCombatTracker.#toggleCombatantTarget,
     },
   };
   static PARTS = foundry.utils.mergeObject(
@@ -33,12 +34,22 @@ export class LancerCombatTracker extends foundry.applications.sidebar.tabs.Comba
       }));
       if (combatant === this.viewed?.combatant)
         buttons.push({ icon: appearance.deactivate, action: "deactivateCombatantTurn" });
+      const token = combatant?.token?.object;
+      const isTargeted = !!(token && game.user?.targets.has(token));
+      const targetNames = (game.user?.targets ?? [])
+        .map(t => t.document?.name ?? t.name)
+        .filter(Boolean)
+        .join(", ");
+
       return {
         ...t,
         css: `${t.css} ${disp[combatant.disposition]}`.trim(),
         buttons,
         activations: combatant?.system.activations.max,
         pending: combatant?.system.activations.value,
+        isTargeted,
+        targetSummary: targetNames,
+        canTarget: !!(token ?? combatant?.tokenId),
       };
     });
     if (game.settings.get(game.system.id, LANCER.setting_combat_sort) && ctx?.turns != null) {
@@ -65,6 +76,18 @@ export class LancerCombatTracker extends foundry.applications.sidebar.tabs.Comba
     ev.preventDefault();
     const { combatantId } = target.closest<HTMLElement>("[data-combatant-id]")?.dataset ?? {};
     this.viewed?.deactivateCombatant(combatantId!);
+  }
+
+  static async #toggleCombatantTarget(this: LancerCombatTracker, ev: MouseEvent, target: HTMLElement) {
+    ev.stopPropagation();
+    ev.preventDefault();
+    const { combatantId } = target.closest<HTMLElement>("[data-combatant-id]")?.dataset ?? {};
+    const combatant = this.viewed?.combatants.get(combatantId!);
+    const token = combatant?.token?.object;
+    if (!token?.actor) return;
+    const targeted = game.user?.targets.has(token);
+    token.setTarget(!targeted, { user: game.user, releaseOthers: false });
+    this.render();
   }
 
   /**

@@ -5,6 +5,9 @@ import type { LancerMECH } from "./lancer-actor";
 import type { ResolvedDropData } from "../helpers/dragdrop";
 import { EntryType, fittingsForMount, MountType } from "../enums";
 import type { SourceData } from "../source-template";
+import { LANCER } from "../config";
+import { mountLoadoutEditor } from "../apps/loadout/mount";
+import { unmount } from "svelte";
 
 import ContextMenu = foundry.applications.ux.ContextMenu;
 
@@ -12,6 +15,8 @@ import ContextMenu = foundry.applications.ux.ContextMenu;
  * Extend the basic ActorSheet
  */
 export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
+  private _loadoutEditorHandle: object | null = null;
+
   static override DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
     classes: ["lancer", "sheet", "actor", "mech"],
     position: { width: 900, height: 800 },
@@ -33,15 +38,60 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
     },
   };
 
-  override activateListeners(html: HTMLElement): void {
-    super.activateListeners(html);
+  protected override _bindActorSheetListenersFromRender(): void {
+    super._bindActorSheetListenersFromRender();
+
+    const root = this._coerceRootElement(this.element) ?? this._coerceRootElement(this.form);
+    if (!root) return;
+    const $html = $(root);
+    void this._mountLoadoutEditor($html);
 
     if (!this.isEditable) return;
 
-    const $html = $(this.element);
     this._activateOverchargeControls($html);
     this._activateLoadoutControls($html);
     this._activateMountContextMenus($html);
+  }
+
+  override activateListeners(html: HTMLElement): void {
+    super.activateListeners(html);
+  }
+
+  private async _mountLoadoutEditor($html: JQuery): Promise<void> {
+    const target = $html.find("[data-loadout-editor-mount]")[0] as HTMLElement | undefined;
+    if (!target) {
+      if (this._loadoutEditorHandle) {
+        unmount(this._loadoutEditorHandle);
+        this._loadoutEditorHandle = null;
+      }
+      return;
+    }
+
+    const mech = this.actor as LancerMECH;
+    const loadout = mech.system.loadout;
+    const mountLabels = loadout.weapon_mounts.map(m => `${m.type} (${m.slots.length} slots)`);
+    const props = {
+      mountCount: loadout.weapon_mounts.length,
+      systemCount: loadout.systems.length,
+      spUsed: loadout.sp.value,
+      spMax: loadout.sp.max,
+      mountLabels,
+    };
+
+    if (this._loadoutEditorHandle) {
+      unmount(this._loadoutEditorHandle);
+      this._loadoutEditorHandle = null;
+    }
+
+    this._loadoutEditorHandle = await mountLoadoutEditor(target, props);
+  }
+
+  override async close(options?: foundry.applications.api.ApplicationV2.CloseOptions): Promise<this> {
+    if (this._loadoutEditorHandle) {
+      unmount(this._loadoutEditorHandle);
+      this._loadoutEditorHandle = null;
+    }
+    return super.close(options);
   }
 
   /* -------------------------------------------- */
@@ -253,14 +303,41 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
     let path = evt.currentTarget?.dataset?.path;
 
     switch (mode) {
-      case "reset-all-weapon-mounts":
+      case "reset-all-weapon-mounts": {
+        const confirmed = await foundry.applications.api.DialogV2.confirm({
+          window: { title: game.i18n.localize("lancer.mech-sheet.loadout.reset-all-mounts") },
+          content: `<p>${game.i18n.localize("lancer.mech-sheet.loadout.reset-all-mounts-confirm")}</p>`,
+        });
+        if (!confirmed) return;
         await this.actor.loadoutHelper.resetMounts();
         break;
-      case "reset-sys":
-        this.actor.update({ "system.loadout.systems": [] });
+      }
+      case "reset-sys": {
+        const confirmed = await foundry.applications.api.DialogV2.confirm({
+          window: { title: game.i18n.localize("lancer.mech-sheet.loadout.reset-systems") },
+          content: `<p>${game.i18n.localize("lancer.mech-sheet.loadout.reset-systems-confirm")}</p>`,
+        });
+        if (!confirmed) return;
+        await this.actor.update({ "system.loadout.systems": [] });
         break;
-      case "reset-wep":
+      }
+      case "reset-wep": {
+        if (!path) return;
+        const confirmed = await foundry.applications.api.DialogV2.confirm({
+          window: { title: game.i18n.localize("lancer.mech-sheet.loadout.reset-mount") },
+          content: `<p>${game.i18n.localize("lancer.mech-sheet.loadout.reset-mount-confirm")}</p>`,
+        });
+        if (!confirmed) return;
+        const mount = resolveDotpath(mech, path) as Actor.OfType<"mech">["loadout"]["weapon_mounts"][0];
+        if (!mount?.slots) return;
+        const slots = mount.slots.map(s => ({
+          mod: null,
+          size: s.size,
+          weapon: null,
+        }));
+        await mech.update({ [`${path}.slots`]: slots });
         break;
+      }
       default:
         return; // no-op
     }
@@ -273,6 +350,10 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
     (data as Record<string, unknown>).pilot = this.actor.system.pilot?.value;
     (data as Record<string, unknown>).is_active =
       this.actor.system.pilot?.value?.system.active_mech?.value == this.actor;
+    (data as Record<string, unknown>).experimentalLoadoutEditor = game.settings.get(
+      game.system.id,
+      LANCER.setting_experimental_loadout_editor
+    );
     return data;
   }
 }

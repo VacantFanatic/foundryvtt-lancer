@@ -1,4 +1,4 @@
-<div class="card clipped-bot" style="margin: 0px">
+<div class="card clipped-bot lancer-chat-card">
   <div class="{{concat 'lancer-header lancer-' (lower-case type)}}">
     {{localize (concat "lancer.chat-card.title." (lower-case type)) title=title}}
   </div>
@@ -19,7 +19,7 @@
   {{/if}}
   {{! Tags }}
   {{#if tags}}
-    <div class="flexrow" style="justify-content: flex-end; flex-wrap: wrap">
+    <div class="flexrow lancer-chat-actions-end">
       {{{tag-list "tags"}}}
     </div>
   {{/if}}

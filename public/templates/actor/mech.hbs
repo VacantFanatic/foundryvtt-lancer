@@ -173,13 +173,17 @@
           <span>
             {{{localize "lancer.mech-sheet.system.label"}}}
           </span>
-          <span style="flex-grow: 0">
+          <span class="mech-sp-counter">
             <i class="cci cci-system-point i--4"></i>
             {{system.loadout.sp.value}} / {{system.loadout.sp.max}}
             {{localize "lancer.mech-sheet.system.sp-used"}}
           </span>
         </div>
-        {{{mech-loadout}}}
+        {{#if experimentalLoadoutEditor}}
+          <div class="loadout-editor-mount" data-loadout-editor-mount></div>
+        {{else}}
+          {{{mech-loadout}}}
+        {{/if}}
       </div>
     </div>
 
