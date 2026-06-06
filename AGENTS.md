@@ -70,6 +70,21 @@ dataPath: /home/ubuntu/foundry-data/Data
 
 Symlink built system (host-only Foundry): `ln -sfn "$(pwd)/dist" "$dataPath/systems/lancer"`.
 
+### E2E regression tests (Playwright)
+
+Requires a running Foundry instance (see Docker block above) and Firefox via `npm run test:e2e:install`.
+
+```bash
+SKIP_FOUNDRY_DIST_MIRROR=1 npm run build
+./scripts/e2e/start-foundry-docker.sh   # needs FOUNDRY_USERNAME/PASSWORD
+npm run test:e2e:bootstrap
+npm run test:e2e
+```
+
+Specs live under `e2e/regression/`; see `e2e/README.md`.
+
+**CI:** run manually via GitHub Actions workflow `E2E regression (manual)` (secrets: `FOUNDRY_USERNAME`, `FOUNDRY_PASSWORD`, optional `FOUNDRY_LICENSE_KEY`).
+
 ### Hello-world / E2E in Foundry
 
 1. Start Foundry on port 30000 with the `lancer` system installed (symlink or mirror from `dist/`).
