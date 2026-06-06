@@ -71,6 +71,13 @@ export const registerSettings = function () {
     default: {},
   });
 
+  game.settings.register(game.system.id, LANCER.setting_help_seen_accdiff, {
+    scope: "client",
+    config: false,
+    type: Boolean,
+    default: false,
+  });
+
   game.settings.register(game.system.id, LANCER.setting_autoanimations_enabled, {
     name: "lancer.autoAnimations.enabled.name",
     hint: "lancer.autoAnimations.enabled.hint",

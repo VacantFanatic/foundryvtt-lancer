@@ -54,6 +54,7 @@ import { LancerActiveEffect } from "./module/effects/lancer-active-effect";
 import { EntryType } from "./module/enums";
 import { targetsFromTemplate } from "./module/flows/_template";
 import { registerHandlebarsHelpers } from "./module/helpers";
+import { showLancerHelp } from "./module/helpers/help";
 import { disableLancerInitiative, handleCombatUpdate } from "./module/helpers/automation/combat";
 import { gridDist } from "./module/helpers/automation/targeting";
 import { applyCollapseListeners, initializeCollapses } from "./module/helpers/collapse";
@@ -1068,26 +1069,6 @@ function addSettingsButtons(_app: foundry.applications.sidebar.tabs.Settings, ht
   });
 
   faqButton.on("click", async () => {
-    let helpContent = await foundry.applications.handlebars.renderTemplate(
-      `systems/${game.system.id}/templates/window/lancerHelp.hbs`,
-      {}
-    );
-
-    new foundry.applications.api.DialogV2({
-      window: {
-        title: `LANCER Help`,
-        icon: "fas fa-robot",
-      },
-      content: helpContent,
-      position: {
-        width: 600,
-      },
-      buttons: [
-        {
-          action: "close",
-          label: "Close",
-        },
-      ],
-    }).render(true);
+    await showLancerHelp();
   });
 }

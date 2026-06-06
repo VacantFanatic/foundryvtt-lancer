@@ -25,6 +25,7 @@
   import { LANCER } from "../../config";
   import { onMount } from "svelte";
   import { hudL, hudT } from "../../helpers/hud-i18n";
+  import { hasSeenAccdiffHelp, markAccdiffHelpSeen, showLancerHelp, startSystemTour } from "../../helpers/help";
   import { hudModal } from "../slidinghud/hud-modal";
 
   export let weapon: AccDiffHudWeapon;
@@ -56,6 +57,7 @@
   const dispatch = createEventDispatcher();
   let submitted = false;
   let showAdvanced = false;
+  let showFirstOpenHelp = false;
 
   $: hasAdvancedContent =
     kind === "attack" &&
@@ -96,7 +98,13 @@
 
   onMount(() => {
     loadAdvancedPreference();
+    showFirstOpenHelp = kind === "attack" && !hasSeenAccdiffHelp();
   });
+
+  async function dismissFirstOpenHelp() {
+    showFirstOpenHelp = false;
+    await markAccdiffHelpSeen();
+  }
 
   let rollerName = lancerActor ? ` -- ${lancerActor.token?.name || lancerActor.name}` : "";
 
@@ -258,6 +266,33 @@
     dispatch("submit");
   }}
 >
+  {#if showFirstOpenHelp}
+    <aside class="lancer-contextual-help" data-help-topic="accdiff">
+      <i class="fas fa-circle-info" aria-hidden="true"></i>
+      <p class="minor desc-text grow">{game.i18n.localize("lancer.help.context.accdiff")}</p>
+      <button
+        type="button"
+        class="lancer-button lancer-secondary"
+        on:click={() => showLancerHelp({ topic: "accdiff" })}
+      >
+        <i class="fas fa-book-open"></i>
+        {game.i18n.localize("lancer.help.open-help")}
+      </button>
+      <button type="button" class="lancer-button" on:click={() => startSystemTour("attack-dialog")}>
+        <i class="fas fa-route"></i>
+        {game.i18n.localize("lancer.help.start-tour")}
+      </button>
+      <button
+        type="button"
+        class="lancer-button lancer-contextual-help-dismiss"
+        on:click={dismissFirstOpenHelp}
+        aria-label={game.i18n.localize("lancer.help.dismiss")}
+        data-tooltip={game.i18n.localize("lancer.help.dismiss")}
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </aside>
+  {/if}
   {#if title != ""}
     <div class="lancer-header {isTech() ? 'lancer-tech' : 'lancer-weapon'} medium">
       {#if kind == "attack"}

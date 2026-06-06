@@ -1,0 +1,70 @@
+@layer lancer.applications {
+  .lancerHelpPage {
+    .lancer-help-whats-new {
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--color-border-light-tertiary);
+    }
+
+    .lancer-help-release {
+      margin-bottom: 0.75rem;
+
+      &-version {
+        margin: 0.25rem 0;
+        font-size: var(--font-size-16);
+      }
+
+      h4 {
+        margin: 0.35rem 0 0.15rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      ul {
+        margin: 0 0 0.5rem 1.25rem;
+        padding: 0;
+      }
+    }
+
+    .lancer-help-topic {
+      margin: 1rem 0;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--color-border-light-tertiary);
+    }
+  }
+
+  .lancer-contextual-help {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--color-border-light-tertiary);
+    border-radius: 3px;
+    background: var(--color-bg-option);
+
+    > i {
+      color: var(--color-text-hyperlink);
+      flex-shrink: 0;
+    }
+
+    p {
+      margin: 0;
+      flex: 1 1 12rem;
+    }
+
+    .lancer-contextual-help-dismiss {
+      margin-left: auto;
+      padding: 0.25rem 0.5rem;
+    }
+  }
+
+  #lancer-automation-settings .lancer-contextual-help {
+    margin-bottom: 0.75rem;
+  }
+
+  #accdiff .lancer-contextual-help {
+    margin: 0.35rem 0.5rem 0;
+  }
+}

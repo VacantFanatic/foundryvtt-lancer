@@ -129,6 +129,9 @@ export class LancerPilotTour extends LancerTour {
       const settings = new foundry.applications.settings.SettingsConfig();
       await settings.render({ force: true });
       settings.changeTab("system", "categories");
+    } else if (this.currentStep?.id === "clickToEquip") {
+      await this.actor?.sheet?.["_render"](true);
+      this.actor?.sheet?.["activateTab"]("narrative");
     } else {
       await this.actor?.sheet?.["_render"](true);
       this.actor?.sheet?.["activateTab"]("cloud");
@@ -172,7 +175,11 @@ export class LancerNPCTour extends LancerTour {
     }
     const npcSheet = this.npc.sheet;
     await npcSheet?.["_render"](true);
-    npcSheet?.["changeTab"]?.("stats", "primary", { force: true });
+    if (["featuresTab", "featuresList"].includes(this.currentStep?.id!)) {
+      npcSheet?.["changeTab"]?.("features", "primary", { force: true });
+    } else {
+      npcSheet?.["changeTab"]?.("stats", "primary", { force: true });
+    }
     const el = npcSheet instanceof foundry.applications.api.ApplicationV2 ? npcSheet.element : npcSheet?.element[0];
     el?.classList.add("tour-npc");
     if (["baseFeatures", "optionalFeatures"].includes(this.currentStep?.id!)) {
@@ -234,6 +241,13 @@ export class LancerSlidingHudTour extends LancerTour {
     }
     this.npc?.itemTypes[EntryType.NPC_FEATURE][0].beginWeaponAttackFlow();
     await new Promise(resolve => setTimeout(resolve, 100));
+    if (["template", "advanced"].includes(this.currentStep?.id!)) {
+      const toggle = document.querySelector<HTMLElement>("#hudzone #accdiff .accdiff-advanced-toggle button");
+      if (toggle && !document.querySelector("#hudzone #accdiff .accdiff-advanced")) {
+        toggle.click();
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+    }
   }
 
   protected async _tearDown() {

@@ -6,27 +6,33 @@
   "steps": [
     {
       "id": "accuracy",
-      "selector": "#hudzone #accdiff .accdiff-grid div:nth-child(1)",
+      "selector": "#hudzone #accdiff .accdiff-grid__section:nth-of-type(2) .accdiff-grid__column:first-child",
       "title": "lancer.tour.attack-dialog.accuracy.title",
       "content": "lancer.tour.attack-dialog.accuracy.content"
     },
     {
       "id": "difficulty",
-      "selector": "#hudzone #accdiff .accdiff-grid div:nth-child(2)",
+      "selector": "#hudzone #accdiff .accdiff-grid__section:nth-of-type(2) .accdiff-grid__column:last-child",
       "title": "lancer.tour.attack-dialog.difficulty.title",
       "content": "lancer.tour.attack-dialog.difficulty.content"
     },
     {
-      "id": "template",
-      "selector": "#hudzone #accdiff .lancer-header .range-button",
-      "title": "lancer.tour.attack-dialog.template.title",
-      "content": "lancer.tour.attack-dialog.template.content"
-    },
-    {
-      "id": "targeting",
-      "selector": "#hudzone #accdiff div.accdiff-footer",
+      "id": "targets",
+      "selector": "#hudzone #accdiff .accdiff-footer",
       "title": "lancer.tour.attack-dialog.targeting.title",
       "content": "lancer.tour.attack-dialog.targeting.content"
+    },
+    {
+      "id": "advanced",
+      "selector": "#hudzone #accdiff .accdiff-advanced-toggle",
+      "title": "lancer.tour.attack-dialog.advanced.title",
+      "content": "lancer.tour.attack-dialog.advanced.content"
+    },
+    {
+      "id": "template",
+      "selector": "#hudzone #accdiff .accdiff-advanced .range-button",
+      "title": "lancer.tour.attack-dialog.template.title",
+      "content": "lancer.tour.attack-dialog.template.content"
     },
     {
       "id": "finish",
@@ -35,26 +41,30 @@
       "content": "lancer.tour.attack-dialog.finish.content"
     }
   ],
-  "suggestedNextTours": [],
+  "suggestedNextTours": ["lancer.combat"],
   "localization": {
     "lancer.tour.attack-dialog": {
       "title": "Attack Dialog",
       "description": "Using the LANCER sliding HUD attack dialog",
       "accuracy": {
         "title": "Accuracy",
-        "content": "Confirm the Accuracy bonuses here"
+        "content": "Confirm the Accuracy bonuses here. The default view focuses on targets, totals, and cover."
       },
       "difficulty": {
         "title": "Difficulty",
-        "content": "Confirm any Difficulty penalties here"
-      },
-      "template": {
-        "title": "Place a Measured Template",
-        "content": "If the attack is an AoE attack, this button will allow you to place a measured template. Scrollwheel rotates the template and left click confirms placement. Targets will be automatically selected when to template is placed."
+        "content": "Confirm any Difficulty penalties here."
       },
       "targeting": {
         "title": "Targets",
         "content": "Any targets, whether manually selected or automatically selected using a template will appear here allowing individual bonuses and penalties to be applied as necessary."
+      },
+      "advanced": {
+        "title": "Advanced section",
+        "content": "Weapon and target plugins, measured templates, and per-target fine modifiers live under <strong>Advanced</strong>. A client setting can remember whether Advanced stays open per weapon."
+      },
+      "template": {
+        "title": "Place a Measured Template",
+        "content": "If the attack is an AoE attack, this button will allow you to place a measured template. Scrollwheel rotates the template and left click confirms placement. Targets will be automatically selected when the template is placed."
       },
       "finish": {
         "title": "Finishing up",

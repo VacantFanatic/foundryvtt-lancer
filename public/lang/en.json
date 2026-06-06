@@ -457,6 +457,43 @@
       "walk_of_kings": "Walk of Kings",
       "warp_sensors": "Warp Sensors"
     },
+    "help": {
+      "dialog-title": "LANCER Help",
+      "whats-new": "What's new",
+      "full-changelog": "Full changelog on GitHub",
+      "basic-workflows": "Basic Workflows",
+      "helpful-links": "Helpful Links",
+      "open-help": "Open help",
+      "wiki-link": "Wiki",
+      "start-tour": "Start tour",
+      "dismiss": "Dismiss",
+      "tour-missing": "Tour \"{tour}\" is not registered.",
+      "links": {
+        "faq": "FAQ",
+        "modules": "Suggested Modules",
+        "issues": "Bug reports and enhancement suggestions",
+        "discord": "PilotNET Community on Discord"
+      },
+      "context": {
+        "cloud-import": "Import pilots from COMP/CON cloud sync or a JSON export. Use the wizard steps below, or start the guided import tour.",
+        "automation": "These options control automatic hit calculation, structure/stress prompts, template cleanup, and the optional damage prompt after attacks.",
+        "accdiff": "Confirm accuracy, difficulty, targets, and cover here. Plugins and measured templates are under Advanced."
+      },
+      "topics": {
+        "cloud-import": {
+          "title": "COMP/CON import",
+          "body": "Log into COMP/CON from Configure Settings → LANCER, then use the Cloud tab wizard to select a pilot or paste a share code. JSON exports from COMP/CON can be uploaded on the same tab."
+        },
+        "automation": {
+          "title": "Automation settings",
+          "body": "Attack roll evaluation calculates hits on attack cards. Prompt Damage After Attack (off by default) opens the damage HUD when at least one target is hit. Structure/Stress prompts appear when a mech reaches 0 HP or exceeds heat cap."
+        },
+        "accdiff": {
+          "title": "Attack Acc/Diff HUD",
+          "body": "The sliding HUD confirms bonuses and penalties before an attack roll. Select targets on the canvas or with a measured template, then confirm. Use Advanced for weapon plugins and fine per-target modifiers."
+        }
+      }
+    },
     "automation": {
       "menu-name": "Automation",
       "menu-label": "System Automation Settings",

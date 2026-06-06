@@ -1,3 +1,15 @@
+# 2.17.0 (2026-06-06)
+
+## Added
+
+- **Contextual help** on the pilot Cloud tab, Automation settings, and first Acc/Diff HUD open (dismissible).
+- Help dialog **What's new** section with the three most recent changelog releases.
+- **Attack dialog** guided tour registered; pilot-import tour adds **click-to-equip** step; NPC tour covers **Features** tab.
+
+## Changed
+
+- Help dialog topic sections for cloud import, automation, and Acc/Diff; links to wiki and tours from contextual banners.
+
 # 2.16.0 (2026-06-06)
 
 ## Added

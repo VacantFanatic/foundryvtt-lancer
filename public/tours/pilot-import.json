@@ -33,6 +33,13 @@
       "sidebarTab": "actors"
     },
     {
+      "id": "clickToEquip",
+      "selector": "#LancerPilotSheet-Actor-TOUR0PILOT000000 div[data-tab='narrative'] .ref.slot.click-settable",
+      "title": "lancer.tour.pilot-import.clickToEquip.title",
+      "content": "lancer.tour.pilot-import.clickToEquip.content",
+      "sidebarTab": "actors"
+    },
+    {
       "id": "folders",
       "selector": "#sidebar #actors header button.create-folder",
       "title": "lancer.tour.pilot-import.folders.title",
@@ -66,7 +73,11 @@
       },
       "download": {
         "title": "Download",
-        "content": "One a share code has been entered or a pilot selected in the dropdown, this button will start the process of syncing."
+        "content": "Once a share code has been entered or a pilot selected in the dropdown, this button will start the process of syncing."
+      },
+      "clickToEquip": {
+        "title": "Click to equip",
+        "content": "Empty loadout slots show a drag-or-click hint. Click a slot to open a filtered compendium picker, or drag items from compendiums as before."
       },
       "folders": {
         "title": "Folders",
