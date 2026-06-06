@@ -1,5 +1,9 @@
 # Create or refresh the UX Roadmap 2026 GitHub Project, milestones, labels, and issues.
-# Manual only — requires a PAT or GITHUB_TOKEN with project + issues write on VacantFanatic account.
+#
+# Setup (passkey-friendly, no local gh CLI):
+#   1. Create a fine-grained PAT with Issues + Account Projects (read/write) on this repo.
+#   2. Add repo secret UX_ROADMAP_GH_TOKEN (see scripts/ux-roadmap/MANUAL-SETUP.md).
+#   3. Run workflow manually. GITHUB_TOKEN alone cannot create user-owned Projects.
 name: UX Roadmap bootstrap
 
 on:
@@ -29,9 +33,16 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Require project token
+        if: ${{ !secrets.UX_ROADMAP_GH_TOKEN }}
+        run: |
+          echo "::error::Add repository secret UX_ROADMAP_GH_TOKEN (fine-grained PAT with Projects + Issues)."
+          echo "See scripts/ux-roadmap/MANUAL-SETUP.md — no local gh credentials required."
+          exit 1
+
       - name: Bootstrap UX roadmap
         env:
-          GH_TOKEN: ${{ secrets.UX_ROADMAP_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.UX_ROADMAP_GH_TOKEN }}
         run: |
           MODE="${{ github.event.inputs.mode }}"
           FLAGS=""

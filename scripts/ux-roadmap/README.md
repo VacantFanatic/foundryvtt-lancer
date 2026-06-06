@@ -6,18 +6,22 @@ This folder defines the **UX Roadmap 2026** release plan and a script to create:
 - **Tracking issues** (1 epic, 10 release epics, 32 PR issues)
 - A linked **GitHub Project** with custom fields for Roadmap / Board views
 
-## Quick start (repo owner)
+## Quick start
+
+### Passkey / no local credentials?
+
+**You do not need `gh` on your machine or the cloud VM.** See **[MANUAL-SETUP.md](./MANUAL-SETUP.md)**:
+
+- **Option A (recommended):** one fine-grained PAT in repo secrets → run the **UX Roadmap bootstrap** GitHub Action (passkey only in the browser).
+- **Option B:** create the Project entirely in the GitHub web UI and add issues #43–#85.
+
+### Local CLI (optional)
 
 ```bash
-# Authenticate with project scope
 gh auth refresh -s project,read:org
-
-# Full bootstrap (issues + project)
-node scripts/ux-roadmap/bootstrap.mjs
-
-# Or step by step:
-node scripts/ux-roadmap/bootstrap.mjs --issues-only   # issues only (works with limited tokens)
-node scripts/ux-roadmap/bootstrap.mjs --project-only  # project + fields after issues exist
+node scripts/ux-roadmap/bootstrap.mjs              # full
+node scripts/ux-roadmap/bootstrap.mjs --issues-only
+node scripts/ux-roadmap/bootstrap.mjs --project-only
 ```
 
 Progress is saved to `bootstrap-state.json` (gitignored) so re-runs skip existing issues.
