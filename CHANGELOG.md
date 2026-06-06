@@ -1,3 +1,14 @@
+# 2.12.10 (2026-06-06)
+
+## Fixed
+
+- COMP/CON **v3 mech weapon import** no longer throws when weapon slot data is missing (early return referenced undeclared `mod`/`modId`).
+- COMP/CON **v3 import** now reports partial failures (missing actors/items) with the same summary dialog as v2.
+
+## Changed
+
+- COMP/CON import cleanup: shared `unpackClock` and incomplete-import summary helpers; v2 reuses `clearPilotEmbeddedDocuments`, `hasCreatePermissions`, and `getActorItemByLid`; unified v3 bond import path.
+
 # 2.12.9 (2026-06-05)
 
 ## Fixed
