@@ -18,6 +18,7 @@
 
   import Plugin from "./Plugin.svelte";
   import HudCheckbox from "../components/HudCheckbox.svelte";
+  import { hudL } from "../../helpers/hud-i18n";
 
   export let target: AccDiffHudBase | AccDiffHudTarget;
   export let onlyTarget: boolean = false;
@@ -72,7 +73,7 @@
       bind:this={imgElement}
     />
     {#if target.stunned}
-      <label transition:blur|global for={stunnedId} class="stunned-label" title="Stunned">
+      <label transition:blur|global for={stunnedId} class="stunned-label" title={hudL("accdiff.stunned-label")}>
         <i class="cci cci-condition-stunned i--3" />
       </label>
     {/if}
@@ -81,7 +82,7 @@
       class="lockon-label"
       class:checked={target.usingLockOn}
       class:disabled={!target.lockOnAvailable}
-      title="Consume Lock On (+1)"
+      title={hudL("accdiff.consume-lock-on")}
     >
       <i
         class="cci cci-condition-lock-on"
@@ -92,7 +93,7 @@
         on:keypress={toggleLockOn}
       />
       <HudCheckbox
-        label="Consume Lock On (+1)"
+        label={hudL("accdiff.consume-lock-on")}
         checked={!!target.usingLockOn}
         bind:value={target.consumeLockOn}
         disabled={!target.lockOnAvailable}

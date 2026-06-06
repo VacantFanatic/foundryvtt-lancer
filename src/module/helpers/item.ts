@@ -27,6 +27,7 @@ import {
   activationIcon,
 } from "./commons";
 import { limitedUsesIndicator, loadingIndicator, ref_params, refSlotEmptyHintHtml, reserveUsesIndicator } from "./refs";
+import { ariaLabelAttr } from "./aria";
 import {
   ActivationType,
   ChipIcons,
@@ -116,7 +117,7 @@ export function rangeEditor(path: string, options: HelperOptions): string {
   let value_options = extendHelper(options, { value: range.val });
   let value_input = std_text_input(path + ".val", value_options);
 
-  let delete_button = `<a class="gen-control" data-action="splice" data-path="${path}" style="margin: 4px;"><i class="fas fa-trash"></i></a>`;
+  let delete_button = `<a class="gen-control" ${ariaLabelAttr("lancer.sheet-controls.delete-item")} data-action="splice" data-path="${path}" style="margin: 4px;"><i class="fas fa-trash"></i></a>`;
 
   return `<div class="flexrow flex-center" style="padding: 5px;">
     ${icon_html}
@@ -145,7 +146,7 @@ export function damageEditor(path: string, options: HelperOptions): string {
   let value_options = extendHelper(options, { value: damage.val });
   let value_input = std_text_input(path + ".val", value_options);
 
-  let delete_button = `<a class="gen-control" data-action="splice" data-path="${path}" style="margin: 4px;"><i class="fas fa-trash"></i></a>`;
+  let delete_button = `<a class="gen-control" ${ariaLabelAttr("lancer.sheet-controls.delete-item")} data-action="splice" data-path="${path}" style="margin: 4px;"><i class="fas fa-trash"></i></a>`;
 
   return `<div class="flexrow flex-center" style="padding: 5px;">
     ${icon_html}
@@ -284,7 +285,7 @@ export function bonusesDisplay(bonuses_path: string, edit: boolean, options: Hel
   // Render each bonus
   for (let i = 0; i < bonuses_array.length; i++) {
     let bonus = bonuses_array[i];
-    let delete_button = `<a class="gen-control" data-action="splice" data-path="${bonuses_path}.${i}"><i class="fas fa-trash"></i></a>`;
+    let delete_button = `<a class="gen-control" ${ariaLabelAttr("lancer.sheet-controls.delete-item")} data-action="splice" data-path="${bonuses_path}.${i}"><i class="fas fa-trash"></i></a>`;
     let title = `<span class="grow">${bonus.lid}</span> ${inc_if(delete_button, edit)}`; // Todo: maybe return to
     let boxed = `
       <div class="bonus ${inc_if("editable", edit)}" data-path="${bonuses_path}.${i}">
@@ -392,7 +393,7 @@ export function pilotArmorSlot(armor_path: string, options: HelperOptions): stri
             <div class="lancer-header lancer-primary">
               <i class="mdi mdi-shield-outline i--4 i--light"> </i>
               <span class="minor">${armor.name}</span>
-              <a class="lancer-context-menu" data-path="${armor_path}"">
+              <a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${armor_path}"">
                 <i class="fas fa-ellipsis-v"></i>
               </a>
             </div>
@@ -471,7 +472,7 @@ export function pilotWeaponRefview(weapon_path: string, options: HelperOptions):
     <div class="lancer-header lancer-weapon">
       <i class="cci cci-weapon i--4 i--light"> </i>
       <span class="minor">${weapon.name}</span>
-              <a class="lancer-context-menu" data-path="${weapon_path}"">
+              <a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${weapon_path}"">
                 <i class="fas fa-ellipsis-v"></i>
               </a>
     </div>
@@ -534,9 +535,9 @@ export function pilotGearRefview(gear_path: string, options: HelperOptions): str
   >
     <div class="lancer-header lancer-system">
       <i class="cci cci-generic-item i--4"> </i>
-      <a class="chat-flow-button"><i class="mdi mdi-message"></i></a>
+      <a class="chat-flow-button" ${ariaLabelAttr("lancer.sheet-controls.post-chat")}><i class="mdi mdi-message"></i></a>
       <span class="minor">${gear.name!}</span>
-      <a class="lancer-context-menu" data-path="${gear_path}"">
+      <a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${gear_path}"">
         <i class="fas fa-ellipsis-v"></i>
       </a>
     </div>
@@ -630,9 +631,9 @@ export function reserveRefView(reserve_path: string, options: HelperOptions): st
                 ${ref_params(reserve, reserve_path)} >
     <div class="lancer-header lancer-trait">
       <i class="${icon} i--4"> </i>
-      <a class="chat-flow-button"><i class="mdi mdi-message"></i></a>
+      <a class="chat-flow-button" ${ariaLabelAttr("lancer.sheet-controls.post-chat")}><i class="mdi mdi-message"></i></a>
       <span class="minor">${reserve.name}</span>
-      <a class="lancer-context-menu" data-path="${reserve_path}"">
+      <a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${reserve_path}"">
         <i class="fas fa-ellipsis-v"></i>
       </a>
     </div>
@@ -742,12 +743,12 @@ data-action="set" data-action-value="(int)${i}" data-path="${weapon_path}.system
                   style="max-height: fit-content;">
       <div class="lancer-header lancer-weapon ${weapon.system.destroyed ? "destroyed" : ""}">
         <i class="${weapon.system.destroyed ? "mdi mdi-cog" : "cci cci-weapon i--4 i--light"}"> </i>
-        <a class="chat-flow-button"><i class="mdi mdi-message"></i></a>
+        <a class="chat-flow-button" ${ariaLabelAttr("lancer.sheet-controls.post-chat")}><i class="mdi mdi-message"></i></a>
         <span class="minor" >
           ${weapon.name} // ${weapon.system.size.toUpperCase()} ${profile.type.toUpperCase()}
         </span>
         ${collapseButton(collapse, weapon)}
-        <a class="lancer-context-menu" data-path="${weapon_path}">
+        <a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${weapon_path}">
           <i class="fas fa-ellipsis-v"></i>
         </a>
       </div>
@@ -842,7 +843,7 @@ export function weaponModView(mod_path: string, weapon_path: string | null, opti
     <div class="lancer-header lancer-mod">
       <i class="cci cci-weaponmod i--4 i--light"> </i>
       <span class="minor">${mod.name}</span>
-      <a class="lancer-context-menu" data-path="${mod_path}">
+      <a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${mod_path}">
         <i class="fas fa-ellipsis-v"></i>
       </a>
     </div>
@@ -900,7 +901,7 @@ export function licenseRefView(item_path: string, options: HelperOptions): strin
         <i class="cci cci-license i--4 i--dark"> </i>
         <div class="major modifier-name">${license.name} ${license.system.curr_rank}</div>
         <div class="ref-controls">
-          <a class="lancer-context-menu" data-path="${item_path}"">
+          <a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${item_path}"">
             <i class="fas fa-ellipsis-v"></i>
           </a>
         </div>
@@ -920,7 +921,7 @@ export function framePreview(path: string, options: HelperOptions): string {
         <span class="img-bar" style="background-image: url(${frame_img})"></span>
         <div class="major modifier-name i--light">${frame.system.manufacturer} ${frame.name}</div>
         <div class="ref-controls">
-          <a class="lancer-context-menu" data-path="${path}"">
+          <a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${path}"">
             <i class="fas fa-ellipsis-v i--light"></i>
           </a>
         </div>
@@ -940,7 +941,7 @@ export function npcClassRefView(npc_class: LancerNPC_CLASS | null, item_path?: s
         <span class="img-bar" style="background-image: url(${frame_img})"></span>
         <div class="major modifier-name i--light">${npc_class.name} // ${npc_class.system.role?.toUpperCase()}</div>
         <div class="ref-controls">
-          <a class="lancer-context-menu" data-path="${item_path}"">
+          <a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${item_path}"">
             <i class="fas fa-ellipsis-v i--light"></i>
           </a>
         </div>
@@ -959,7 +960,7 @@ export function npcTemplateRefView(template: LancerNPC_TEMPLATE | null, item_pat
         <span class="img-bar" style="background-image: url(${template.img})"></span>
         <div class="major modifier-name i--light">${template.name}</div>
         <div class="ref-controls">
-          <a class="lancer-context-menu" data-path="${item_path}"">
+          <a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${item_path}"">
             <i class="fas fa-ellipsis-v i--light"></i>
           </a>
         </div>
@@ -1064,7 +1065,7 @@ export function buildActionHTML(
     // If it's editable, it's deletable
     editor = `
     <div class="action-editor-wrapper">
-      <a class="gen-control" data-uuid="${doc.uuid}" data-action="splice" data-path="${path}"><i class="fas fa-trash"></i></a>
+      <a class="gen-control" ${ariaLabelAttr("lancer.sheet-controls.delete-item")} data-uuid="${doc.uuid}" data-action="splice" data-path="${path}"><i class="fas fa-trash"></i></a>
       <a class="action-editor fas fa-edit" data-path="${path}"></a>
     </div>`;
   }
@@ -1322,7 +1323,7 @@ export function buildCounterHeader(
 ): string {
   const contextMenu = options?.noContextMenu
     ? ""
-    : `<a class="lancer-context-menu" data-path="${path}" data-can-delete="${
+    : `<a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${path}" data-can-delete="${
         options?.canDelete ? options.canDelete : false
       }">
         <i class="fas fa-ellipsis-v"></i>

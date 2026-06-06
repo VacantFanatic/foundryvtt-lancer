@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { hudL } from "../../helpers/hud-i18n";
+
   export let value: number = 0;
   export let id: string;
 </script>
@@ -6,12 +8,13 @@
 <button
   class="lancer-button dec-set"
   type="button"
-  data-tooltip="Add global accuracy"
+  data-tooltip={hudL("accdiff.add-global-accuracy")}
+  aria-label={hudL("accdiff.add-global-accuracy")}
   on:click={() => (value = value + 1)}
 >
   <i class="cci cci-accuracy i--3" />
 </button>
-<label for={id} class="flexcol" data-tooltip="Global Accuracy/Difficulty Adjustment">
+<label for={id} class="flexcol" data-tooltip={hudL("accdiff.global-accuracy-difficulty")}>
   <strong style="text-wrap: nowrap">Manual Adjust</strong>
   <strong class="accdiff-value">
     <span>{Math.abs(value)}</span>
@@ -22,7 +25,8 @@
 <button
   class="lancer-button dec-set"
   type="button"
-  data-tooltip="Add global difficulty"
+  data-tooltip={hudL("accdiff.add-global-difficulty")}
+  aria-label={hudL("accdiff.add-global-difficulty")}
   on:click={() => (value = value - 1)}
 >
   <i class="cci cci-difficulty i--3" />

@@ -33,6 +33,7 @@ import { LancerActor } from "../actor/lancer-actor";
 import { coreBonusView, skillView, talent_view as talentView } from "./pilot";
 import type { SourceData } from "../source-template";
 import { LancerActiveEffect } from "../effects/lancer-active-effect";
+import { ariaLabelAttr } from "./aria";
 
 /*
 "Ref" manifesto - Things for handling everything in data that is either a ResolvedUuidRefField or ResolvedEmbeddedRefField.
@@ -216,7 +217,7 @@ export function itemPreview<T extends LancerItemType>(
         <span class="major">${doc.name}</span>
         <span class="vsep"></span>
         <div class="ref-controls">
-          <a class="lancer-context-menu" data-path="${item_path}">
+          <a class="lancer-context-menu" ${ariaLabelAttr("lancer.sheet-controls.item-menu")} data-path="${item_path}">
             <i class="fas fa-ellipsis-v"></i>
           </a>
         </div>

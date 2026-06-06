@@ -2,6 +2,8 @@
   import type { DamageData } from "../../models/bits/damage";
   import type { RangeData } from "../../models/bits/range";
 
+  import { hudL } from "../../helpers/hud-i18n";
+
   export let profile: { range: RangeData[]; damage?: DamageData[]; accuracy?: number; attack?: number };
 </script>
 
@@ -9,12 +11,12 @@
   {#if profile.attack || profile.accuracy}
     <div class="mini-weapon-profile-accuracy flexrow">
       {#if profile.attack}
-        <span data-tooltip="Attack bonus"><i class="cci cci-reticule" />{profile.attack < 0 ? "-" : "+"}{
-            profile.attack
-          }</span>
+        <span data-tooltip={hudL("profile.attack-bonus")}><i class="cci cci-reticule" />{
+            profile.attack < 0 ? "-" : "+"
+          }{profile.attack}</span>
       {/if}
       {#if profile.accuracy}
-        <span data-tooltip={(profile.accuracy ?? 0) > 0 ? "Accuracy" : "Difficulty"}><i
+        <span data-tooltip={(profile.accuracy ?? 0) > 0 ? hudL("profile.accuracy") : hudL("profile.difficulty")}><i
             class="cci cci-{(profile.accuracy ?? 0) > 0 ? 'accuracy' : 'difficulty'}"
           />{Math.abs(profile.accuracy)}</span>
       {/if}

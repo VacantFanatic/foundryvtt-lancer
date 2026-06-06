@@ -502,7 +502,114 @@
       "allowPlayers": "Allow Players",
       "allowPlayers-desc": "Allows players to modify their own actions.",
       "printMessages": "Print Messages",
-      "printMessages-desc": "Prints chat messages for start and end of a token's turn."
+      "printMessages-desc": "Prints chat messages for start and end of a token's turn.",
+      "showTextLabels": "Show text labels",
+      "showTextLabels-desc": "Show text labels beside action icons on the floating action tracker.",
+      "toolbar": "Combat actions",
+      "drag": "Drag action tracker",
+      "reset": "Reset actions",
+      "actions": {
+        "protocol": "Protocol",
+        "move": "Movement",
+        "full": "Full Action",
+        "quick": "Quick Action",
+        "reaction": "Reaction",
+        "free": "Free Action"
+      }
+    },
+    "collapse": {
+      "toggle": "Toggle section"
+    },
+    "flow": {
+      "common": {
+        "submit": "Submit",
+        "cancel": "Cancel",
+        "yes": "Yes",
+        "no": "No"
+      },
+      "stabilize": {
+        "title": "Stabilize — {name}"
+      },
+      "fullRepair": {
+        "title": "Full Repair — {name}",
+        "prompt": "Fully repair the {type} \"{name}\"?"
+      }
+    },
+    "sheet-controls": {
+      "item-menu": "Item options",
+      "delete-item": "Delete item",
+      "add-entry": "Add entry",
+      "post-chat": "Post to chat",
+      "roll-attack": "Roll attack",
+      "roll-stat": "Roll stat"
+    },
+    "hud": {
+      "common": {
+        "roll": "Roll",
+        "cancel": "Cancel",
+        "total": "Total",
+        "accuracy": "Accuracy",
+        "difficulty": "Difficulty",
+        "configuration": "Configuration",
+        "unknown-actor": "UNKNOWN MECH"
+      },
+      "accdiff": {
+        "flat-modifier": "Flat Modifier",
+        "total-vs": "Total vs {name}",
+        "grit": "Grit",
+        "weapon-base": "Weapon Base",
+        "tech-attack": "Tech Attack",
+        "tech-item-base": "Tech Item Base",
+        "tier": "Tier",
+        "accurate": "Accurate (+1)",
+        "seeking": "Seeking (*)",
+        "inaccurate": "Inaccurate (-1)",
+        "impaired": "Impaired (-1)",
+        "thrown": "Thrown (*)",
+        "engaged": "Engaged (-1)",
+        "prone": "Prone (+1)",
+        "stunned": "Stunned (EVA=5)",
+        "lock-on": "Lock On (+1)",
+        "add-global-accuracy": "Add global accuracy",
+        "global-accuracy-difficulty": "Global Accuracy/Difficulty Adjustment",
+        "add-global-difficulty": "Add global difficulty",
+        "consume-lock-on": "Consume Lock On (+1)",
+        "stunned-label": "Stunned"
+      },
+      "cover": {
+        "none": "No Cover",
+        "soft": "Soft Cover (-1)",
+        "hard": "Hard Cover (-2)"
+      },
+      "damage": {
+        "base-damage": "Base Damage",
+        "bonus-damage": "Bonus Damage",
+        "add-base-damage": "Add a base damage type",
+        "add-bonus-damage": "Add a bonus damage type",
+        "add-target-bonus-damage": "Add a bonus damage type for only this target",
+        "remove-damage-type": "Remove damage type",
+        "armor-piercing": "Armor Piercing (AP)",
+        "overkill": "Overkill",
+        "cannot-be-reduced": "Cannot be Reduced",
+        "cannot-be-reduced-tip": "For 'cannot be reduced' effects like the Paracausal mod",
+        "half-damage": "Half Damage",
+        "half-damage-tip": "For effects which cause the attacker to deal half damage in addition to resistance, like Heavy Gunner",
+        "reliable": "Reliable",
+        "armor-piercing-tip": "Armor Piercing (AP)",
+        "paracausal-tip": "For 'cannot be reduced' effects like the Paracausal mod"
+      },
+      "structstress": {
+        "damage-taken": "{name} has taken {stat} damage!",
+        "roll-prompt": "Roll {dice}d6 to determine what happens.",
+        "no-roll": "No {stat} remaining. No roll is available.",
+        "structure": "structure",
+        "stress": "stress"
+      },
+      "profile": {
+        "attack-bonus": "Attack bonus",
+        "accuracy": "Accuracy",
+        "difficulty": "Difficulty"
+      }
     },
     "initiative": {
       "sorttracker": "Sort the tracker",

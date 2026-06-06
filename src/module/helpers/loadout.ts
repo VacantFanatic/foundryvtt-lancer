@@ -189,8 +189,10 @@ function allWeaponMountView(loadout_path: string, options: HelperOptions) {
   );
 
   return `
-    <div class="lancer-header lancer-dark-gray loadout-category submajor">
-      <i class="mdi mdi-unfold-less-horizontal collapse-trigger collapse-icon" data-collapse-id="weapons"></i>
+    <div class="lancer-header lancer-dark-gray loadout-category submajor sheet-section-header sticky">
+      <button type="button" class="collapse-trigger collapse-icon" data-collapse-id="weapons" aria-expanded="true" aria-label="${game.i18n.localize("lancer.collapse.toggle")}">
+        <i class="mdi mdi-unfold-less-horizontal" aria-hidden="true"></i>
+      </button>
       <span>MOUNTED WEAPONS</span>
       <a class="gen-control fas fa-plus" data-action="append" data-path="${loadout_path}.weapon_mounts" data-action-value="(struct)wep_mount"></a>
       <a class="reset-all-weapon-mounts-button fas fa-redo" data-path="${loadout_path}.weapon_mounts"></a>
@@ -211,8 +213,10 @@ function allMechSystemsView(loadout_path: string, options: HelperOptions) {
   // Archiving add button: <a class="gen-control fas fa-plus" data-action="append" data-path="${loadout_path}.SysMounts" data-action-value="(struct)sys_mount"></a>
 
   return `
-    <div class="lancer-header lancer-dark-gray loadout-category submajor">
-      <i class="mdi mdi-unfold-less-horizontal collapse-trigger collapse-icon" data-collapse-id="systems"></i>
+    <div class="lancer-header lancer-dark-gray loadout-category submajor sheet-section-header sticky">
+      <button type="button" class="collapse-trigger collapse-icon" data-collapse-id="systems" aria-expanded="true" aria-label="${game.i18n.localize("lancer.collapse.toggle")}">
+        <i class="mdi mdi-unfold-less-horizontal" aria-hidden="true"></i>
+      </button>
       <span>MOUNTED SYSTEMS</span>
       <span style="flex-grow: 0">
         <i class="cci cci-system-point i--4"></i>

@@ -32,32 +32,29 @@ export class FullRepairFlow extends Flow<LancerFlowState.TextRollData> {
 export async function displayFullRepairDialog(state: FlowState<LancerFlowState.TextRollData>): Promise<boolean> {
   if (!state.data) throw new TypeError(`Full Repair flow state missing!`);
 
-  return new Promise<boolean>((resolve, reject) => {
-    new Dialog({
-      title: `FULL REPAIR - ${state.actor.name}`,
-      content: `<h3>Are you sure you want to fully repair the ${state.actor?.type} "${state.actor?.name}"?`,
-      buttons: {
-        submit: {
-          icon: '<i class="fas fa-check"></i>',
-          label: "Yes",
-          callback: async _dlg => {
-            // Gotta typeguard the actor again
-            if (!state.actor) {
-              return reject();
-            }
-            resolve(true);
-          },
-        },
-        cancel: {
-          icon: '<i class="fas fa-times"></i>',
-          label: "No",
-          callback: async () => resolve(false),
-        },
+  if (!state.actor) return false;
+
+  return (
+    (await foundry.applications.api.DialogV2.confirm({
+      window: {
+        title: game.i18n.format("lancer.flow.fullRepair.title", { name: state.actor.name ?? "" }),
+        icon: "cci cci-repair",
       },
-      default: "submit",
-      close: () => resolve(false),
-    }).render(true);
-  });
+      content: `<p>${game.i18n.format("lancer.flow.fullRepair.prompt", {
+        type: state.actor.type,
+        name: state.actor.name ?? "",
+      })}</p>`,
+      yes: {
+        icon: "fas fa-check",
+        label: game.i18n.localize("lancer.flow.common.yes"),
+        default: true,
+      },
+      no: {
+        icon: "fas fa-times",
+        label: game.i18n.localize("lancer.flow.common.no"),
+      },
+    })) ?? false
+  );
 }
 
 export async function executeFullRepair(state: FlowState<LancerFlowState.TextRollData>): Promise<boolean> {

@@ -61,11 +61,13 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
 
   async _prepareContext(options: Record<string, unknown>) {
     const context = await super._prepareContext(options);
+    const trackerSettings = game.settings.get(game.system.id, LANCER.setting_actionTracker);
     const data = {
       position: this.position,
       name: this.target && this.target.name.toLocaleUpperCase(),
       actions: this.getActions(),
-      clickable: game.user?.isGM || game.settings.get(game.system.id, LANCER.setting_actionTracker).allowPlayers,
+      clickable: game.user?.isGM || trackerSettings.allowPlayers,
+      showTextLabels: trackerSettings.showTextLabels,
     };
     return foundry.utils.mergeObject(context, data);
   }
@@ -195,24 +197,13 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
   }
 
   private loadTooltips() {
-    tippy('.action[data-action="protocol"]', {
-      content: "Protocol",
-    });
-    tippy('.action[data-action="full"]', {
-      content: "Full Action",
-    });
-    tippy('.action[data-action="quick"]', {
-      content: "Quick Action",
-    });
-    tippy('.action[data-action="move"]', {
-      content: "Movement Action",
-    });
-    tippy('.action[data-action="reaction"]', {
-      content: "Reaction",
-    });
-    tippy('.action[data-action="free"]', {
-      content: "Free Actions",
-    });
+    const localizeTip = (key: string) => game.i18n.localize(key);
+    tippy('.action[data-action="protocol"]', { content: localizeTip("lancer.actionTracker.actions.protocol") });
+    tippy('.action[data-action="full"]', { content: localizeTip("lancer.actionTracker.actions.full") });
+    tippy('.action[data-action="quick"]', { content: localizeTip("lancer.actionTracker.actions.quick") });
+    tippy('.action[data-action="move"]', { content: localizeTip("lancer.actionTracker.actions.move") });
+    tippy('.action[data-action="reaction"]', { content: localizeTip("lancer.actionTracker.actions.reaction") });
+    tippy('.action[data-action="free"]', { content: localizeTip("lancer.actionTracker.actions.free") });
   }
 
   // HELPERS //

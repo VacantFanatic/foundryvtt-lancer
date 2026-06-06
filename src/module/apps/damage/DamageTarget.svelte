@@ -5,6 +5,7 @@
   import HudCheckbox from "../components/HudCheckbox.svelte";
   import { DamageHudTarget, HitQuality } from "./data";
   import DamageInput from "./DamageInput.svelte";
+  import { hudL } from "../../helpers/hud-i18n";
   import { DamageType } from "../../enums";
   import HitRadio from "./HitRadio.svelte";
 
@@ -63,9 +64,9 @@
             class="lancer-button add-damage-type small"
             type="button"
             on:click={addBonusDamage}
-            aria-label="Add bonus damage type"
-            title="Add bonus damage type"
-            data-tooltip="Add a bonus damage type for only this target"
+            aria-label={hudL("damage.add-target-bonus-damage")}
+            title={hudL("damage.add-target-bonus-damage")}
+            data-tooltip={hudL("damage.add-target-bonus-damage")}
           >
             <i class="mdi mdi-plus-thick"></i>
           </button>
@@ -81,9 +82,9 @@
           class="lancer-button add-damage-type"
           type="button"
           on:click={addBonusDamage}
-          aria-label="Add bonus damage type"
-          title="Add bonus damage type"
-          data-tooltip="Add a bonus damage type for only this target"
+          aria-label={hudL("damage.add-target-bonus-damage")}
+          title={hudL("damage.add-target-bonus-damage")}
+          data-tooltip={hudL("damage.add-target-bonus-damage")}
         >
           <i class="mdi mdi-plus-thick"></i>
         </button>
@@ -100,21 +101,21 @@
       icon="mdi mdi-shield-off-outline"
       bind:value={target.ap}
       on:change={toggleAP}
-      tooltip="Armor Piercing (AP)"
+      tooltip={hudL("damage.armor-piercing-tip")}
       disabled={target.paracausal}
     />
     <HudCheckbox
       icon="cci cci-large-beam"
       bind:value={target.paracausal}
       on:change={toggleParacausal}
-      tooltip="For 'cannot be reduced' effects like the Paracausal mod"
+      tooltip={hudL("damage.paracausal-tip")}
       style="margin: 0 0.3em"
     />
     <HudCheckbox
       icon="mdi mdi-fraction-one-half"
       bind:value={target.halfDamage}
       on:change={toggleHalfDamage}
-      tooltip="For effects which cause the attacker to deal half damage in addition to resistance, like Heavy Gunner"
+      tooltip={hudL("damage.half-damage-tip")}
     />
   </div>
 </div>

@@ -1,3 +1,17 @@
+# 2.16.0 (2026-06-06)
+
+## Added
+
+- Collapse controls use `aria-expanded` and support **Enter/Space** keyboard activation.
+- Action tracker **text labels** optional via client setting; all action icons have `aria-label`s.
+- Combat HUDs (`aria-modal`) with **focus trap** while open; Escape still cancels.
+- `lancer.hud` i18n keys for Acc/Diff, Damage, and Structure/Stress HUD strings.
+
+## Changed
+
+- **Stabilize** and **Full Repair** flows use DialogV2 instead of legacy `Dialog`.
+- Sheet icon-only controls (context menu, chat flow, roll buttons) include localized `aria-label`s.
+
 # 2.15.0 (2026-06-06)
 
 ## Added
