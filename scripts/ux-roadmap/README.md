@@ -12,7 +12,7 @@ This folder defines the **UX Roadmap 2026** release plan and a script to create:
 
 **You do not need `gh` on your machine or the cloud VM.** See **[MANUAL-SETUP.md](./MANUAL-SETUP.md)**:
 
-- **Option A (recommended):** one fine-grained PAT in repo secrets → run the **UX Roadmap bootstrap** GitHub Action (passkey only in the browser).
+- **Option A (recommended):** one **classic** PAT (`project` + `repo` scopes) in repo secrets → run **UX Roadmap bootstrap**. If you see `unknown owner type`, the token is wrong — see MANUAL-SETUP.md.
 - **Option B:** create the Project entirely in the GitHub web UI and add issues #43–#85.
 
 ### Local CLI (optional)
