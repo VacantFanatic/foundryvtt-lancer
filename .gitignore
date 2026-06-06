@@ -23,3 +23,6 @@ fvttrc.yml
 
 # UX roadmap bootstrap local state
 scripts/ux-roadmap/bootstrap-state.json
+
+# E2E Foundry Docker data dir
+.foundry-e2e-data/

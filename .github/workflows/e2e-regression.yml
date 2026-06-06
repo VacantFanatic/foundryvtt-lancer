@@ -1,0 +1,82 @@
+name: E2E regression (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      foundry_image:
+        description: "Docker image for Foundry VTT"
+        required: false
+        default: "felddy/foundryvtt:release"
+        type: string
+
+concurrency:
+  group: e2e-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    env:
+      FOUNDRY_URL: http://localhost:30000
+      FOUNDRY_ADMIN_KEY: devadmin
+      FOUNDRY_WORLD_ID: lancer-dev-test
+      FOUNDRY_DATA_DIR: ${{ github.workspace }}/.foundry-e2e-data
+      FOUNDRY_CONTAINER_NAME: lancer-e2e-foundry
+      FOUNDRY_IMAGE: ${{ inputs.foundry_image }}
+      CI: "1"
+
+    steps:
+      - name: Require Foundry credentials
+        run: |
+          if [ -z "${{ secrets.FOUNDRY_USERNAME }}" ] || [ -z "${{ secrets.FOUNDRY_PASSWORD }}" ]; then
+            echo "::error::Add repository secrets FOUNDRY_USERNAME and FOUNDRY_PASSWORD (FoundryVTT.com login)."
+            echo "Optional: FOUNDRY_LICENSE_KEY for headless license acceptance."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: CI=1 npm ci
+
+      - name: Build Lancer system
+        run: SKIP_FOUNDRY_DIST_MIRROR=1 npm run build
+
+      - name: Install Playwright Firefox
+        run: npm run test:e2e:install
+
+      - name: Start Foundry (Docker)
+        env:
+          FOUNDRY_USERNAME: ${{ secrets.FOUNDRY_USERNAME }}
+          FOUNDRY_PASSWORD: ${{ secrets.FOUNDRY_PASSWORD }}
+          FOUNDRY_LICENSE_KEY: ${{ secrets.FOUNDRY_LICENSE_KEY }}
+        run: |
+          chmod +x scripts/e2e/*.sh
+          ./scripts/e2e/start-foundry-docker.sh
+
+      - name: Bootstrap Foundry (license / auth)
+        run: npx playwright test -c e2e/playwright.config.ts e2e/setup/bootstrap.spec.ts
+
+      - name: Run E2E regression suite
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            e2e/report/
+            e2e/test-results/
+          retention-days: 14
+
+      - name: Stop Foundry container
+        if: always()
+        run: docker rm -f "${FOUNDRY_CONTAINER_NAME}" 2>/dev/null || true
