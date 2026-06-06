@@ -1,3 +1,15 @@
+# 2.15.0 (2026-06-06)
+
+## Added
+
+- **Dismissible sync banner** on the pilot Tactical tab for never-synced pilots, with a shortcut to the Cloud tab.
+- Mech Stats tab **Combat** and **Systems** collapsible sections with sticky headers.
+- NPC sheet **Stats | Features | Effects** tabs; feature drag-sort behavior preserved.
+
+## Changed
+
+- NPC guided tour selectors updated for the tabbed sheet layout.
+
 # 2.14.0 (2026-06-06)
 
 ## Added

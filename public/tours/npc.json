@@ -21,7 +21,7 @@
     },
     {
       "id": "addClass",
-      "selector": ".tour-npc .window-content .sheet-body>div.flexcol>div.card.clipped.flexrow>div:nth-child(1)",
+      "selector": ".tour-npc [data-npc-section='class-templates'] .npc-class-column",
       "title": "lancer.tour.npc.addClass.title",
       "content": "lancer.tour.npc.addClass.content",
       "sidebarTab": "compendium"
@@ -40,7 +40,7 @@
     },
     {
       "id": "npcTemplates",
-      "selector": ".tour-npc .window-content .sheet-body>div.flexcol>div.card.clipped.flexrow>div:nth-child(2)",
+      "selector": ".tour-npc [data-npc-section='class-templates'] .npc-template-column",
       "title": "lancer.tour.npc.npcTemplates.title",
       "content": "lancer.tour.npc.npcTemplates.content"
     }

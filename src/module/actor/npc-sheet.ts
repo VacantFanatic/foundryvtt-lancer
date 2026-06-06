@@ -17,6 +17,17 @@ export class LancerNPCSheet extends LancerActorSheet<EntryType.NPC> {
     body: { template: "systems/lancer/templates/actor/npc.hbs" },
   };
 
+  static override TABS = {
+    primary: {
+      initial: "stats",
+      tabs: [
+        { id: "stats", group: "primary" },
+        { id: "features", group: "primary" },
+        { id: "effects", group: "primary" },
+      ],
+    },
+  };
+
   override activateListeners(html: HTMLElement): void {
     super.activateListeners(html);
 

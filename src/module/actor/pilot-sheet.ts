@@ -196,6 +196,25 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
       });
 
     $el
+      .find('[data-action="goCloudTab"]')
+      .off("click.lancerGoCloudTab")
+      .on("click.lancerGoCloudTab", ev => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this.changeTab("cloud", "primary");
+      });
+
+    $el
+      .find('[data-action="dismissSyncBanner"]')
+      .off("click.lancerDismissSyncBanner")
+      .on("click.lancerDismissSyncBanner", async ev => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        await pilot.setFlag("lancer", "dismissSyncBanner", true);
+        this.render();
+      });
+
+    $el
       .find('[data-action="startPilotImportTour"]')
       .off("click.lancerPilotImportTour")
       .on("click.lancerPilotImportTour", async ev => {
@@ -293,6 +312,8 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
 
     data.compConLoggedIn = await isCompconLoggedIn();
     data.compConPilotCount = pilotCache().length;
+    data.showSyncBanner =
+      pilot.system.last_cloud_update === "never" && !(pilot.getFlag("lancer", "dismissSyncBanner") as boolean);
     data.compConPilotList = pilotCache()
       .sort((p1, p2) => {
         if (p1.callsign < p2.callsign) return -1;

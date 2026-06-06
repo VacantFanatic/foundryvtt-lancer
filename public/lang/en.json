@@ -127,9 +127,21 @@
       "system": {
         "label": "LOADOUT",
         "sp-used": "SP USED"
+      },
+      "sections": {
+        "combat": "COMBAT",
+        "systems": "SYSTEMS"
+      },
+      "inventory": {
+        "label": "View Inventory"
       }
     },
     "npc-sheet": {
+      "tabs": {
+        "stats": "<NPC//STATS>",
+        "features": "<NPC//FEATURES>",
+        "effects": "<EFFECTS//ACTIVE>"
+      },
       "header": {
         "class": "CLASS",
         "templates": "TEMPLATES"
@@ -179,6 +191,11 @@
       },
       "json-import": {
         "label": "IMPORT"
+      },
+      "sync-banner": {
+        "message": "This pilot has not been imported from COMP/CON yet. Open the Sync tab to download or upload a JSON export.",
+        "action": "Open Sync tab",
+        "dismiss": "Dismiss"
       },
       "cloud-wizard": {
         "steps-label": "COMP/CON import steps",

@@ -53,6 +53,7 @@ export interface LancerActorSheetData<T extends LancerActorType> {
   compConPilotList?: Record<string, string>;
   compConLoggedIn?: boolean;
   compConPilotCount?: number;
+  showSyncBanner?: boolean;
   cleanedOwnerID?: string;
   vaultID?: string;
   rawID?: string;
