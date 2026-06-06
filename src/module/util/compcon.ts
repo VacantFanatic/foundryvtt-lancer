@@ -92,6 +92,16 @@ export function pilotCache(): CachedCloudPilot[] {
   return _cache;
 }
 
+export async function isCompconLoggedIn(): Promise<boolean> {
+  try {
+    const { Auth } = await import("@aws-amplify/auth");
+    await Auth.currentSession();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function fetchV2PilotViaShareCode(sharecode: string): Promise<PackedPilotData> {
   const shareCodeResponse = await fetchWithOptionalShareProxy(
     `${CC_API_URI}/share?code=${encodeURIComponent(sharecode)}`,

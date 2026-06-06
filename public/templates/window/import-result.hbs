@@ -1,0 +1,29 @@
+<div class="import-result import-result--{{status}}">
+  <p class="import-result-summary major">{{summary}}</p>
+
+  {{#if missingActors.length}}
+    <div class="import-result-section">
+      <span class="lancer-header lancer-primary minor">{{localize "lancer.import.result.missing-actors"}}</span>
+      <ul class="import-result-list">
+        {{#each missingActors}}
+          <li><strong>{{name}}</strong> — <code>{{lid}}</code></li>
+        {{/each}}
+      </ul>
+    </div>
+  {{/if}}
+
+  {{#if missingItems.length}}
+    <div class="import-result-section">
+      <span class="lancer-header lancer-primary minor">{{localize "lancer.import.result.missing-items"}}</span>
+      <ul class="import-result-list">
+        {{#each missingItems}}
+          <li><strong>{{actor}}</strong> — <code>{{lid}}</code></li>
+        {{/each}}
+      </ul>
+    </div>
+  {{/if}}
+
+  {{#if showLcpHint}}
+    <p class="minor desc-text import-result-hint">{{{lcpHint}}}</p>
+  {{/if}}
+</div>

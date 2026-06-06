@@ -12,7 +12,13 @@ import {
   type LancerRESERVE,
 } from "../item/lancer-item";
 import { array_path_edit_changes, drilldownDocument, extendHelper, hex_array, resolveHelperDotpath } from "./commons";
-import { type FoundryDropData, handleDocDropping, handleDragging, type ResolvedDropData } from "./dragdrop";
+import {
+  type DropPredicate,
+  type FoundryDropData,
+  handleDocDropping,
+  handleDragging,
+  type ResolvedDropData,
+} from "./dragdrop";
 import {
   framePreview,
   licenseRefView,
@@ -76,11 +82,12 @@ export function simple_ref_slot(path: string = "", accept_types: string | EntryT
     let icons = (arr_types || ["dummy"]).filter(t => t).map(t => `<img class="ref-icon" src="${TypeIcon(t)}"></img>`);
 
     // Make an empty ref. Note that it still has path stuff if we are going to be dropping things here
-    return `<div class="ref ref-card slot"
+    return `<div class="ref ref-card slot drop-settable click-settable"
                  data-accept-types="${flat_types}"
                  data-path="${path}">
           ${icons.join(" ")}
-          <span class="major">Empty</span>
+          <span class="major">${game.i18n.localize("lancer.ref-slot.empty-label")}</span>
+          ${refSlotEmptyHintHtml()}
       </div>`;
   } else if (doc.then !== undefined) {
     return `<span>ASYNC not handled yet</span>`;
@@ -424,6 +431,70 @@ export function handleChargedInteraction(html: JQuery, _doc: LancerActor | Lance
   });
 }
 
+export function refSlotEmptyHintHtml(): string {
+  return `<span class="minor ref-slot-hint">${game.i18n.localize("lancer.ref-slot.empty-hint")}</span>`;
+}
+
+export function formatAcceptTypeLabels(acceptTypes: string): string {
+  return acceptTypes
+    .split(" ")
+    .filter(Boolean)
+    .map(t => game.i18n.localize(`TYPES.Item.${t}`))
+    .join(", ");
+}
+
+export function refSlotAcceptsDrop(drop: ResolvedDropData, dest: JQuery): boolean {
+  const types = dest[0]?.dataset?.acceptTypes;
+  if (!types) return true;
+  const docType = drop.type === "Item" ? drop.document.type : "err";
+  return types.split(" ").includes(docType);
+}
+
+export function notifyInvalidRefSlotDrop(dest: JQuery): void {
+  const types = dest[0]?.dataset?.acceptTypes;
+  if (!types) return;
+  ui.notifications!.warn(game.i18n.format("lancer.ref-slot.invalid-drop", { types: formatAcceptTypeLabels(types) }));
+}
+
+export async function setRefSlotValue(
+  root_doc: LancerActor | LancerItem,
+  path: string,
+  val: LancerItem
+): Promise<void> {
+  const dd = drilldownDocument(root_doc, path.endsWith(".value") ? path.slice(0, path.length - ".value".length) : path);
+  const updateData = {} as Record<string, unknown>;
+  if (path.includes("loadout") && dd.sub_doc instanceof LancerActor) {
+    if (dd.sub_doc.is_pilot()) {
+      const cl = (dd.sub_doc as LancerActor & { system: { _source: { loadout: SourceData.Pilot["loadout"] } } }).system
+        ._source.loadout;
+      if (cl.armor.some(x => x == val.id))
+        updateData["system.loadout.armor"] = cl.armor.map(x => (x == val.id ? null : x));
+      if (cl.gear.some(x => x == val.id))
+        updateData["system.loadout.gear"] = cl.gear.map(x => (x == val.id ? null : x));
+      if (cl.weapons.some(x => x == val.id))
+        updateData["system.loadout.weapons"] = cl.weapons.map(x => (x == val.id ? null : x));
+    } else if (dd.sub_doc.is_mech()) {
+      const cl = (dd.sub_doc as LancerActor & { system: { _source: { loadout: SourceData.Mech["loadout"] } } }).system
+        ._source.loadout;
+      if (cl.systems.some(x => x == val.id))
+        updateData["system.loadout.systems"] = cl.systems.map(x => (x == val.id ? null : x));
+      if (cl.weapon_mounts.some(x => x.slots.some(y => y.weapon == val.id || y.mod == val.id))) {
+        updateData["system.loadout.weapon_mounts"] = cl.weapon_mounts.map(wm => ({
+          slots: wm.slots.map(s => ({
+            weapon: s.weapon == val.id ? null : s.weapon,
+            mod: s.mod == val.id ? null : s.mod,
+            size: s.size,
+          })),
+          bracing: wm.bracing,
+          type: wm.type,
+        }));
+      }
+    }
+  }
+  updateData[dd.sub_path] = val.id;
+  await dd.sub_doc.update(updateData);
+}
+
 // Enables dragging of ref cards (or anything with .ref.set and the appropriate fields)
 // This doesn't handle natives
 export function handleRefDragging(html: JQuery) {
@@ -450,59 +521,46 @@ export function handleRefSlotDropping(
   root_doc: LancerActor | LancerItem,
   pre_finalize_drop: ((drop: ResolvedDropData) => Promise<ResolvedDropData>) | null
 ) {
-  handleDocDropping(html.find(".ref.drop-settable"), async (drop, dest, evt) => {
-    // Pre-finalize the entry
-    if (pre_finalize_drop) {
-      drop = await pre_finalize_drop(drop);
+  const allowDrop: DropPredicate = (drop, dest, evt) => {
+    const permitted = refSlotAcceptsDrop(drop, dest);
+    if (!permitted && evt.type === "drop") {
+      notifyInvalidRefSlotDrop(dest);
     }
+    return permitted;
+  };
 
-    // Decide the mode
-    let path = dest[0].dataset.path;
-    let types = dest[0].dataset.acceptTypes as string;
-    let val = drop.document;
-
-    // Check allows
-    if (types && !types.includes((drop.document as any).type ?? "err")) {
-      return;
-    }
-
-    // Then set it to path, with an added correction of unsetting any other place its set on the same document's loadout (if path in loadout)
-    if (path) {
-      let dd = drilldownDocument(
-        root_doc,
-        path.endsWith(".value") ? path.slice(0, path.length - ".value".length) : path
-      ); // If dropping onto an item.value, then truncate to target the item
-      let updateData = {} as any;
-      if (path.includes("loadout") && dd.sub_doc instanceof LancerActor) {
-        // Do clear-correction here
-        if (dd.sub_doc.is_pilot()) {
-          // If other occurrences of val
-          let cl = (dd.sub_doc as any).system._source.loadout as SourceData.Pilot["loadout"];
-          if (cl.armor.some(x => x == val.id))
-            updateData["system.loadout.armor"] = cl.armor.map(x => (x == val.id ? null : x));
-          if (cl.gear.some(x => x == val.id))
-            updateData["system.loadout.gear"] = cl.gear.map(x => (x == val.id ? null : x));
-          if (cl.weapons.some(x => x == val.id))
-            updateData["system.loadout.weapons"] = cl.weapons.map(x => (x == val.id ? null : x));
-        } else if (dd.sub_doc.is_mech()) {
-          let cl = (dd.sub_doc as any).system._source.loadout as SourceData.Mech["loadout"];
-          if (cl.systems.some(x => x == val.id))
-            updateData["system.loadout.systems"] = cl.systems.map(x => (x == val.id ? null : x));
-          if (cl.weapon_mounts.some(x => x.slots.some(y => y.weapon == val.id || y.mod == val.id))) {
-            updateData["system.loadout.weapon_mounts"] = cl.weapon_mounts.map(wm => ({
-              slots: wm.slots.map(s => ({
-                weapon: s.weapon == val.id ? null : s.weapon,
-                mod: s.mod == val.id ? null : s.mod,
-                size: s.size,
-              })),
-              bracing: wm.bracing,
-              type: wm.type,
-            }));
-          }
-        }
+  handleDocDropping(
+    html.find(".ref.drop-settable"),
+    async (drop, dest, _evt) => {
+      if (pre_finalize_drop) {
+        drop = await pre_finalize_drop(drop);
       }
-      updateData[dd.sub_path] = val.id;
-      dd.sub_doc.update(updateData);
-    }
+
+      const path = dest[0].dataset.path;
+      if (!path || drop.type !== "Item") return;
+
+      await setRefSlotValue(root_doc, path, drop.document);
+    },
+    allowDrop
+  );
+}
+
+export function handleRefSlotPicking(
+  html: JQuery,
+  root_doc: LancerActor | LancerItem,
+  pre_finalize_drop: ((drop: ResolvedDropData) => Promise<ResolvedDropData>) | null
+) {
+  if (!(root_doc instanceof LancerActor) || !root_doc.isOwner) return;
+
+  html.find(".ref.slot.click-settable").on("click", async ev => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    const elt = ev.currentTarget as HTMLElement;
+    const path = elt.dataset.path;
+    const acceptTypes = (elt.dataset.acceptTypes ?? "").split(" ").filter(Boolean) as EntryType[];
+    if (!path || !acceptTypes.length) return;
+
+    const { CompendiumSlotPicker } = await import("../apps/compendium-slot-picker");
+    await CompendiumSlotPicker.pick(root_doc, acceptTypes, path, pre_finalize_drop);
   });
 }

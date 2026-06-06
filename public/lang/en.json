@@ -54,8 +54,37 @@
       "errors": {
         "core-data-title": "Core data required",
         "core-data-required": "Import Core Book Data in the Lancer Compendium Manager (Compendiums tab) before importing a pilot.",
-        "core-data-open-lcp": "Open LCP Manager"
+        "core-data-open-lcp": "Open LCP Manager",
+        "unrecognized-format": "Could not determine COMP/CON import format for this pilot data.",
+        "not-pilot": "COMP/CON import target is not a pilot actor.",
+        "missing-fields": "COMP/CON import data is missing required pilot fields (name/callsign).",
+        "invalid-json": "Selected file is not valid JSON."
+      },
+      "result": {
+        "title": "Pilot Import Result",
+        "close": "Close",
+        "success": "Successfully imported {name}.",
+        "partial": "Partially imported {name}. Some actors or items could not be found.",
+        "failure": "Failed to import {name}.",
+        "missing-actors": "Actors that could not be created or updated",
+        "missing-items": "Items not found in compendiums",
+        "lcp-hint": "Install required LCPs using the <b>Lancer Compendium Manager</b>, then re-import."
       }
+    },
+    "ref-slot": {
+      "empty-label": "Empty",
+      "empty-hint": "Drag an item here or click to browse compendiums",
+      "equip-armor": "Equip armor",
+      "equip-weapon": "Equip weapon",
+      "equip-gear": "Equip gear",
+      "equip-reserve": "Equip reserve",
+      "equip-mod": "Install mod",
+      "insert-weapon": "Insert {size} weapon",
+      "invalid-drop": "This slot accepts: {types}",
+      "picker-title": "Choose from Compendium",
+      "picker-hint": "Showing compendium items of type: {types}",
+      "picker-filter": "Filter by name…",
+      "picker-empty": "No matching compendium items found. Import the required LCP first."
     },
     "common-sheet": {
       "tabs": {
@@ -150,6 +179,19 @@
       },
       "json-import": {
         "label": "IMPORT"
+      },
+      "cloud-wizard": {
+        "steps-label": "COMP/CON import steps",
+        "step-login": "Login",
+        "step-select": "Select",
+        "step-import": "Download / JSON",
+        "login-title": "COMP/CON ACCOUNT",
+        "login-button": "Open COMP/CON Login",
+        "logged-in": "Signed in — {count} pilots available in the vault list.",
+        "logged-out": "Optional: sign in to list pilots from your COMP/CON vault. Share codes work without login.",
+        "json-hint": "Upload a pilot JSON exported from COMP/CON.",
+        "tour-link": "Take the pilot import tour",
+        "tour-missing": "Pilot import tour is not registered."
       },
       "dossier": {
         "cs": "CALLSIGN",

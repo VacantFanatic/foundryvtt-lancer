@@ -18,11 +18,11 @@ sudo docker start foundry   # or see AGENTS.md for full docker run
 
 Environment variables:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `FOUNDRY_URL` | `http://localhost:30000` | Foundry base URL |
-| `FOUNDRY_ADMIN_KEY` | `devadmin` | Setup admin password |
-| `FOUNDRY_WORLD_ID` | `lancer-dev-test` | World package id |
+| Variable            | Default                  | Description          |
+| ------------------- | ------------------------ | -------------------- |
+| `FOUNDRY_URL`       | `http://localhost:30000` | Foundry base URL     |
+| `FOUNDRY_ADMIN_KEY` | `devadmin`               | Setup admin password |
+| `FOUNDRY_WORLD_ID`  | `lancer-dev-test`        | World package id     |
 
 ## Run
 
@@ -44,10 +44,10 @@ Trigger from **Actions → E2E regression (manual) → Run workflow**.
 
 ### Required repository secrets
 
-| Secret | Description |
-|--------|-------------|
+| Secret             | Description                      |
+| ------------------ | -------------------------------- |
 | `FOUNDRY_USERNAME` | FoundryVTT.com account **email** |
-| `FOUNDRY_PASSWORD` | FoundryVTT.com password |
+| `FOUNDRY_PASSWORD` | FoundryVTT.com password          |
 
 Optional: `FOUNDRY_LICENSE_KEY` — license key for headless EULA acceptance in Docker.
 
@@ -55,11 +55,11 @@ The workflow builds `dist/`, starts `felddy/foundryvtt`, seeds the `lancer-dev-t
 
 ## Regression suite
 
-| Spec | Covers |
-|------|--------|
-| `world-load.spec.ts` | World join, Lancer system version, console errors |
-| `automation-settings.spec.ts` | `prompt_damage_after_attack` setting (#59) |
-| `accdiff-hud.spec.ts` | Acc/Diff Advanced disclosure (#60) |
-| `combat-loop.spec.ts` | Combat tour steps, attack reroll flags (#61, #62) |
+| Spec                          | Covers                                            |
+| ----------------------------- | ------------------------------------------------- |
+| `world-load.spec.ts`          | World join, Lancer system version, console errors |
+| `automation-settings.spec.ts` | `prompt_damage_after_attack` setting (#59)        |
+| `accdiff-hud.spec.ts`         | Acc/Diff Advanced disclosure (#60)                |
+| `combat-loop.spec.ts`         | Combat tour steps, attack reroll flags (#61, #62) |
 
 Tests seed temporary actors/scenes tagged with `flags.lancer.e2e` and clean them up on re-run.

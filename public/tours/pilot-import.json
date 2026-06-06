@@ -20,14 +20,14 @@
     },
     {
       "id": "codeEntry",
-      "selector": "#LancerPilotSheet-Actor-TOUR0PILOT000000 div[data-tab='cloud'] div div:nth-child(1)",
+      "selector": "#LancerPilotSheet-Actor-TOUR0PILOT000000 div[data-tab='cloud'] [data-cloud-step='select']",
       "title": "lancer.tour.pilot-import.codeEntry.title",
       "content": "lancer.tour.pilot-import.codeEntry.content",
       "sidebarTab": "actors"
     },
     {
       "id": "download",
-      "selector": "#LancerPilotSheet-Actor-TOUR0PILOT000000 div[data-tab='cloud'] div div:nth-child(2)",
+      "selector": "#LancerPilotSheet-Actor-TOUR0PILOT000000 div[data-tab='cloud'] .cloud-download-button",
       "title": "lancer.tour.pilot-import.download.title",
       "content": "lancer.tour.pilot-import.download.content",
       "sidebarTab": "actors"
@@ -41,7 +41,7 @@
     },
     {
       "id": "jsonImport",
-      "selector": "#LancerPilotSheet-Actor-TOUR0PILOT000000 div[data-tab='cloud'] div div:nth-child(4)",
+      "selector": "#LancerPilotSheet-Actor-TOUR0PILOT000000 input#pilot-json-import",
       "title": "lancer.tour.pilot-import.jsonImport.title",
       "content": "lancer.tour.pilot-import.jsonImport.content",
       "sidebarTab": "actors"

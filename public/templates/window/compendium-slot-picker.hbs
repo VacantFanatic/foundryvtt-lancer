@@ -1,0 +1,25 @@
+<div class="compendium-slot-picker">
+  <p class="minor desc-text">{{hint}}</p>
+  <input
+    class="lancer-input major compendium-slot-picker-filter"
+    type="search"
+    placeholder='{{localize "lancer.ref-slot.picker-filter"}}'
+    autocomplete="off"
+  />
+  <div class="compendium-slot-picker-list scroll-body">
+    {{#if items.length}}
+      {{#each items}}
+        <button
+          type="button"
+          class="compendium-slot-picker-item lancer-button"
+          data-uuid="{{uuid}}"
+        >
+          <img src="{{img}}" alt="" />
+          <span class="major">{{name}}</span>
+        </button>
+      {{/each}}
+    {{else}}
+      <p class="minor desc-text">{{localize "lancer.ref-slot.picker-empty"}}</p>
+    {{/if}}
+  </div>
+</div>

@@ -57,6 +57,78 @@ import { unpackReserve } from "../models/items/reserve";
 import { unpackFrame } from "../models/items/frame";
 const lp = LANCER.log_prefix;
 
+export type ImportResultStatus = "success" | "partial" | "failure";
+export type ImportResultSource = "cloud" | "json" | "v2" | "v3";
+
+export interface ImportResultSummary {
+  status: ImportResultStatus;
+  pilotName: string;
+  source?: ImportResultSource;
+  message?: string;
+  missingActors?: { name: string; lid: string }[];
+  missingItems?: { actor: string; lid: string }[];
+}
+
+function buildImportResultSummary(
+  pilot: LancerPILOT,
+  missingActors: { name: string; lid: string }[],
+  missingItems: { actor: string; lid: string }[],
+  source?: ImportResultSource
+): ImportResultSummary {
+  const hasMissing = missingActors.length > 0 || missingItems.length > 0;
+  return {
+    status: hasMissing ? "partial" : "success",
+    pilotName: pilot.name,
+    source,
+    missingActors,
+    missingItems,
+  };
+}
+
+export async function showImportResultDialog(summary: ImportResultSummary): Promise<void> {
+  const summaryKey =
+    summary.status === "success"
+      ? "lancer.import.result.success"
+      : summary.status === "partial"
+        ? "lancer.import.result.partial"
+        : "lancer.import.result.failure";
+
+  const content = await foundry.applications.handlebars.renderTemplate(
+    `systems/${game.system.id}/templates/window/import-result.hbs`,
+    {
+      status: summary.status,
+      summary: summary.message ?? game.i18n.format(summaryKey, { name: summary.pilotName }),
+      missingActors: summary.missingActors ?? [],
+      missingItems: summary.missingItems ?? [],
+      showLcpHint: summary.status === "partial",
+      lcpHint: game.i18n.localize("lancer.import.result.lcp-hint"),
+    }
+  );
+
+  const icon =
+    summary.status === "success"
+      ? "fas fa-check-circle"
+      : summary.status === "partial"
+        ? "fas fa-triangle-exclamation"
+        : "fas fa-times-circle";
+
+  await new foundry.applications.api.DialogV2({
+    window: {
+      title: game.i18n.localize("lancer.import.result.title"),
+      icon,
+    },
+    content,
+    buttons: [
+      {
+        action: "close",
+        icon: "fas fa-check",
+        label: game.i18n.localize("lancer.import.result.close"),
+        default: true,
+      },
+    ],
+  }).render(true);
+}
+
 async function notifyCoreDataRequired(): Promise<void> {
   const message = game.i18n.localize("lancer.import.errors.core-data-required");
   ui.notifications!.warn(message, { permanent: true });
@@ -87,49 +159,16 @@ function unpackClock(clock: PackedClockBurdenData) {
   };
 }
 
-function showIncompleteImportSummary(
+async function showIncompleteImportSummary(
   pilot: LancerPILOT,
   missingActors: { name: string; lid: string }[],
-  missingItems: { actor: string; lid: string }[]
+  missingItems: { actor: string; lid: string }[],
+  source?: ImportResultSource
 ) {
-  if (!missingItems.length && !missingActors.length) {
-    ui.notifications!.info("Successfully loaded pilot new state.");
-    return;
+  if (missingItems.length || missingActors.length) {
+    console.warn(`${lp} Some actors and/or items were missed during pilot import:`, missingActors, missingItems);
   }
-
-  let message = `Partially loaded '${pilot.name}'s new state.`;
-  if (missingActors.length) {
-    message += ` ${missingActors.length} actors could not be created/updated.`;
-  }
-  if (missingItems.length) {
-    message += ` ${missingItems.length} items could not be found.`;
-  }
-  message += ` Open the dialog for missing LIDs and install required LCPs via the Compendium Manager.`;
-  ui.notifications!.warn(message, { permanent: true });
-  console.warn(`${lp} Some actors and/or items were missed during pilot import:`, missingActors, missingItems);
-
-  let content = "";
-  if (missingActors.length) {
-    content += `<div><span>The following Actors could not be created or updated:</span>
-        <ul>${missingActors.map(i => `<li>${i.name} - ${i.lid}</li>`).join("")}</ul></div>`;
-  }
-  if (missingItems.length) {
-    content += `<div><span>The following Items were not found in the compendium and could not be imported:</span>
-        <ul>${missingItems.map(i => `<li>${i.actor} - ${i.lid}</li>`).join("")}</ul>
-        <span>Import all necessary LCPs first using the <b>Lancer Compendium Manager</b>.</span></div>`;
-  }
-  new foundry.applications.api.DialogV2({
-    window: { title: `Incomplete Pilot Import`, icon: "fas fa-triangle-exclamation" },
-    content,
-    buttons: [
-      {
-        action: "close",
-        icon: "fas fa-check",
-        label: "Close",
-        default: true,
-      },
-    ],
-  }).render(true);
+  await showImportResultDialog(buildImportResultSummary(pilot, missingActors, missingItems, source));
 }
 
 /**
@@ -438,18 +477,24 @@ async function getActorItemByLid(
 export async function importCC(
   pilot: LancerPILOT,
   importedData: PackedPilotData | PackedPilotWrapper,
-  clearFirst = true
+  clearFirst = true,
+  source: ImportResultSource = "cloud"
 ) {
   const resolved = resolveImportCCPayload(importedData);
   if (!resolved) {
-    ui.notifications!.error("Could not determine COMP/CON import format for this pilot data.", { permanent: true });
     console.error(`${lp} Unrecognized COMP/CON import payload`, importedData);
+    await showImportResultDialog({
+      status: "failure",
+      pilotName: pilot.name,
+      source,
+      message: game.i18n.localize("lancer.import.errors.unrecognized-format"),
+    });
     return;
   }
   if (resolved.route === "v3") {
-    await importCCv3(pilot, resolved.wrapper, clearFirst);
+    await importCCv3(pilot, resolved.wrapper, clearFirst, source === "json" ? "json" : "v3");
   } else {
-    await importCCv2(pilot, resolved.data, clearFirst);
+    await importCCv2(pilot, resolved.data, clearFirst, source === "json" ? "json" : "v2");
   }
 }
 
@@ -457,20 +502,33 @@ export async function importCC(
  * Imports packed pilot data from CCv3.
  * Minimum import version: CCv3.0.4
  */
-export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWrapper, clearFirst = true) {
+export async function importCCv3(
+  pilot: LancerPILOT,
+  importedData: PackedPilotWrapper,
+  clearFirst = true,
+  source: ImportResultSource = "v3"
+) {
   if (!requireCoreDataForImport()) return;
 
   console.log(`${lp} Importing v3 Pilot`, pilot, importedData);
   if (!pilot.is_pilot()) {
-    ui.notifications!.error("COMP/CON import target is not a pilot actor.", { permanent: true });
+    await showImportResultDialog({
+      status: "failure",
+      pilotName: pilot.name,
+      source,
+      message: game.i18n.localize("lancer.import.errors.not-pilot"),
+    });
     return;
   }
   const data = importedData.data;
   if (!data?.name || !data?.callsign) {
-    ui.notifications!.warn("COMP/CON v3 import data is missing required pilot fields (name/callsign).", {
-      permanent: true,
-    });
     console.error(`${lp} Invalid v3 import payload`, importedData);
+    await showImportResultDialog({
+      status: "failure",
+      pilotName: pilot.name,
+      source,
+      message: game.i18n.localize("lancer.import.errors.missing-fields"),
+    });
     return;
   }
 
@@ -1073,15 +1131,25 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
 
     pilot.effectHelper.propagateEffects(true);
     pilot.render();
-    showIncompleteImportSummary(pilot, _missingActors, _missingItems);
+    await showIncompleteImportSummary(pilot, _missingActors, _missingItems, source);
   } catch (e) {
     console.warn(e);
-    ui.notifications!.warn(`Failed to update pilot: ${e instanceof Error ? e.message : e}`, { permanent: true });
+    await showImportResultDialog({
+      status: "failure",
+      pilotName: pilot.name,
+      source,
+      message: e instanceof Error ? e.message : String(e),
+    });
   }
 }
 
 // Imports packed pilot data, from either a vault id or gist id
-export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clearFirst = true) {
+export async function importCCv2(
+  pilot: LancerPILOT,
+  data: PackedPilotData,
+  clearFirst = true,
+  source: ImportResultSource = "v2"
+) {
   if (!requireCoreDataForImport()) return;
   console.log(`${lp} Importing v2 Pilot`, pilot, data);
   if (!pilot.is_pilot() || !data) return;
@@ -1507,9 +1575,14 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
 
     // Reset curr data and render all
     pilot.render();
-    showIncompleteImportSummary(pilot, missingActors, missingItems);
+    await showIncompleteImportSummary(pilot, missingActors, missingItems, source);
   } catch (e) {
     console.warn(e);
-    ui.notifications!.warn(`Failed to update pilot: ${e instanceof Error ? e.message : e}`, { permanent: true });
+    await showImportResultDialog({
+      status: "failure",
+      pilotName: pilot.name,
+      source,
+      message: e instanceof Error ? e.message : String(e),
+    });
   }
 }

@@ -1,3 +1,17 @@
+# 2.14.0 (2026-06-06)
+
+## Added
+
+- Pilot Cloud tab **import wizard** with numbered steps (Login → Select → Download/JSON), COMP/CON login status, and a link to start the pilot-import tour.
+- **Empty loadout slots** show drag/click hints; clicking opens a filtered **compendium picker** for the accepted item types.
+- Unified **import result dialog** (DialogV2) for COMP/CON v2/v3 and JSON imports — success, partial, and failure — replacing fragmented toasts.
+
+## Changed
+
+- Pilots that have **never synced** (`last_cloud_update === "never"`) open on the Cloud tab by default.
+- Invalid item drops on ref slots show a notification listing accepted item types.
+- Pilot-import tour selectors updated for the new Cloud tab layout.
+
 # 2.13.0 (2026-06-06)
 
 ## Added
