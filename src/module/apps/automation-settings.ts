@@ -1,5 +1,6 @@
 import type { DeepPartial } from "fvtt-types/utils";
 import { LANCER } from "../config";
+import { bindContextualHelpActions, renderContextualHelp } from "../helpers/help";
 import { AutomationOptions } from "../settings";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -45,6 +46,11 @@ export class AutomationConfig extends HandlebarsApplicationMixin(ApplicationV2<{
     const ctx = {
       config: opts.loadDefault ? new AutomationOptions() : opts.loadEmpty ? blank : config,
       fields: config.schema.fields,
+      automationHelpHtml: await renderContextualHelp({
+        topic: "automation",
+        messageKey: "lancer.help.context.automation",
+        tourKey: "combat",
+      }),
       buttons: [
         { type: "submit", name: "submit", icon: "fas fa-save", label: "Save" },
         { type: "button", name: "reset", icon: "fas fa-undo", label: "SETTINGS.Reset", action: "onReset" },
@@ -67,5 +73,10 @@ export class AutomationConfig extends HandlebarsApplicationMixin(ApplicationV2<{
 
   static async #loadEmpty(this: AutomationConfig) {
     this.render(false, { loadEmpty: true });
+  }
+
+  protected override _onRender(context: object, options: Record<string, unknown>) {
+    super._onRender(context, options);
+    bindContextualHelpActions($(this.element));
   }
 }

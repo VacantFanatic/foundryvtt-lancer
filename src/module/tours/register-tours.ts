@@ -1,4 +1,4 @@
-import { LancerCombatTour, LancerLcpTour, LancerNPCTour, LancerPilotTour } from "./lancer-tour";
+import { LancerCombatTour, LancerLcpTour, LancerNPCTour, LancerPilotTour, LancerSlidingHudTour } from "./lancer-tour";
 
 export async function registerTours() {
   game.tours.register(
@@ -20,5 +20,10 @@ export async function registerTours() {
     game.system.id,
     "combat",
     await LancerCombatTour.fromJSON(`./systems/${game.system.id}/tours/combat.json`)
+  );
+  game.tours.register(
+    game.system.id,
+    "attack-dialog",
+    await LancerSlidingHudTour.fromJSON(`./systems/${game.system.id}/tours/attack-dialog.json`)
   );
 }

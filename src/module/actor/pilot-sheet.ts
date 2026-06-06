@@ -22,6 +22,7 @@ import type { ResolvedDropData } from "../helpers/dragdrop";
 import { EntryType } from "../enums";
 import type { PackedPilotData } from "../util/unpacking/packed-types";
 import { importCC, showImportResultDialog } from "./import";
+import { bindContextualHelpActions, renderContextualHelp } from "../helpers/help";
 
 const shareCodeMatcherV2 = /^[A-Z0-9]{6}$/;
 const shareCodeMatcherV3 = /^[A-Z0-9]{12}$/;
@@ -225,6 +226,8 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
         else ui.notifications!.warn(game.i18n.localize("lancer.pilot-sheet.cloud-wizard.tour-missing"));
       });
 
+    bindContextualHelpActions($el);
+
     $el.find<HTMLInputElement>("input#pilot-json-import").on("change", ev => this._onPilotJsonUpload(ev));
 
     $el.find(".activate-mech").on("click", async ev => {
@@ -309,11 +312,17 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
     options: Partial<foundry.applications.types.ApplicationRenderOptions>
   ): Promise<LancerActorSheetData<EntryType.PILOT>> {
     const data = (await super._prepareContext(options)) as LancerActorSheetData<EntryType.PILOT>;
+    const pilot = this.actor as LancerPILOT;
 
     data.compConLoggedIn = await isCompconLoggedIn();
     data.compConPilotCount = pilotCache().length;
     data.showSyncBanner =
       pilot.system.last_cloud_update === "never" && !(pilot.getFlag("lancer", "dismissSyncBanner") as boolean);
+    data.cloudHelpHtml = await renderContextualHelp({
+      topic: "cloud-import",
+      messageKey: "lancer.help.context.cloud-import",
+      tourKey: "pilot-import",
+    });
     data.compConPilotList = pilotCache()
       .sort((p1, p2) => {
         if (p1.callsign < p2.callsign) return -1;

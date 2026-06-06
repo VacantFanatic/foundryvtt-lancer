@@ -1,0 +1,39 @@
+<aside class="lancer-contextual-help" data-help-topic="{{topic}}">
+  <i class="fas fa-circle-info" aria-hidden="true"></i>
+  <p class="minor desc-text grow">{{{message}}}</p>
+  {{#if showHelpButton}}
+    <button
+      type="button"
+      class="lancer-button lancer-secondary"
+      data-action="openLancerHelp"
+      data-help-topic="{{topic}}"
+    >
+      <i class="fas fa-book-open"></i>
+      {{localize "lancer.help.open-help"}}
+    </button>
+  {{/if}}
+  {{#if wikiUrl}}
+    <a class="lancer-button lancer-secondary" href="{{wikiUrl}}" target="_blank" rel="noopener noreferrer">
+      <i class="fas fa-external-link-alt"></i>
+      {{localize "lancer.help.wiki-link"}}
+    </a>
+  {{/if}}
+  {{#if tourKey}}
+    <button type="button" class="lancer-button" data-action="startSystemTour" data-tour-key="{{tourKey}}">
+      <i class="fas fa-route"></i>
+      {{localize "lancer.help.start-tour"}}
+    </button>
+  {{/if}}
+  {{#if dismissible}}
+    <button
+      type="button"
+      class="lancer-button lancer-contextual-help-dismiss"
+      data-action="dismissContextualHelp"
+      data-help-dismiss="{{dismissKey}}"
+      data-tooltip='{{localize "lancer.help.dismiss"}}'
+      aria-label='{{localize "lancer.help.dismiss"}}'
+    >
+      <i class="fas fa-times"></i>
+    </button>
+  {{/if}}
+</aside>

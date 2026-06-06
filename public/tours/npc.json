@@ -43,6 +43,18 @@
       "selector": ".tour-npc [data-npc-section='class-templates'] .npc-template-column",
       "title": "lancer.tour.npc.npcTemplates.title",
       "content": "lancer.tour.npc.npcTemplates.content"
+    },
+    {
+      "id": "featuresTab",
+      "selector": ".tour-npc nav.lancer-tabs [data-tab='features']",
+      "title": "lancer.tour.npc.featuresTab.title",
+      "content": "lancer.tour.npc.featuresTab.content"
+    },
+    {
+      "id": "featuresList",
+      "selector": ".tour-npc [data-npc-section='features']",
+      "title": "lancer.tour.npc.featuresList.title",
+      "content": "lancer.tour.npc.featuresList.content"
     }
   ],
   "suggestedNextTours": ["lancer.pilot-import"],
@@ -73,6 +85,14 @@
       "npcTemplates": {
         "title": "NPC Templates",
         "content": "NPC Templates can be added by dragging them to the sheet. All base features will be added and any desired optional features can be added by dragging them from the Template sheet, similar to Class features."
+      },
+      "featuresTab": {
+        "title": "Features tab",
+        "content": "The NPC sheet uses <strong>Stats | Features | Effects</strong> tabs. Feature drag-sort and recharge controls live on the Features tab."
+      },
+      "featuresList": {
+        "title": "Feature list",
+        "content": "Equipped features appear here. Drag to reorder; use the recharge button to reset limited-use features at the start of a turn."
       }
     }
   }
