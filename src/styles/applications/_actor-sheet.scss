@@ -184,6 +184,82 @@
     }
   }
 
+  .pilot-sync-banner {
+    margin-bottom: 0.5rem;
+  }
+
+  .pilot-sync-banner-dismiss {
+    flex: 0 0 auto;
+    padding: 0.35rem 0.55rem;
+  }
+
+  .mech-stat-section {
+    margin-bottom: 0.75rem;
+  }
+
+  .sheet-section-header.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    margin-bottom: 0.35rem;
+  }
+
+  .mech-combat-stat-grid {
+    grid-template: repeat(3, minmax(3.25em, auto)) / repeat(5, 1fr);
+  }
+
+  .mech-systems-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .mech-systems-utilities {
+    align-items: stretch;
+    gap: 0.5rem;
+
+    .size-card,
+    .inventory {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 6rem;
+      padding: 0.35rem;
+    }
+
+    .hase {
+      flex: 1 1 12rem;
+      margin: 0;
+    }
+  }
+
+  .flow-button-sep {
+    margin: 0 8px;
+    border-left: 2px solid #a2a2a2;
+  }
+
+  .mech-combat-actions {
+    min-width: min(560px, 100%);
+    flex: 1 1 auto;
+  }
+
+  .npc-class-column,
+  .npc-template-column {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 5px;
+  }
+
+  .npc-features-spacer {
+    width: 120px;
+  }
+
+  .npc-recharge-button {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-size: 0.75rem;
+  }
+
   /* Mech stats: class on the grid so layout survives App V2 host/class quirks */
   .lancer-mech-stat-grid {
     display: grid;

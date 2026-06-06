@@ -172,6 +172,7 @@ export class LancerNPCTour extends LancerTour {
     }
     const npcSheet = this.npc.sheet;
     await npcSheet?.["_render"](true);
+    npcSheet?.["changeTab"]?.("stats", "primary", { force: true });
     const el = npcSheet instanceof foundry.applications.api.ApplicationV2 ? npcSheet.element : npcSheet?.element[0];
     el?.classList.add("tour-npc");
     if (["baseFeatures", "optionalFeatures"].includes(this.currentStep?.id!)) {

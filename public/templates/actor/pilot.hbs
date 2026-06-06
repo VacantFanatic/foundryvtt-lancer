@@ -381,6 +381,27 @@
 
     {{!-- Pilot Tactical Tab --}}
     <div class="tab tactical flexcol {{tabs.primary.tactical.cssClass}}" data-group="primary" data-tab="tactical">
+      {{#if showSyncBanner}}
+        <div class="card clipped pilot-sync-banner" data-pilot-section="sync-banner">
+          <div class="flexrow" style="align-items: center; gap: 0.5rem">
+            <i class="mdi mdi-cloud-sync-outline i--4"></i>
+            <p class="minor grow desc-text">{{localize "lancer.pilot-sheet.sync-banner.message"}}</p>
+            <button type="button" class="lancer-button" data-action="goCloudTab">
+              {{localize "lancer.pilot-sheet.sync-banner.action"}}
+            </button>
+            <button
+              type="button"
+              class="lancer-button pilot-sync-banner-dismiss"
+              data-action="dismissSyncBanner"
+              data-tooltip='{{localize "lancer.pilot-sheet.sync-banner.dismiss"}}'
+              aria-label='{{localize "lancer.pilot-sheet.sync-banner.dismiss"}}'
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      {{/if}}
+
       {{!-- Counters --}}
       <div class="flexrow">
         {{{pilot-counters actor}}}
