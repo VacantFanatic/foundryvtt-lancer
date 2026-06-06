@@ -4,7 +4,6 @@ export type ResolvedImportPayload =
   | { route: "v3"; wrapper: PackedPilotWrapper }
   | { route: "v2"; data: PackedPilotData };
 
-/** Pure routing for COMP/CON JSON (file export, share code, cloud fetch). */
 export function resolveImportCCPayload(
   importedData: PackedPilotData | PackedPilotWrapper
 ): ResolvedImportPayload | null {
