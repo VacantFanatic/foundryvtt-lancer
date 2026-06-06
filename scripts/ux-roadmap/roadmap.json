@@ -1,0 +1,493 @@
+{
+  "project": {
+    "title": "UX Roadmap 2026",
+    "owner": "VacantFanatic",
+    "repo": "foundryvtt-lancer",
+    "description": "Foundry VTT Lancer system UX improvements from the 2026 UX pass. Tracks releases v2.12.11 through v2.20.0 (optional v3.0.0)."
+  },
+  "labels": [
+    { "name": "ux-roadmap", "color": "1D76DB", "description": "UX roadmap tracking" },
+    { "name": "ux/epic", "color": "5319E7", "description": "Roadmap epic or release milestone issue" },
+    { "name": "ux/pr", "color": "0E8A16", "description": "Roadmap implementation PR issue" },
+    { "name": "priority/p0", "color": "B60205", "description": "High impact UX work" },
+    { "name": "priority/p1", "color": "D93F0B", "description": "Moderate impact UX work" },
+    { "name": "priority/p2", "color": "FBCA04", "description": "Polish and long-term UX work" }
+  ],
+  "milestones": [
+    { "title": "v2.12.11 — Trust & polish", "description": "Quick wins: import errors, WIP cleanup, cloud spinner, chat layout, HUD drag fix." },
+    { "title": "v2.13.0 — Combat loop", "description": "Auto-damage prompt, Acc/Diff disclosure, combat tour, chat rerolls." },
+    { "title": "v2.14.0 — Import & equip", "description": "Pilot cloud wizard, empty slot picker, unified import dialog." },
+    { "title": "v2.15.0 — Sheet IA", "description": "Pilot defaults, mech stat sections, NPC tabs." },
+    { "title": "v2.16.0 — A11y & dialogs", "description": "Collapse a11y, action manager labels, DialogV2, HUD focus trap, i18n." },
+    { "title": "v2.17.0 — Help & tours", "description": "Contextual help, what's new, tour maintenance." },
+    { "title": "v2.18.0 — Visual consistency", "description": "SCSS migration, remove legacy LCP HBS." },
+    { "title": "v2.19.0 — Finish stubs", "description": "Async loading, mount reset, combat tracker targets." },
+    { "title": "v2.20.0 — Interactive sheets", "description": "Svelte cloud island, experimental loadout editor." },
+    { "title": "v3.0.0 — Loadout editor GA", "description": "Optional major: promote loadout editor, remove legacy markup." }
+  ],
+  "releases": [
+    {
+      "id": "2.12.11",
+      "title": "v2.12.11 — Trust & polish",
+      "semver": "patch",
+      "sprint": "A",
+      "priority": "P0",
+      "summary": "Five low-risk PRs: actionable errors, hide WIP UI, cloud download spinner, attack card layout, HUD pointer-events during drag."
+    },
+    {
+      "id": "2.13.0",
+      "title": "v2.13.0 — Combat loop",
+      "semver": "minor",
+      "sprint": "B",
+      "priority": "P0",
+      "summary": "Optional auto-prompt damage, Acc/Diff progressive disclosure, combat tour update, chat reroll buttons."
+    },
+    {
+      "id": "2.14.0",
+      "title": "v2.14.0 — Import & equip",
+      "semver": "minor",
+      "sprint": "C",
+      "priority": "P0",
+      "summary": "Pilot cloud wizard, empty slot affordances with compendium picker, unified import result dialog."
+    },
+    {
+      "id": "2.15.0",
+      "title": "v2.15.0 — Sheet information architecture",
+      "semver": "minor",
+      "sprint": "D",
+      "priority": "P1",
+      "summary": "Pilot tab defaults, mech stats collapsible sections, NPC sheet tabs."
+    },
+    {
+      "id": "2.16.0",
+      "title": "v2.16.0 — Accessibility & dialogs",
+      "semver": "minor",
+      "sprint": "E",
+      "priority": "P1",
+      "summary": "Collapse a11y, action manager labels, DialogV2 migration, HUD focus trap, Svelte HUD i18n, sheet aria audit."
+    },
+    {
+      "id": "2.17.0",
+      "title": "v2.17.0 — Help & discoverability",
+      "semver": "minor",
+      "sprint": "F",
+      "priority": "P1",
+      "summary": "Contextual help links, what's new in help dialog, guided tour maintenance."
+    },
+    {
+      "id": "2.18.0",
+      "title": "v2.18.0 — Visual consistency",
+      "semver": "minor",
+      "sprint": "F",
+      "priority": "P2",
+      "summary": "Inline styles to SCSS utilities; remove legacy Handlebars LCP manager."
+    },
+    {
+      "id": "2.19.0",
+      "title": "v2.19.0 — Finish stubs",
+      "semver": "minor",
+      "sprint": "F",
+      "priority": "P1",
+      "summary": "Shared async loading pattern, mount reset implementation, combat tracker target controls."
+    },
+    {
+      "id": "2.20.0",
+      "title": "v2.20.0 — Interactive sheets (phase 1)",
+      "semver": "minor",
+      "sprint": "G",
+      "priority": "P2",
+      "summary": "Svelte cloud import island; experimental visual loadout editor."
+    },
+    {
+      "id": "3.0.0",
+      "title": "v3.0.0 — Loadout editor GA (optional)",
+      "semver": "major",
+      "sprint": "G",
+      "priority": "P2",
+      "summary": "Promote loadout editor; remove legacy Handlebars loadout if no fallback."
+    }
+  ],
+  "prs": [
+    {
+      "id": 1,
+      "release": "2.12.11",
+      "branch": "cursor/ux-import-errors-4b38",
+      "title": "Actionable import & migration errors",
+      "priority": "P0",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["src/module/actor/import.ts", "src/lancer.ts", "src/module/world_migration.ts", "src/module/apps/lcp-manager/lcp-manager.ts", "lang/en.json"],
+      "acceptance": [
+        "Failed COMP/CON import shows reason and next step",
+        "Missing-core errors include Open LCP Manager action",
+        "GM migration warnings stay permanent; player errors are timed"
+      ]
+    },
+    {
+      "id": 2,
+      "release": "2.12.11",
+      "branch": "cursor/ux-hide-wip-4b38",
+      "title": "Remove live WIP surfaces",
+      "priority": "P0",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["public/templates/actor/pilot.hbs", "src/module/actor/mech-sheet.ts", "src/module/actor/lancer-actor-sheet.ts"],
+      "acceptance": [
+        "No user-visible TODO toasts",
+        "Pilot upload WIP card hidden until implemented"
+      ]
+    },
+    {
+      "id": 3,
+      "release": "2.12.11",
+      "branch": "cursor/ux-cloud-download-spinner-4b38",
+      "title": "Pilot cloud download loading state",
+      "priority": "P0",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["src/module/actor/pilot-sheet.ts", "public/templates/actor/pilot.hbs", "src/styles/applications/_actor-sheet.scss"],
+      "acceptance": [
+        "Download button disabled with spinner during sync",
+        "Double-click cannot fire duplicate downloads"
+      ]
+    },
+    {
+      "id": 4,
+      "release": "2.12.11",
+      "branch": "cursor/ux-attack-card-layout-4b38",
+      "title": "Attack chat card layout polish",
+      "priority": "P0",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["public/templates/chat/attack-card.hbs", "public/templates/chat/tech-attack-card.hbs", "src/module/helpers/chat.ts"],
+      "acceptance": [
+        "Hit summary visible at top of card",
+        "Roll Damage CTA pinned above collapsible sections"
+      ]
+    },
+    {
+      "id": 5,
+      "release": "2.12.11",
+      "branch": "cursor/ux-hud-drag-pointer-events-4b38",
+      "title": "HUD non-interactive during canvas drag",
+      "priority": "P0",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["src/module/apps/slidinghud/SlidingHUDZone.svelte"],
+      "acceptance": ["Cannot click HUD controls while dragging a token on canvas"]
+    },
+    {
+      "id": 6,
+      "release": "2.13.0",
+      "branch": "cursor/ux-auto-damage-prompt-4b38",
+      "title": "Optional auto-prompt damage after attack",
+      "priority": "P0",
+      "parallel": false,
+      "dependsOn": [4],
+      "files": ["src/module/flows/attack.ts", "src/module/apps/automation-settings.ts", "public/templates/settings/automation-config.hbs", "lang/en.json"],
+      "acceptance": [
+        "World setting defaults to off",
+        "When on and hits exist, Damage HUD opens after attack card",
+        "Cancel aborts without applying damage"
+      ]
+    },
+    {
+      "id": 7,
+      "release": "2.13.0",
+      "branch": "cursor/ux-accdiff-disclosure-4b38",
+      "title": "Acc/Diff HUD progressive disclosure",
+      "priority": "P0",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["src/module/apps/acc_diff/AccDiffHUD.svelte", "src/lancer.ts", "lang/en.json"],
+      "acceptance": [
+        "Default view shows targets, totals, cover only",
+        "Advanced section for plugins and template tools",
+        "Client setting remembers per-weapon toggles"
+      ]
+    },
+    {
+      "id": 8,
+      "release": "2.13.0",
+      "branch": "cursor/ux-combat-tour-damage-loop-4b38",
+      "title": "Combat tour: attack → damage → apply",
+      "priority": "P1",
+      "parallel": false,
+      "dependsOn": [6],
+      "files": ["public/tours/combat.json", "src/module/tours/register-tours.ts"],
+      "acceptance": ["Tour documents manual and auto-damage paths"]
+    },
+    {
+      "id": 9,
+      "release": "2.13.0",
+      "branch": "cursor/ux-chat-reroll-4b38",
+      "title": "Restore chat reroll buttons",
+      "priority": "P1",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["public/templates/chat/*.hbs", "src/lancer.ts"],
+      "acceptance": ["Reroll available to owner/GM; hidden for others"]
+    },
+    {
+      "id": 10,
+      "release": "2.14.0",
+      "branch": "cursor/ux-pilot-cloud-wizard-4b38",
+      "title": "Pilot Cloud import wizard",
+      "priority": "P0",
+      "parallel": true,
+      "dependsOn": [3],
+      "files": ["public/templates/actor/pilot.hbs", "src/styles/applications/_actor-sheet.scss", "src/module/actor/pilot-sheet.ts"],
+      "acceptance": [
+        "Stepped layout: Login → Select → Download/JSON",
+        "Unsynced pilots default to Cloud tab",
+        "Link to pilot-import tour"
+      ]
+    },
+    {
+      "id": 11,
+      "release": "2.14.0",
+      "branch": "cursor/ux-empty-slot-picker-4b38",
+      "title": "Empty slot affordances & compendium picker",
+      "priority": "P0",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["src/module/helpers/refs.ts", "src/module/helpers/dragdrop.ts", "src/module/actor/lancer-actor-sheet.ts", "lang/en.json"],
+      "acceptance": [
+        "Empty slots show drag hint",
+        "Click opens filtered compendium picker",
+        "Invalid drop explains accepted types"
+      ]
+    },
+    {
+      "id": 12,
+      "release": "2.14.0",
+      "branch": "cursor/ux-import-result-dialog-4b38",
+      "title": "Unified import result dialog",
+      "priority": "P0",
+      "parallel": false,
+      "dependsOn": [1],
+      "files": ["src/module/actor/import.ts", "public/templates/window/import-result.hbs", "lang/en.json"],
+      "acceptance": ["Single DialogV2 for v2/v3/JSON success, partial, and failure"]
+    },
+    {
+      "id": 13,
+      "release": "2.15.0",
+      "branch": "cursor/ux-pilot-tab-defaults-4b38",
+      "title": "Pilot sheet IA defaults",
+      "priority": "P1",
+      "parallel": false,
+      "dependsOn": [10],
+      "files": ["src/module/actor/pilot-sheet.ts", "public/templates/actor/pilot.hbs"],
+      "acceptance": ["Cloud tab default for unsynced pilots; dismissible Tactical banner"]
+    },
+    {
+      "id": 14,
+      "release": "2.15.0",
+      "branch": "cursor/ux-mech-stats-sections-4b38",
+      "title": "Mech stats collapsible sections",
+      "priority": "P1",
+      "parallel": false,
+      "dependsOn": [13],
+      "files": ["public/templates/actor/mech.hbs", "src/styles/applications/_actor-sheet.scss"],
+      "acceptance": ["Combat vs Systems collapsible groups with sticky headers"]
+    },
+    {
+      "id": 15,
+      "release": "2.15.0",
+      "branch": "cursor/ux-npc-sheet-tabs-4b38",
+      "title": "NPC sheet tabs",
+      "priority": "P1",
+      "parallel": false,
+      "dependsOn": [14],
+      "files": ["public/templates/actor/npc.hbs", "src/module/actor/npc-sheet.ts", "public/tours/npc.json"],
+      "acceptance": ["Stats | Features | Effects tabs; feature drag-sort preserved"]
+    },
+    {
+      "id": 16,
+      "release": "2.16.0",
+      "branch": "cursor/ux-collapse-a11y-4b38",
+      "title": "Collapse accessibility",
+      "priority": "P1",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["src/module/helpers/collapse.ts", "public/templates/chat/*.hbs"],
+      "acceptance": ["aria-expanded, keyboard Enter/Space on collapse triggers"]
+    },
+    {
+      "id": 17,
+      "release": "2.16.0",
+      "branch": "cursor/ux-action-manager-a11y-4b38",
+      "title": "Action manager accessibility",
+      "priority": "P1",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["public/templates/window/action_manager.hbs", "src/module/action/action-manager.ts", "lang/en.json"],
+      "acceptance": ["aria-label on all actions; optional text labels via client setting"]
+    },
+    {
+      "id": 18,
+      "release": "2.16.0",
+      "branch": "cursor/ux-dialogv2-stabilize-repair-4b38",
+      "title": "DialogV2 migration (stabilize & repair)",
+      "priority": "P1",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["src/module/flows/*.ts", "public/templates/window/promptStabilize.hbs"],
+      "acceptance": ["No legacy Dialog for stabilize/full repair flows"]
+    },
+    {
+      "id": 19,
+      "release": "2.16.0",
+      "branch": "cursor/ux-hud-focus-trap-4b38",
+      "title": "HUD focus trap & modal behavior",
+      "priority": "P1",
+      "parallel": false,
+      "dependsOn": [7],
+      "files": ["src/module/apps/acc_diff/AccDiffHUD.svelte", "src/module/apps/damage/DamageHUD.svelte", "src/module/apps/struct_stress/StructStressHUD.svelte"],
+      "acceptance": ["aria-modal and focus trap while HUD open; Escape still cancels"]
+    },
+    {
+      "id": 20,
+      "release": "2.16.0",
+      "branch": "cursor/ux-hud-i18n-4b38",
+      "title": "Svelte HUD i18n",
+      "priority": "P1",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["src/module/apps/**/*.svelte", "lang/en.json"],
+      "acceptance": ["No hardcoded English in combat HUD components"]
+    },
+    {
+      "id": 21,
+      "release": "2.16.0",
+      "branch": "cursor/ux-sheet-aria-audit-4b38",
+      "title": "Sheet icon aria-label audit",
+      "priority": "P2",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["src/module/helpers/index.ts", "src/module/helpers/item.ts", "src/module/helpers/actor.ts"],
+      "acceptance": ["Icon-only sheet controls have aria-label matching combat tracker standard"]
+    },
+    {
+      "id": 22,
+      "release": "2.17.0",
+      "branch": "cursor/ux-contextual-help-4b38",
+      "title": "Contextual help links",
+      "priority": "P1",
+      "parallel": false,
+      "dependsOn": [10],
+      "files": ["public/templates/window/lancerHelp.hbs", "lang/en.json"],
+      "acceptance": ["Help links on Cloud tab, Automation settings, first Acc/Diff open"]
+    },
+    {
+      "id": 23,
+      "release": "2.17.0",
+      "branch": "cursor/ux-help-whats-new-4b38",
+      "title": "What's new in help dialog",
+      "priority": "P2",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["public/templates/window/lancerHelp.hbs", "src/lancer.ts"],
+      "acceptance": ["Help dialog shows recent CHANGELOG entries"]
+    },
+    {
+      "id": 24,
+      "release": "2.17.0",
+      "branch": "cursor/ux-tours-maintenance-4b38",
+      "title": "Guided tour maintenance pass",
+      "priority": "P1",
+      "parallel": false,
+      "dependsOn": [8, 10, 11, 15],
+      "files": ["public/tours/*.json"],
+      "acceptance": ["Tour selectors match new layouts; click-to-equip step added"]
+    },
+    {
+      "id": 25,
+      "release": "2.18.0",
+      "branch": "cursor/ux-scss-inline-migration-4b38",
+      "title": "SCSS migration (pilot cloud, chat, mech)",
+      "priority": "P2",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["public/templates/actor/pilot.hbs", "public/templates/chat/*.hbs", "src/styles/applications/_actor-sheet.scss"],
+      "acceptance": ["Inline style attributes replaced with SCSS utility classes"]
+    },
+    {
+      "id": 26,
+      "release": "2.18.0",
+      "branch": "cursor/ux-remove-legacy-lcp-hbs-4b38",
+      "title": "Remove legacy LCP Handlebars manager",
+      "priority": "P2",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["src/module/preload-templates.ts", "public/templates/lcp/"],
+      "acceptance": ["Only Svelte LCP manager preloaded"]
+    },
+    {
+      "id": 27,
+      "release": "2.19.0",
+      "branch": "cursor/ux-async-loading-pattern-4b38",
+      "title": "Shared async loading pattern",
+      "priority": "P1",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["src/module/helpers/async-ui.ts", "src/module/helpers/refs.ts"],
+      "acceptance": ["Loading indicators for async ref slots and license refresh"]
+    },
+    {
+      "id": 28,
+      "release": "2.19.0",
+      "branch": "cursor/ux-mount-reset-4b38",
+      "title": "Mount reset implementation",
+      "priority": "P1",
+      "parallel": true,
+      "dependsOn": [2],
+      "files": ["src/module/actor/mech-sheet.ts", "lang/en.json"],
+      "acceptance": ["Single-mount and reset-all with confirm dialog"]
+    },
+    {
+      "id": 29,
+      "release": "2.19.0",
+      "branch": "cursor/ux-combat-tracker-targets-4b38",
+      "title": "Combat tracker target controls",
+      "priority": "P1",
+      "parallel": true,
+      "dependsOn": [],
+      "files": ["public/templates/combat/tracker.hbs", "src/styles/combat/_lancer-combat-tracker.scss"],
+      "acceptance": ["Target selection controls implemented per tracker TODOs"]
+    },
+    {
+      "id": 30,
+      "release": "2.20.0",
+      "branch": "cursor/ux-svelte-cloud-island-4b38",
+      "title": "Svelte Cloud import island",
+      "priority": "P2",
+      "parallel": false,
+      "dependsOn": [10, 12],
+      "files": ["src/module/apps/pilot-cloud/", "public/templates/actor/pilot.hbs"],
+      "acceptance": ["Cloud tab hosts Svelte wizard; HBS is thin mount point"]
+    },
+    {
+      "id": 31,
+      "release": "2.20.0",
+      "branch": "cursor/ux-svelte-loadout-editor-4b38",
+      "title": "Svelte loadout editor (experimental)",
+      "priority": "P2",
+      "parallel": false,
+      "dependsOn": [11],
+      "files": ["src/module/apps/loadout/", "public/templates/actor/mech.hbs"],
+      "acceptance": ["Feature-flagged visual loadout editor on mech Loadout tab"]
+    },
+    {
+      "id": 32,
+      "release": "3.0.0",
+      "branch": "cursor/ux-loadout-editor-ga-4b38",
+      "title": "Loadout editor GA (optional major)",
+      "priority": "P2",
+      "parallel": false,
+      "dependsOn": [31],
+      "files": ["src/module/apps/loadout/", "src/module/world_migration.ts"],
+      "acceptance": ["Remove experimental flag; document breaking change if legacy loadout removed"]
+    }
+  ]
+}

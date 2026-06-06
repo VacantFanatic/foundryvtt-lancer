@@ -1,0 +1,40 @@
+# Create or refresh the UX Roadmap 2026 GitHub Project, milestones, labels, and issues.
+# Manual only — requires a PAT or GITHUB_TOKEN with project + issues write on VacantFanatic account.
+name: UX Roadmap bootstrap
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Bootstrap mode
+        required: true
+        default: full
+        type: choice
+        options:
+          - full
+          - issues-only
+          - project-only
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Bootstrap UX roadmap
+        env:
+          GH_TOKEN: ${{ secrets.UX_ROADMAP_GH_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          MODE="${{ github.event.inputs.mode }}"
+          FLAGS=""
+          if [ "$MODE" = "issues-only" ]; then FLAGS="--issues-only"; fi
+          if [ "$MODE" = "project-only" ]; then FLAGS="--project-only"; fi
+          node scripts/ux-roadmap/bootstrap.mjs $FLAGS
