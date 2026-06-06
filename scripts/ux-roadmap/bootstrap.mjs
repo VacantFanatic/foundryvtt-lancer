@@ -343,8 +343,26 @@ function resolveIssueNumbers(state) {
   };
 }
 
+/** Owner for gh project * — use @me when GH_TOKEN is set (CI/PAT). */
+function projectOwner() {
+  return process.env.GH_TOKEN ? "@me" : project.owner;
+}
+
+function verifyProjectToken() {
+  try {
+    ghJson(["project", "list", "--owner", projectOwner(), "--format", "json", "--limit", "1"]);
+  } catch (e) {
+    const hint =
+      "GH_TOKEN cannot access GitHub Projects. Create a new classic PAT at " +
+      "https://github.com/settings/tokens/new with scopes: project + repo. " +
+      "Fine-grained PATs do not work for user-owned Projects. " +
+      "The gh CLI error 'unknown owner type' usually means missing or wrong token scopes.";
+    throw new Error(`${hint}\n\nUnderlying error: ${e.message.split("\n")[0]}`);
+  }
+}
+
 function listProjects() {
-  const data = ghJson(["project", "list", "--owner", project.owner, "--format", "json", "--limit", "100"]);
+  const data = ghJson(["project", "list", "--owner", projectOwner(), "--format", "json", "--limit", "100"]);
   return data.projects ?? [];
 }
 
@@ -354,12 +372,13 @@ function findProjectByTitle(title) {
 
 function createProject(state) {
   log("Creating GitHub Project...");
+  verifyProjectToken();
   let proj = state.project?.number ? findProjectByTitle(project.title) : null;
   if (!proj) {
     proj = findProjectByTitle(project.title);
   }
   if (!proj) {
-    gh(["project", "create", "--owner", project.owner, "--title", project.title]);
+    gh(["project", "create", "--owner", projectOwner(), "--title", project.title]);
     proj = findProjectByTitle(project.title);
   }
   if (!proj) throw new Error(`Could not find or create project "${project.title}"`);
@@ -367,7 +386,7 @@ function createProject(state) {
   log("  project", proj.url);
 
   try {
-    gh(["project", "link", String(proj.number), "--owner", project.owner, "--repo", project.repo]);
+    gh(["project", "link", String(proj.number), "--owner", projectOwner(), "--repo", project.repo]);
     log("  linked repo", project.repo);
   } catch (e) {
     if (!String(e).includes("already")) {
@@ -380,7 +399,7 @@ function createProject(state) {
     "field-list",
     String(proj.number),
     "--owner",
-    project.owner,
+    projectOwner(),
     "--format",
     "json",
     "--limit",
@@ -398,7 +417,7 @@ function createProject(state) {
       "field-create",
       String(proj.number),
       "--owner",
-      project.owner,
+      projectOwner(),
       "--name",
       field.name,
       "--data-type",
@@ -420,7 +439,7 @@ function getFieldMap(projectNumber) {
     "field-list",
     String(projectNumber),
     "--owner",
-    project.owner,
+    projectOwner(),
     "--format",
     "json",
     "--limit",
@@ -447,7 +466,7 @@ function addIssueToProject(projectMeta, issueNumber, fieldMap, itemMeta) {
     "item-add",
     String(projectMeta.number),
     "--owner",
-    project.owner,
+    projectOwner(),
     "--url",
     issueUrl,
     "--format",
