@@ -34,11 +34,6 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Install gh project extension
-        env:
-          GH_TOKEN: ${{ secrets.UX_ROADMAP_GH_TOKEN }}
-        run: gh extension install github/gh-project
-
       - name: Bootstrap UX roadmap
         env:
           GH_TOKEN: ${{ secrets.UX_ROADMAP_GH_TOKEN }}
