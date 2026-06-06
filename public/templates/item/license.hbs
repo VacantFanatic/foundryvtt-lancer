@@ -23,6 +23,14 @@
     {{/if}}
   </header>
   <div class="flexcol">
+    {{#if item.isOwned}}
+      <div class="license-refresh-row">
+        <button type="button" class="lancer-button license-refresh-button" data-action="refreshUnlocks">
+          <i class="fas fa-sync" aria-hidden="true"></i>
+          {{localize "lancer.async-ui.refresh-license"}}
+        </button>
+      </div>
+    {{/if}}
     {{#each unlocks as |unlock_array rank|}}
       <div class="card">
         <div class="lancer-header lancer-primary">

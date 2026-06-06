@@ -1,4 +1,5 @@
 import { EntryType } from "../enums";
+import { bindAsyncRefreshButton } from "../helpers/async-ui";
 import { handleDocDropping } from "../helpers/dragdrop";
 import { handleContextMenus } from "../helpers/item";
 import type { LancerItemSheetData } from "../interfaces";
@@ -88,8 +89,8 @@ export class LancerLicenseSheet extends LancerItemSheet<EntryType.LICENSE> {
       }
     });
 
-    if (!this.isEditable) return;
-
-    // TODO: Add refresh button
+    bindAsyncRefreshButton($html, '[data-action="refreshUnlocks"]', async () => {
+      await this.render();
+    });
   }
 }

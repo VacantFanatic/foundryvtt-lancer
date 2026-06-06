@@ -35,7 +35,6 @@ export const preloadTemplates = async function () {
     `systems/${game.system.id}/templates/item/talent.hbs`,
     `systems/${game.system.id}/templates/item/weapon_mod.hbs`,
     // Misc App UIs
-    `systems/${game.system.id}/templates/lcp/lcp-manager.hbs`,
     `systems/${game.system.id}/templates/window/action_editor.hbs`,
     `systems/${game.system.id}/templates/window/action_manager.hbs`,
     `systems/${game.system.id}/templates/window/bonus.hbs`,

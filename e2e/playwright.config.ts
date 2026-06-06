@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 const baseURL = process.env.FOUNDRY_URL ?? "http://localhost:30000";
 
 export default defineConfig({
-  testDir: "./regression",
+  testDir: ".",
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

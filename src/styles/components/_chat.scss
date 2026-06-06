@@ -1,4 +1,47 @@
 @layer lancer.components {
+  .lancer-chat-card {
+    margin: 0;
+  }
+
+  .lancer-chat-card-body {
+    padding: 5px;
+  }
+
+  .lancer-chat-effect-grid {
+    grid-area: 2 / 1 / 3 / 3;
+  }
+
+  .lancer-chat-effect-col {
+    margin: 10px;
+  }
+
+  .lancer-chat-effect-row {
+    padding: 5px;
+  }
+
+  .lancer-chat-actions-end {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .lancer-chat-center-self {
+    align-self: center;
+  }
+
+  .lancer-chat-center-major {
+    margin: auto;
+  }
+
+  .lancer-damage-tag--no-grow {
+    flex-grow: 0;
+  }
+
+  .lancer-damage-summary-label {
+    text-align: left;
+    margin-left: 5px;
+    flex: 3;
+  }
+
   .lancer-attack-hit-summary {
     margin: 0.35rem 0;
     padding: 0.35rem 0.5rem;

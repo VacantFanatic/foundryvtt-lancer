@@ -1,4 +1,4 @@
-<div class="card clipped-bot" {{#if item_uuid}} data-uuid="{{item_uuid}}" {{/if}} style="margin: 0px">
+<div class="card clipped-bot lancer-chat-card" {{#if item_uuid}} data-uuid="{{item_uuid}}" {{/if}}>
   <div class="lancer-header {{#if invade}}lancer-tech{{else}}lancer-weapon{{/if}} medium">
     {{#if icon}}
       <i class="{{icon}} i--4 i--light"> </i>
@@ -39,7 +39,8 @@
       {{#if (not damage.target)}}
         <div class="flexrow">
           {{#if damage.bonus}}
-            <span class="lancer-damage-tag" style="flex-grow: 0" data-tooltip="This row is bonus damage">BONUS</span>
+            <span class="lancer-damage-tag lancer-damage-tag--no-grow" data-tooltip="This row is bonus damage"
+            >BONUS</span>
           {{/if}}
           {{
             {lancer-dice-roll damage.roll damage.tt (concat "cci cci-" (lower-case damage.d_type) " i--4 damage--" (lower-case damage.d_type))}
@@ -67,7 +68,8 @@
         {{#if (not damage.target)}}
           <div class="flexrow">
             {{#if damage.bonus}}
-              <span class="lancer-damage-tag" style="flex-grow: 0" data-tooltip="This row is bonus damage">BONUS</span>
+              <span class="lancer-damage-tag lancer-damage-tag--no-grow" data-tooltip="This row is bonus damage"
+              >BONUS</span>
             {{/if}}
             {{
               {lancer-dice-roll damage.roll damage.tt (concat "cci cci-" (lower-case damage.d_type) " i--4 damage--" (lower-case damage.d_type))}
@@ -101,9 +103,7 @@
       </div>
       <div class="collapse" data-collapse-id="{{_uuid}}-self-heat">
         <div class="flexrow">
-          <span style="text-align: left; margin-left: 5px; flex: 3">{{
-              localize "lancer.chat-card.exclamation.overkill"
-            }}</span>
+          <span class="lancer-damage-summary-label">{{localize "lancer.chat-card.exclamation.overkill"}}</span>
           <span class="dice-total major">{{overkill_heat}} <i class="cci cci-heat i--4 damage--heat"></i></span>
         </div>
       </div>

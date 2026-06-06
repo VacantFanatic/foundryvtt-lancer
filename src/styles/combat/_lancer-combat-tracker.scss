@@ -28,6 +28,19 @@
 
 .combat-sidebar {
   li.combatant {
+    .combatant-targets {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.35rem;
+      font-size: var(--font-size-12);
+      opacity: 0.85;
+    }
+
+    .combatant-control[data-action="toggleCombatantTarget"].active {
+      color: var(--color-text-hyperlink);
+    }
+
     .token-initiative {
       flex-direction: row;
       button {

@@ -1,3 +1,40 @@
+# 2.20.0 (2026-06-06)
+
+## Added
+
+- **Svelte Cloud import island** on the pilot Cloud tab (thin HBS mount point).
+- **Experimental loadout editor** (client setting) — Svelte overview on the mech Loadout tab.
+- Combat tracker **target toggle** control and target summary display.
+- Shared **async loading** pattern for ref slots and license refresh.
+- E2E regression tests for help/tours, a11y, and Sprint G features.
+
+## Changed
+
+- Chat cards and sheet banners use **SCSS utility classes** instead of inline `style` attributes.
+- Mech **mount reset** controls with confirm dialogs (per-mount, all mounts, systems).
+- Removed legacy **LCP Handlebars manager** template from preload.
+
+## Fixed
+
+- Pilot sheet header **Handlebars** syntax for compact stat helpers (sheet render in Foundry).
+- Pilot Cloud wizard and experimental loadout editor use **Svelte 5 `mount()`** (was broken with legacy constructor API).
+- E2E harness handles license checkbox, setup tours, world migration, and reuses an active `/game` session.
+
+# 2.19.0 (2026-06-06)
+
+## Added
+
+- `async-ui.ts` helpers; license sheet refresh button with loading state.
+- Mount reset buttons on mech loadout (per-mount, all mounts, clear systems).
+- Combat tracker target selection controls.
+
+# 2.18.0 (2026-06-06)
+
+## Changed
+
+- Inline styles migrated to SCSS in chat templates, pilot sync banner, and mech SP counter.
+- Legacy `lcp-manager.hbs` removed; only Svelte LCP manager remains.
+
 # 2.17.0 (2026-06-06)
 
 ## Added
