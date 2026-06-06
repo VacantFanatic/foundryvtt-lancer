@@ -29,10 +29,29 @@ Environment variables:
 ```bash
 npm run test:e2e:install   # once per machine
 SKIP_FOUNDRY_DIST_MIRROR=1 npm run build
+./scripts/e2e/start-foundry-docker.sh   # optional: fresh Docker stack
+npm run test:e2e:bootstrap              # license + auth (CI runs this)
 npm run test:e2e
 ```
 
 HTML report: `npm run test:e2e:report`
+
+## GitHub Actions (manual)
+
+Workflow: **E2E regression (manual)** (`.github/workflows/e2e-regression.yml`)
+
+Trigger from **Actions → E2E regression (manual) → Run workflow**.
+
+### Required repository secrets
+
+| Secret | Description |
+|--------|-------------|
+| `FOUNDRY_USERNAME` | FoundryVTT.com account **email** |
+| `FOUNDRY_PASSWORD` | FoundryVTT.com password |
+
+Optional: `FOUNDRY_LICENSE_KEY` — license key for headless EULA acceptance in Docker.
+
+The workflow builds `dist/`, starts `felddy/foundryvtt`, seeds the `lancer-dev-test` fixture world, bootstraps license/auth, runs the regression suite, and uploads Playwright artifacts.
 
 ## Regression suite
 

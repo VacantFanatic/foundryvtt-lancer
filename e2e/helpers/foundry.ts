@@ -13,9 +13,9 @@ export function trackConsoleErrors(page: Page): string[] {
   return errors;
 }
 
-/** Authenticate, launch world if needed, and join as the first available user. */
-export async function joinLancerWorld(page: Page, worldId = FOUNDRY_WORLD_ID): Promise<void> {
-  await page.goto("/", { waitUntil: "networkidle" });
+/** Accept license and admin auth; verify the E2E world appears on the setup screen. */
+export async function completeFoundrySetup(page: Page, worldId = FOUNDRY_WORLD_ID): Promise<void> {
+  await page.goto("/", { waitUntil: "networkidle", timeout: 120_000 });
 
   if (page.url().includes("/license")) {
     await page.getByRole("button", { name: /agree/i }).click();
@@ -25,8 +25,17 @@ export async function joinLancerWorld(page: Page, worldId = FOUNDRY_WORLD_ID): P
   if (page.url().includes("/auth")) {
     await page.locator('input[type="password"]').first().fill(FOUNDRY_ADMIN_KEY);
     await page.locator('button[type="submit"]').first().click();
-    await page.waitForURL(/\/(setup|join|game)/, { timeout: 60_000 });
+    await page.waitForURL(/\/(setup|join|game)/, { timeout: 120_000 });
   }
+
+  if (page.url().includes("/setup")) {
+    await page.locator(`li.world[data-package-id="${worldId}"]`).waitFor({ state: "visible", timeout: 120_000 });
+  }
+}
+
+/** Authenticate, launch world if needed, and join as the first available user. */
+export async function joinLancerWorld(page: Page, worldId = FOUNDRY_WORLD_ID): Promise<void> {
+  await completeFoundrySetup(page, worldId);
 
   if (page.url().includes("/setup")) {
     await page.locator(`li.world[data-package-id="${worldId}"]`).click({ button: "right" });
