@@ -20,6 +20,9 @@
     "verify:git-remote": "sh ./scripts/assert-safe-git-remote.sh",
     "verify:doc-links": "sh ./scripts/assert-no-eranziel-doc-links.sh",
     "test": "node --import tsx --test scripts/import-routing.test.ts",
+    "test:e2e": "playwright test -c e2e/playwright.config.ts",
+    "test:e2e:install": "playwright install firefox",
+    "test:e2e:report": "playwright show-report e2e/report",
     "serve": "vite",
     "version": "./scripts/version.mjs && git add src/system.json",
     "watch": "vite build --watch"
@@ -28,6 +31,7 @@
   "license": "",
   "devDependencies": {
     "@foundryvtt/foundryvtt-cli": "^3.0.3",
+    "@playwright/test": "^1.52.0",
     "@sveltejs/vite-plugin-svelte": "^5.1.1",
     "@tsconfig/svelte": "^5.0.4",
     "@types/node": "^24.0.1",
