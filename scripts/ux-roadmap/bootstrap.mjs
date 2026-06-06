@@ -50,18 +50,14 @@ function gh(args, opts = {}) {
   }
 }
 
-function graphql(query, variables = {}) {
-  const varArgs = Object.entries(variables).flatMap(([k, v]) => ["-f", `${k}=${typeof v === "object" ? JSON.stringify(v) : v}`]);
-  if (dryRun) {
-    log("DRY graphql", query.slice(0, 80).replace(/\s+/g, " "));
-    return {};
+function ghJson(args, fallback = {}) {
+  const out = gh(args);
+  if (!out) return fallback;
+  try {
+    return JSON.parse(out);
+  } catch {
+    return fallback;
   }
-  const out = gh(["api", "graphql", "-f", `query=${query}`, ...varArgs]);
-  const parsed = JSON.parse(out);
-  if (parsed.errors?.length) {
-    throw new Error(parsed.errors.map(e => e.message).join("; "));
-  }
-  return parsed.data;
 }
 
 function loadState() {
@@ -321,102 +317,122 @@ function createIssues(state) {
   }
 }
 
-function getOwnerId() {
-  const q = `query($login:String!){ user(login:$login){ id } }`;
-  const data = graphql(q, { login: project.owner });
-  return data.user?.id;
+const PROJECT_FIELD_DEFS = [
+  { name: "Type", dataType: "SINGLE_SELECT", options: ["Epic", "Release", "PR"] },
+  { name: "Release", dataType: "SINGLE_SELECT", options: releases.map(r => `v${r.id}`) },
+  { name: "Sprint", dataType: "SINGLE_SELECT", options: ["A", "B", "C", "D", "E", "F", "G"] },
+  { name: "Priority", dataType: "SINGLE_SELECT", options: ["P0", "P1", "P2"] },
+  { name: "PR #", dataType: "NUMBER" },
+];
+
+/** Known issue numbers when bootstrap-state.json is absent (e.g. CI project-only). */
+function defaultIssueNumbers() {
+  return {
+    epic: 43,
+    release: Object.fromEntries(releases.map((r, i) => [r.id, 44 + i])),
+    pr: Object.fromEntries(prs.map(p => [p.id, 53 + Number(p.id)])),
+  };
+}
+
+function resolveIssueNumbers(state) {
+  const defaults = defaultIssueNumbers();
+  return {
+    epic: state.issues?.epic ?? defaults.epic,
+    release: { ...defaults.release, ...state.issues?.release },
+    pr: { ...defaults.pr, ...state.issues?.pr },
+  };
+}
+
+function listProjects() {
+  const data = ghJson(["project", "list", "--owner", project.owner, "--format", "json", "--limit", "100"]);
+  return data.projects ?? [];
+}
+
+function findProjectByTitle(title) {
+  return listProjects().find(p => p.title === title) ?? null;
 }
 
 function createProject(state) {
   log("Creating GitHub Project...");
-  const ownerId = getOwnerId();
-  if (!ownerId) throw new Error(`Could not resolve owner ${project.owner}`);
-
-  const createQ = `
-    mutation($input: CreateProjectV2Input!) {
-      createProjectV2(input: $input) {
-        projectV2 { id number title url }
-      }
-    }`;
-  const created = graphql(createQ, {
-    input: { ownerId, title: project.title },
-  });
-  const proj = created.createProjectV2.projectV2;
+  let proj = state.project?.number ? findProjectByTitle(project.title) : null;
+  if (!proj) {
+    proj = findProjectByTitle(project.title);
+  }
+  if (!proj) {
+    gh(["project", "create", "--owner", project.owner, "--title", project.title]);
+    proj = findProjectByTitle(project.title);
+  }
+  if (!proj) throw new Error(`Could not find or create project "${project.title}"`);
   state.project = { id: proj.id, number: proj.number, url: proj.url };
   log("  project", proj.url);
 
-  const linkQ = `
-    mutation($projectId:ID!, $repoId:ID!) {
-      linkProjectV2ToRepository(input: {projectId: $projectId, repositoryId: $repoId}) {
-        repository { name }
-      }
-    }`;
-  const repoNode = JSON.parse(gh(["api", `repos/${REPO}`, "--jq", ".node_id"]));
-  graphql(linkQ, { projectId: proj.id, repoId: repoNode });
-
-  const fields = [
-    { name: "Type", dataType: "SINGLE_SELECT", options: ["Epic", "Release", "PR"] },
-    { name: "Release", dataType: "SINGLE_SELECT", options: releases.map(r => `v${r.id}`) },
-    { name: "Sprint", dataType: "SINGLE_SELECT", options: ["A", "B", "C", "D", "E", "F", "G"] },
-    { name: "Priority", dataType: "SINGLE_SELECT", options: ["P0", "P1", "P2"] },
-    { name: "PR #", dataType: "NUMBER" },
-  ];
-
-  state.fields = {};
-  for (const field of fields) {
-    const fieldQ = `
-      mutation($input: CreateProjectV2FieldInput!) {
-        createProjectV2Field(input: $input) {
-          projectV2Field { ... on ProjectV2FieldCommon { id name } }
-        }
-      }`;
-    const input = {
-      projectId: proj.id,
-      name: field.name,
-      dataType: field.dataType,
-    };
-    if (field.dataType === "SINGLE_SELECT") {
-      input.singleSelectOptions = field.options.map(name => ({ name, color: "GRAY", description: "" }));
+  try {
+    gh(["project", "link", String(proj.number), "--owner", project.owner, "--repo", project.repo]);
+    log("  linked repo", project.repo);
+  } catch (e) {
+    if (!String(e).includes("already")) {
+      log("  link skip", e.message.split("\n")[0]);
     }
-    const res = graphql(fieldQ, { input: JSON.stringify(input) });
-    const f = res.createProjectV2Field.projectV2Field;
-    state.fields[field.name] = f.id;
+  }
+
+  const existingFields = ghJson([
+    "project",
+    "field-list",
+    String(proj.number),
+    "--owner",
+    project.owner,
+    "--format",
+    "json",
+    "--limit",
+    "50",
+  ]).fields ?? [];
+  const existingNames = new Set(existingFields.map(f => f.name));
+
+  for (const field of PROJECT_FIELD_DEFS) {
+    if (existingNames.has(field.name)) {
+      log("  field exists", field.name);
+      continue;
+    }
+    const args = [
+      "project",
+      "field-create",
+      String(proj.number),
+      "--owner",
+      project.owner,
+      "--name",
+      field.name,
+      "--data-type",
+      field.dataType,
+    ];
+    if (field.options?.length) {
+      args.push("--single-select-options", field.options.join(","));
+    }
+    gh(args);
     log("  field", field.name);
   }
 
   return proj;
 }
 
-function getFieldOptionIds(projectId, fieldId) {
-  const q = `
-    query($projectId: ID!, $fieldId: ID!) {
-      node(id: $projectId) {
-        ... on ProjectV2 {
-          field(name: "") { id }
-        }
-      }
-    }`;
-  // fetch all fields with options
-  const fq = `
-    query($id: ID!) {
-      node(id: $id) {
-        ... on ProjectV2 {
-          fields(first: 20) {
-            nodes {
-              ... on ProjectV2SingleSelectField {
-                id name
-                options { id name }
-              }
-            }
-          }
-        }
-      }
-    }`;
-  const data = graphql(fq, { id: projectId });
+function getFieldMap(projectNumber) {
+  const data = ghJson([
+    "project",
+    "field-list",
+    String(projectNumber),
+    "--owner",
+    project.owner,
+    "--format",
+    "json",
+    "--limit",
+    "50",
+  ]);
   const map = {};
-  for (const node of data.node.fields.nodes) {
-    if (node.options) {
-      map[node.name] = { id: node.id, options: Object.fromEntries(node.options.map(o => [o.name, o.id])) };
+  for (const node of data.fields ?? []) {
+    if (node.options?.length) {
+      map[node.name] = {
+        id: node.id,
+        options: Object.fromEntries(node.options.map(o => [o.name, o.id])),
+      };
     } else if (node.id) {
       map[node.name] = { id: node.id };
     }
@@ -424,83 +440,99 @@ function getFieldOptionIds(projectId, fieldId) {
   return map;
 }
 
-function addIssueToProject(projectId, issueNodeId, fieldMap, itemMeta, state) {
-  const addQ = `
-    mutation($projectId: ID!, $contentId: ID!) {
-      addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
-        item { id }
-      }
-    }`;
-  const added = graphql(addQ, { projectId, contentId: issueNodeId });
-  const itemId = added.addProjectV2ItemById.item.id;
+function addIssueToProject(projectMeta, issueNumber, fieldMap, itemMeta) {
+  const issueUrl = `https://github.com/${REPO}/issues/${issueNumber}`;
+  const added = ghJson([
+    "project",
+    "item-add",
+    String(projectMeta.number),
+    "--owner",
+    project.owner,
+    "--url",
+    issueUrl,
+    "--format",
+    "json",
+  ]);
+  const itemId = added.id;
+  if (!itemId) throw new Error(`item-add returned no id for ${issueUrl}`);
 
-  const setField = (fieldName, optionName) => {
+  const setSelect = (fieldName, optionName) => {
     const field = fieldMap[fieldName];
-    if (!field?.options?.[optionName]) return;
-    const mut = `
-      mutation($input: UpdateProjectV2ItemFieldValueInput!) {
-        updateProjectV2ItemFieldValue(input: $input) { projectV2Item { id } }
-      }`;
-    graphql(mut, {
-      input: JSON.stringify({
-        projectId,
-        itemId,
-        fieldId: field.id,
-        value: { singleSelectOptionId: field.options[optionName] },
-      }),
-    });
+    const optionId = field?.options?.[optionName];
+    if (!field?.id || !optionId) return;
+    gh([
+      "project",
+      "item-edit",
+      "--id",
+      itemId,
+      "--project-id",
+      projectMeta.id,
+      "--field-id",
+      field.id,
+      "--single-select-option-id",
+      optionId,
+    ]);
   };
 
   const setNumber = (fieldName, num) => {
     const field = fieldMap[fieldName];
-    if (!field?.id) return;
-    const mut = `
-      mutation($input: UpdateProjectV2ItemFieldValueInput!) {
-        updateProjectV2ItemFieldValue(input: $input) { projectV2Item { id } }
-      }`;
-    graphql(mut, {
-      input: JSON.stringify({
-        projectId,
-        itemId,
-        fieldId: field.id,
-        value: { number: num },
-      }),
-    });
+    if (!field?.id || num == null) return;
+    gh([
+      "project",
+      "item-edit",
+      "--id",
+      itemId,
+      "--project-id",
+      projectMeta.id,
+      "--field-id",
+      field.id,
+      "--number",
+      String(num),
+    ]);
   };
 
-  setField("Type", itemMeta.type);
-  if (itemMeta.release) setField("Release", `v${itemMeta.release}`);
-  if (itemMeta.sprint) setField("Sprint", itemMeta.sprint);
-  if (itemMeta.priority) setField("Priority", itemMeta.priority);
+  setSelect("Type", itemMeta.type);
+  if (itemMeta.release) setSelect("Release", `v${itemMeta.release}`);
+  if (itemMeta.sprint) setSelect("Sprint", itemMeta.sprint);
+  if (itemMeta.priority) setSelect("Priority", itemMeta.priority);
   if (itemMeta.prNumber != null) setNumber("PR #", itemMeta.prNumber);
 }
 
 function populateProject(state) {
-  if (!state.project?.id) {
-    createProject(state);
+  const issues = resolveIssueNumbers(state);
+  if (!state.issues?.epic && issues.epic) {
+    log("Using seeded issue numbers (#43–#85) for project-only bootstrap");
+    state.issues = issues;
   }
-  const projectId = state.project.id;
+
+  const projectMeta = createProject(state);
   log("Populating project items...");
 
-  const fieldMap = getFieldOptionIds(projectId);
+  const fieldMap = getFieldMap(projectMeta.number);
 
   const addByNumber = (num, meta) => {
-    const nodeId = gh(["api", `repos/${REPO}/issues/${num}`, "--jq", ".node_id"]);
-    addIssueToProject(projectId, nodeId, fieldMap, meta, state);
+    if (!num) {
+      log("  skip missing issue for", meta.type);
+      return;
+    }
+    addIssueToProject(projectMeta, num, fieldMap, meta);
     log("  added", `#${num}`, meta.type);
   };
 
-  addByNumber(state.issues.epic, { type: "Epic", priority: "P0", sprint: "A" });
+  addByNumber(issues.epic, { type: "Epic", priority: "P0", sprint: "A" });
 
   for (const rel of releases) {
-    const num = state.issues.release[rel.id];
-    addByNumber(num, { type: "Release", release: rel.id, sprint: rel.sprint, priority: rel.priority });
+    addByNumber(issues.release[rel.id], {
+      type: "Release",
+      release: rel.id,
+      sprint: rel.sprint,
+      priority: rel.priority,
+    });
   }
 
   for (const pr of prs) {
-    const num = state.issues.pr[pr.id];
     const rel = releases.find(r => r.id === pr.release);
-    addByNumber(num, {
+    addByNumber(issues.pr[pr.id], {
       type: "PR",
       release: pr.release,
       sprint: rel?.sprint,
@@ -532,8 +564,8 @@ async function main() {
     } catch (e) {
       console.error("\n[ux-roadmap] Project creation failed (issues may still have been created):");
       console.error(e.message);
-      console.error("\nRun as VacantFanatic with: gh auth refresh -s project,read:org");
-      console.error("Then: node scripts/ux-roadmap/bootstrap.mjs --project-only");
+      console.error("\nEnsure UX_ROADMAP_GH_TOKEN is a classic PAT with project + repo scopes.");
+      console.error("See scripts/ux-roadmap/MANUAL-SETUP.md");
       process.exitCode = 1;
     }
   }
