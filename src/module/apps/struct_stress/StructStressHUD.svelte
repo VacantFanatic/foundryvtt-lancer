@@ -3,6 +3,8 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import type { LancerActor } from "../../actor/lancer-actor";
+  import { hudL, hudT } from "../../helpers/hud-i18n";
+  import { hudModal } from "../slidinghud/hud-modal";
 
   export let title: string;
   export let stat: "structure" | "stress";
@@ -14,6 +16,22 @@
 
   function focus(el: HTMLElement) {
     el.focus();
+  }
+
+  function escToCancel(_el: HTMLElement) {
+    function escHandler(ev: KeyboardEvent) {
+      if (ev.key === "Escape") {
+        ev.preventDefault();
+        dispatch("cancel");
+      }
+    }
+
+    window.addEventListener("keydown", escHandler);
+    return {
+      destroy() {
+        window.removeEventListener("keydown", escHandler);
+      },
+    };
   }
 
   function getCurrent(a: LancerActor | null) {
@@ -31,11 +49,14 @@
   $: current = getCurrent(lancerActor);
   $: damage = getDamage(lancerActor);
   $: canRoll = damage > 0;
+  $: statLabel = hudL(`structstress.${stat}`);
 </script>
 
 <form
   id="structstress"
   class="lancer-hud structstress window-content"
+  use:hudModal
+  use:escToCancel
   on:submit|preventDefault={() => {
     if (!canRoll) return;
     dispatch("submit");
@@ -47,7 +68,11 @@
   </div>
   {#if lancerActor && (lancerActor.is_mech() || lancerActor.is_npc())}
     <div class="lancer-hud-body">
-      <h4>{lancerActor?.name ?? "UNKNOWN MECH"} has taken {icon} damage!</h4>
+      <h4>
+        {
+          hudT("structstress.damage-taken", { name: lancerActor?.name ?? hudL("common.unknown-actor"), stat: statLabel })
+        }
+      </h4>
       <div class="damage-preview">
         {#each { length: current } as _}
           <i class="cci cci-{icon} i--4 damage-pip" />
@@ -58,9 +83,9 @@
       </div>
       <p class="message">
         {#if canRoll}
-          Roll {damage}d6 to determine what happens.
+          {hudT("structstress.roll-prompt", { dice: damage })}
         {:else}
-          No {stat} remaining. No roll is available.
+          {hudT("structstress.no-roll", { stat: statLabel })}
         {/if}
       </p>
     </div>
@@ -68,11 +93,11 @@
   <div class="lancer-hud-buttons flexrow">
     <button class="dialog-button submit default" data-button="submit" type="submit" use:focus disabled={!canRoll}>
       <i class="fas fa-check" />
-      Roll
+      {hudL("common.roll")}
     </button>
     <button class="dialog-button cancel" data-button="cancel" type="button" on:click={() => dispatch("cancel")}>
       <i class="fas fa-times" />
-      Cancel
+      {hudL("common.cancel")}
     </button>
   </div>
 </form>

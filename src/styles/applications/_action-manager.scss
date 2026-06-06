@@ -55,9 +55,21 @@
     font-size: 1.35em;
     padding: 8px 2px 0 6px;
   }
+  .action-manager-reset-wrap {
+    position: absolute;
+    right: 0;
+  }
+
   #action-manager-reset {
     display: inline-flex;
     padding: 2px;
+    cursor: pointer;
+  }
+
+  a.action .action-text {
+    font-size: 0.45em;
+    margin-left: 0.15em;
+    vertical-align: middle;
   }
   #action-manager.noclick a,
   #action-manager .lancer-action-manager-surface.noclick a {

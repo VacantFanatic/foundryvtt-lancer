@@ -1,5 +1,5 @@
-import { LancerActor } from "../actor/lancer-actor";
-import { LancerItem } from "../item/lancer-item";
+import type { LancerActor } from "../actor/lancer-actor";
+import type { LancerItem } from "../item/lancer-item";
 
 export type CollapseRegistry = { [LID: string]: number };
 
@@ -23,22 +23,11 @@ export class CollapseHandler {
   }
 }
 
-/**Generate a UID for the given collapse item
- *
- * */
-
-/**
- * Generate a unique id for the given collapse item
- * @param collapse Collapse ID registry to operate in
- * @param doc The document / id we are generating a new ID based off of
- * @param no_inc Whether we should re-use the previous index, if one exists. This allows consecutively generated IDs to be aliased to each other - they will collapse each other
- */
 export function collapseID(
   collapse: CollapseRegistry,
   doc: string | LancerActor | LancerItem | null | undefined,
   no_inc: boolean
 ): string {
-  // On sheet, enable collapse.
   let doc_id: string;
   if (doc instanceof foundry.abstract.Document) {
     doc_id = doc.id ?? "ephem";
@@ -57,24 +46,47 @@ export function collapseID(
   return `${doc_id}_${collapse_index}`;
 }
 
-/**
- * Generates a button for toggling collapse state of a thing. To be used in conjuncture with collapseParam
- * @param collapse G
- * @param doc
- * @param no_increment
- * @returns
- */
+export function collapseSectionForId(collapseId: string): Element | null {
+  return document.querySelector(`.collapse[data-collapse-id="${collapseId}"]`);
+}
+
+export function syncCollapseAria(trigger: Element, section?: Element | null): void {
+  const id = trigger.getAttribute("data-collapse-id");
+  const collapse =
+    section ??
+    (id ? collapseSectionForId(id) : null) ??
+    (id ? document.querySelector(`[data-collapse-id="${id}"].collapse`) : null);
+  const expanded = collapse ? !collapse.classList.contains("collapsed") : true;
+  trigger.setAttribute("aria-expanded", expanded ? "true" : "false");
+}
+
+function enhanceCollapseTrigger(trigger: Element): void {
+  if (!trigger.hasAttribute("role") && trigger.tagName !== "BUTTON") {
+    trigger.setAttribute("role", "button");
+  }
+  if (!trigger.hasAttribute("tabindex") && trigger.tagName !== "BUTTON") {
+    trigger.setAttribute("tabindex", "0");
+  }
+  if (!trigger.hasAttribute("aria-label")) {
+    trigger.setAttribute("aria-label", game.i18n.localize("lancer.collapse.toggle"));
+  }
+  syncCollapseAria(trigger);
+}
+
+export function enhanceCollapseTriggers(html: JQuery): void {
+  html.find(".collapse-trigger").each((_, el) => enhanceCollapseTrigger(el));
+}
+
 export function collapseButton(
   collapse: CollapseRegistry | undefined | null,
   doc?: string | LancerActor | LancerItem | null,
   no_increment: boolean = false
 ) {
   if (collapse) {
-    return `<i class="mdi mdi-unfold-less-horizontal collapse-trigger collapse-icon" data-collapse-id="${collapseID(
-      collapse,
-      doc,
-      no_increment
-    )}"> </i>`;
+    const id = collapseID(collapse, doc, no_increment);
+    return `<button type="button" class="collapse-trigger collapse-icon" data-collapse-id="${id}" aria-expanded="true" aria-label="${game.i18n.localize("lancer.collapse.toggle")}">
+      <i class="mdi mdi-unfold-less-horizontal" aria-hidden="true"></i>
+    </button>`;
   }
   return "";
 }
@@ -90,22 +102,12 @@ export function collapseParam(
   return "";
 }
 
-// V2
-/**
- * Generalized collapse activator
- */
-export function applyCollapseListeners(html: JQuery) {
-  html.find(".collapse-trigger").on("click", handleCollapse);
-}
+export function toggleCollapse(trigger: Element): void {
+  const id = trigger.getAttribute("data-collapse-id");
+  if (!id) return;
 
-const handleCollapse = (ev: Event) => {
-  ev.stopPropagation();
-
-  let prefix = `lancer-collapse`;
-  // On click, find matching collapse, and toggle collapsed class.
-  let id = (ev.currentTarget as Element).getAttribute("data-collapse-id");
-
-  let collapse = document.querySelector(`.collapse[data-collapse-id="${id}"]`);
+  const collapse = collapseSectionForId(id);
+  const prefix = `lancer-collapse`;
   if (collapse?.classList.contains("collapsed")) {
     collapse.classList.remove("collapsed");
     sessionStorage.setItem(`${prefix}-${id}`, "opened");
@@ -113,12 +115,29 @@ const handleCollapse = (ev: Event) => {
     collapse?.classList.add("collapsed");
     sessionStorage.setItem(`${prefix}-${id}`, "closed");
   }
-  // console.debug(collapse);
+
+  document.querySelectorAll(`.collapse-trigger[data-collapse-id="${id}"]`).forEach(t => syncCollapseAria(t, collapse));
+}
+
+const handleCollapse = (ev: Event) => {
+  ev.preventDefault();
+  ev.stopPropagation();
+  toggleCollapse(ev.currentTarget as Element);
 };
+
+const handleCollapseKeydown = (ev: JQuery.KeyDownEvent) => {
+  if (ev.key !== "Enter" && ev.key !== " ") return;
+  ev.preventDefault();
+  toggleCollapse(ev.currentTarget);
+};
+
+export function applyCollapseListeners(html: JQuery) {
+  enhanceCollapseTriggers(html);
+  html.find(".collapse-trigger").on("click", handleCollapse).on("keydown", handleCollapseKeydown);
+}
 
 export function initializeCollapses(html: JQuery) {
   let collapse_sections = html.find(".collapse");
-  // Init according to session store.
   collapse_sections.each((_index, section) => {
     let id = section.getAttribute("data-collapse-id");
     if (id) {
@@ -130,4 +149,6 @@ export function initializeCollapses(html: JQuery) {
       }
     }
   });
+  enhanceCollapseTriggers(html);
+  html.find(".collapse-trigger").each((_, trigger) => syncCollapseAria(trigger));
 }

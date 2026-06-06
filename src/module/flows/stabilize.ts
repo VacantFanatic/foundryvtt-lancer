@@ -43,33 +43,34 @@ async function renderStabilizePrompt(state: FlowState<LancerFlowState.StabilizeD
 
   let submit: boolean | null = null;
 
-  submit = await new Promise<boolean>((resolve, _reject) => {
-    new Dialog({
-      title: `STABILIZE - ${actor.name!}`,
-      content: template,
-      buttons: {
-        submit: {
-          icon: '<i class="fas fa-check"></i>',
-          label: "Submit",
-          callback: async dlg => {
-            // Typeguard the flow data again
-            if (!state.data) return;
-            state.data.option1 = <StabOptions1>$(dlg).find(".stabilize-options-1:checked").first().val();
-            state.data.option2 = <StabOptions2>$(dlg).find(".stabilize-options-2:checked").first().val();
-            resolve(true);
-          },
-        },
-        cancel: {
-          icon: '<i class="fas fa-times"></i>',
-          label: "Cancel",
-          callback: async () => resolve(false),
+  const action = await foundry.applications.api.DialogV2.wait({
+    window: {
+      title: game.i18n.format("lancer.flow.stabilize.title", { name: actor.name ?? "" }),
+      icon: "cci cci-repair",
+    },
+    content: template,
+    buttons: [
+      {
+        action: "submit",
+        icon: "fas fa-check",
+        label: game.i18n.localize("lancer.flow.common.submit"),
+        default: true,
+        callback: (_event, _button, dialog) => {
+          if (!state.data) return false;
+          const root = dialog.element as HTMLElement;
+          state.data.option1 = <StabOptions1>$(root).find(".stabilize-options-1:checked").first().val();
+          state.data.option2 = <StabOptions2>$(root).find(".stabilize-options-2:checked").first().val();
+          return true;
         },
       },
-      default: "submit",
-      close: () => resolve(false),
-    }).render(true);
+      {
+        action: "cancel",
+        icon: "fas fa-times",
+        label: game.i18n.localize("lancer.flow.common.cancel"),
+      },
+    ],
   });
-  return submit ?? false;
+  return action === "submit";
 }
 
 async function applyStabilizeUpdates(state: FlowState<LancerFlowState.StabilizeData>): Promise<boolean> {

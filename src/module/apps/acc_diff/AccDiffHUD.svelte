@@ -24,6 +24,8 @@
   import type { SystemTemplates } from "../../system-template";
   import { LANCER } from "../../config";
   import { onMount } from "svelte";
+  import { hudL, hudT } from "../../helpers/hud-i18n";
+  import { hudModal } from "../slidinghud/hud-modal";
 
   export let weapon: AccDiffHudWeapon;
   export let base: AccDiffHudBase;
@@ -189,33 +191,29 @@
   }
 
   function gritLabel() {
-    // This is a tech attack
     if (isTech()) {
       if (lancerItem?.is_npc_feature() && lancerItem.system.type === NpcFeatureType.Tech) {
-        return "Tech Item Base";
+        return hudL("accdiff.tech-item-base");
       }
-      return "Tech Attack";
+      return hudL("accdiff.tech-attack");
     }
-    // Not a tech attack and we have an item. Base the label on the item type.
     if (lancerItem) {
       if (lancerItem.is_mech_weapon() || lancerItem.is_pilot_weapon()) {
-        return "Grit";
+        return hudL("accdiff.grit");
       }
       if (lancerItem.is_npc_feature() && lancerItem.system.type === NpcFeatureType.Weapon) {
-        return "Weapon Base";
+        return hudL("accdiff.weapon-base");
       }
     }
-    // Not a tech attack and we have no item. Base the label on the actor type.
     if (lancerActor) {
       if (lancerActor.is_npc()) {
-        return "Tier";
+        return hudL("accdiff.tier");
       }
       if (lancerActor.is_mech() || lancerActor.is_pilot() || lancerActor.is_deployable()) {
-        return "Grit";
+        return hudL("accdiff.grit");
       }
     }
-    // Default fallback
-    return "Grit";
+    return hudL("accdiff.grit");
   }
 
   function flatSign(val: number) {
@@ -253,6 +251,7 @@
 <form
   id="accdiff"
   class="lancer lancer-hud accdiff window-content"
+  use:hudModal
   use:escToCancel
   on:submit|preventDefault={() => {
     submitted = true;
@@ -279,7 +278,9 @@
   <div id="{kind}-accdiff-dialog" class="lancer-hud-body">
     <!-- Flat attack bonus -->
     {#if isAttack()}
-      <label class="flexrow accdiff-weight lancer-border-primary" for="accdiff-flat-bonus"> Flat Modifier </label>
+      <label class="flexrow accdiff-weight lancer-border-primary" for="accdiff-flat-bonus">
+        {hudL("accdiff.flat-modifier")}
+      </label>
       <div class="accdiff-grid accdiff-flat-bonus">
         <div class="accdiff-other-grid">
           <span><b>{gritLabel()}:</b> {flatSign(base.grit)}{base.grit}</span>
@@ -295,7 +296,7 @@
           </button>
         </div>
         <div class="accdiff-other-grid">
-          <span><b>Total:</b> {flatSign(flatTotal)}{flatTotal}</span>
+          <span><b>{hudL("common.total")}:</b> {flatSign(flatTotal)}{flatTotal}</span>
         </div>
       </div>
     {/if}
@@ -305,13 +306,13 @@
       <div class="accdiff-grid__column">
         <h4 class="lancer-border-primary">
           <i class="cci cci-accuracy i--4" style="vertical-align: middle; border: none" />
-          <span>Accuracy</span>
+          <span>{hudL("common.accuracy")}</span>
         </h4>
       </div>
       <div class="accdiff-grid__column">
         <h4 class="lancer-border-primary">
           <i class="cci cci-difficulty i--4" style="vertical-align: middle; border: none" />
-          <span>Difficulty</span>
+          <span>{hudL("common.difficulty")}</span>
         </h4>
       </div>
     </div>
@@ -319,21 +320,21 @@
     <div class="accdiff-grid accdiff-grid__section">
       <!-- Accuracy column -->
       <div class="accdiff-grid__column">
-        <HudCheckbox label="Accurate (+1)" bind:value={weapon.accurate} />
+        <HudCheckbox label={hudL("accdiff.accurate")} bind:value={weapon.accurate} />
         {#if kind == "attack"}
-          <HudCheckbox label="Seeking (*)" bind:value={weapon.seeking} />
+          <HudCheckbox label={hudL("accdiff.seeking")} bind:value={weapon.seeking} />
         {/if}
       </div>
 
       <!-- Difficulty column -->
       <div class="accdiff-grid__column">
-        <HudCheckbox label="Inaccurate (-1)" bind:value={weapon.inaccurate} />
-        <HudCheckbox label="Impaired (-1)" value={!!weapon.impaired} disabled />
+        <HudCheckbox label={hudL("accdiff.inaccurate")} bind:value={weapon.inaccurate} />
+        <HudCheckbox label={hudL("accdiff.impaired")} value={!!weapon.impaired} disabled />
         {#if kind == "attack" && !isTech()}
           {#if isMelee()}
-            <HudCheckbox label="Thrown (*)" bind:value={weapon.thrown} />
+            <HudCheckbox label={hudL("accdiff.thrown")} bind:value={weapon.thrown} />
           {/if}
-          <HudCheckbox label="Engaged (-1)" bind:value={weapon.engaged} />
+          <HudCheckbox label={hudL("accdiff.engaged")} bind:value={weapon.engaged} />
         {/if}
       </div>
     </div>
@@ -342,11 +343,16 @@
       <div transition:slide|global class="accdiff-grid accdiff-grid__section" style="width: 100%">
         <div class="accdiff-grid__column">
           {#if targets.length == 1}
-            <HudCheckbox style="grid-area: prone" label="Prone (+1)" bind:value={targets[0].prone} disabled />
-            <HudCheckbox label="Stunned (EVA=5)" bind:value={targets[0].stunned} disabled />
+            <HudCheckbox
+              style="grid-area: prone"
+              label={hudL("accdiff.prone")}
+              bind:value={targets[0].prone}
+              disabled
+            />
+            <HudCheckbox label={hudL("accdiff.stunned")} bind:value={targets[0].stunned} disabled />
             <HudCheckbox
               style="grid-area: lock-on"
-              label="Lock On (+1)"
+              label={hudL("accdiff.lock-on")}
               checked={!!targets[0].usingLockOn}
               bind:value={targets[0].consumeLockOn}
               disabled={!targets[0].lockOnAvailable}
@@ -448,10 +454,13 @@
                 class="accdiff-weight total-label lancer-mini-header"
                 for="total-display-0"
               >
-                🞂 <span>Total
+                🞂 <span>
                   {#if targets.length > 0}
-                    vs {targets[0].token.name}
-                  {/if}</span> 🞀
+                    {hudT("accdiff.total-vs", { name: targets[0].token.name ?? "" })}
+                  {:else}
+                    {hudL("common.total")}
+                  {/if}
+                </span> 🞀
               </label>
             </div>
           {/key}
@@ -541,7 +550,7 @@
       use:focus
     >
       <i class="fas fa-check" />
-      Roll
+      {hudL("common.roll")}
     </button>
     <button
       class="dialog-button cancel"
@@ -553,7 +562,7 @@
       }}
     >
       <i class="fas fa-times" />
-      Cancel
+      {hudL("common.cancel")}
     </button>
   </div>
 </form>

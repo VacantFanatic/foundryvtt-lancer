@@ -380,6 +380,7 @@ interface ActionTrackerOptionsSchema extends foundry.data.fields.DataSchema {
    * @defaultValue `true`
    */
   printMessages: fields.BooleanField<{ initial: true }>;
+  showTextLabels: fields.BooleanField<{ initial: false }>;
 }
 
 export class ActionTrackerOptions extends foundry.abstract.DataModel<ActionTrackerOptionsSchema> {
@@ -402,6 +403,12 @@ export class ActionTrackerOptions extends foundry.abstract.DataModel<ActionTrack
         required: true,
         label: "lancer.actionTracker.printMessages",
         hint: "lancer.actionTracker.printMessages-desc",
+      }),
+      showTextLabels: new fields.BooleanField({
+        initial: false,
+        required: true,
+        label: "lancer.actionTracker.showTextLabels",
+        hint: "lancer.actionTracker.showTextLabels-desc",
       }),
     };
   }

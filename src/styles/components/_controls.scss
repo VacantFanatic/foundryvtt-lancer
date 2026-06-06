@@ -71,6 +71,11 @@ a.item.lancer-tab {
 }
 .collapse-trigger {
   cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
 }
 .collapse {
   max-height: 1000em;

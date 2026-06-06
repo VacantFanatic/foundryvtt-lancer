@@ -6,6 +6,7 @@ import { LANCER } from "../config";
 import { EntryType } from "../enums";
 import { LancerFlowState } from "../flows/interfaces";
 import { extendHelper, inc_if, resolveHelperDotpath, selected, std_num_input, std_x_of_y } from "./commons";
+import { ariaLabelAttr } from "./aria";
 import { ref_params, simple_ref_slot } from "./refs";
 
 // ---------------------------------------
@@ -26,7 +27,14 @@ interface ButtonOverrides {
 
 function _flowButton(button_class: string, html_data: string, overrides: ButtonOverrides = {}): string {
   const tooltip = overrides.tooltip ? `data-tooltip="${overrides.tooltip}"` : "";
-  return `<a class="${button_class} lancer-button ${overrides.classes ?? ""}" ${html_data} ${tooltip}>
+  const ariaKey =
+    button_class === "roll-stat"
+      ? "lancer.sheet-controls.roll-stat"
+      : button_class === "lancer-flow-button"
+        ? "lancer.sheet-controls.roll-attack"
+        : "";
+  const aria = ariaKey ? `${ariaLabelAttr(ariaKey)} ` : "";
+  return `<a class="${button_class} lancer-button ${overrides.classes ?? ""}" ${aria}${html_data} ${tooltip}>
     <i class="fas ${overrides.icon ?? "fa-dice-d20"} i--dark i--2"></i>
   </a>`;
 }

@@ -4,6 +4,7 @@
 
   import { DamageType } from "../../enums";
   import type { DamageData } from "../../models/bits/damage";
+  import { hudL } from "../../helpers/hud-i18n";
 
   const dispatch = createEventDispatcher();
   const damageSelectOptions = Object.entries(DamageType);
@@ -48,9 +49,9 @@
       class="lancer-button damage-delete"
       type="button"
       on:click={dispatchDelete}
-      aria-label="Remove damage type"
-      title="Remove damage type"
-      data-tooltip="Remove this damage type"
+      aria-label={hudL("damage.remove-damage-type")}
+      title={hudL("damage.remove-damage-type")}
+      data-tooltip={hudL("damage.remove-damage-type")}
     >
       <i class="fas fa-trash"></i>
     </button>

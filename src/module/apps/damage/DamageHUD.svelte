@@ -18,6 +18,8 @@
   import HitRadio from "./HitRadio.svelte";
   import { LancerActor } from "../../actor/lancer-actor";
   import { LancerToken } from "../../token";
+  import { hudL } from "../../helpers/hud-i18n";
+  import { hudModal } from "../slidinghud/hud-modal";
 
   export let title: string;
   export let kind: "damage";
@@ -189,6 +191,7 @@
 <form
   id="damage-hud"
   class="lancer lancer-hud damage-hud window-content"
+  use:hudModal
   use:escToCancel
   on:submit|preventDefault={() => dispatch("submit")}
 >
@@ -207,9 +210,14 @@
     <div class="damage-grid">
       <div class="base-damage lancer-border-primary">
         <h4 class="damage-hud-section lancer-border-primary flexrow">
-          Base Damage
-          <button class="add-damage-type" type="button" on:click={addBaseDamage}>
-            <i class="mdi mdi-plus-thick" data-tooltip="Add a base damage type" />
+          {hudL("damage.base-damage")}
+          <button
+            class="add-damage-type"
+            type="button"
+            on:click={addBaseDamage}
+            aria-label={hudL("damage.add-base-damage")}
+          >
+            <i class="mdi mdi-plus-thick" data-tooltip={hudL("damage.add-base-damage")} />
           </button>
         </h4>
         {#each weaponDamage as damage, i (i)}
@@ -225,9 +233,14 @@
       </div>
       <div class="bonus-damage">
         <h4 class="damage-hud-section lancer-border-primary flexrow">
-          Bonus Damage
-          <button class="add-damage-type" type="button" on:click={addBonusDamage}>
-            <i class="mdi mdi-plus-thick" data-tooltip="Add a bonus damage type" />
+          {hudL("damage.bonus-damage")}
+          <button
+            class="add-damage-type"
+            type="button"
+            on:click={addBonusDamage}
+            aria-label={hudL("damage.add-bonus-damage")}
+          >
+            <i class="mdi mdi-plus-thick" data-tooltip={hudL("damage.add-bonus-damage")} />
           </button>
         </h4>
         {#each weaponBonusDamage as damage, i (i)}
@@ -245,39 +258,39 @@
     <!-- Checkboxes - AP etc... -->
     <div class="damage-hud-options-grid">
       <h4 class="damage-hud-section lancer-border-primary" style="justify-content: center; grid-area: title">
-        Configuration
+        {hudL("common.configuration")}
       </h4>
       <HudCheckbox
         icon="mdi mdi-shield-off-outline"
-        label="Armor Piercing (AP)"
+        label={hudL("damage.armor-piercing")}
         bind:value={base.ap}
         bind:partial={partialAP}
         on:change={toggleAP}
         disabled={base.paracausal}
         style="grid-area: ap"
       />
-      <HudCheckbox label="Overkill" bind:value={weapon.overkill} style="grid-area: overkill" />
+      <HudCheckbox label={hudL("damage.overkill")} bind:value={weapon.overkill} style="grid-area: overkill" />
       <HudCheckbox
         icon="cci cci-large-beam"
-        label="Cannot be Reduced"
+        label={hudL("damage.cannot-be-reduced")}
         bind:value={base.paracausal}
         bind:partial={partialParacausal}
         on:change={toggleParacausal}
-        tooltip="For 'cannot be reduced' effects like the Paracausal mod"
+        tooltip={hudL("damage.cannot-be-reduced-tip")}
         style="grid-area: paracausal"
       />
       <HudCheckbox
         icon="mdi mdi-fraction-one-half"
-        label="Half Damage"
+        label={hudL("damage.half-damage")}
         bind:value={base.halfDamage}
         bind:partial={partialHalfDamage}
         on:change={toggleHalfDamage}
-        tooltip="For effects which cause the attacker to deal half damage in addition to resistance, like Heavy Gunner"
+        tooltip={hudL("damage.half-damage-tip")}
         style="grid-area: halfdamage"
       />
       <div class="flexrow" style="grid-area: reliable; align-items: center">
         <HudCheckbox
-          label="Reliable"
+          label={hudL("damage.reliable")}
           bind:value={weapon.reliable}
           style="grid-area: reliable; max-width: fit-content; padding-right: 0.5em"
         />
@@ -333,11 +346,11 @@
   <div class="lancer-hud-buttons flexrow">
     <button class="dialog-button submit default" data-button="submit" type="submit" use:focus>
       <i class="fas fa-check" />
-      Roll
+      {hudL("common.roll")}
     </button>
     <button class="dialog-button cancel" data-button="cancel" type="button" on:click={() => dispatch("cancel")}>
       <i class="fas fa-times" />
-      Cancel
+      {hudL("common.cancel")}
     </button>
   </div>
 </form>

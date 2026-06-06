@@ -5,6 +5,7 @@
 <script lang="ts">
   import { crossfade } from "svelte/transition";
   import type { Cover } from "./index";
+  import { hudL } from "../../helpers/hud-i18n";
   export let cover: Cover;
   export let disabled: boolean = false;
   export let labelClass: string = "";
@@ -14,9 +15,9 @@
   let id = `accdiff-cover-input-${counter++}`;
 
   let inputs = [
-    { slug: "no", human: "No Cover", value: 0, icon: "shield-outline" },
-    { slug: "soft", human: "Soft Cover (-1)", value: 1, icon: "shield-half-full" },
-    { slug: "hard", human: "Hard Cover (-2)", value: 2, icon: "shield" },
+    { slug: "no", human: hudL("cover.none"), value: 0, icon: "shield-outline" },
+    { slug: "soft", human: hudL("cover.soft"), value: 1, icon: "shield-half-full" },
+    { slug: "hard", human: hudL("cover.hard"), value: 2, icon: "shield" },
   ];
 
   let [send, recv] = crossfade({});
