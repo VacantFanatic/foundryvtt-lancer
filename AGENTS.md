@@ -36,9 +36,9 @@ Handled by the VM update script: `CI=1 npm ci` from repo root (skips `postinstal
 
 ### Running the stack
 
-| Process | Port | Required? |
-|---------|------|-----------|
-| Foundry VTT | 30000 | **Yes** for in-browser testing |
+| Process                | Port  | Required?                                              |
+| ---------------------- | ----- | ------------------------------------------------------ |
+| Foundry VTT            | 30000 | **Yes** for in-browser testing                         |
 | Vite (`npm run serve`) | 30001 | Optional HMR; proxies non-`/systems/lancer` to Foundry |
 
 **Foundry is not bundled.** Install Node Foundry under `installPath` and set `dataPath` via `fvttrc.yml` (gitignored) or `~/.fvttrc.yml`, then `npx fvtt --config ./fvttrc.yml launch`.

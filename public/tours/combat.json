@@ -54,6 +54,34 @@
       "title": "lancer.tour.combat.combatSettings.title",
       "content": "lancer.tour.combat.combatSettings.content",
       "sidebarTab": "combat"
+    },
+    {
+      "id": "attackDamageLoop",
+      "selector": "#combat .combat-tracker",
+      "title": "lancer.tour.combat.attackDamageLoop.title",
+      "content": "lancer.tour.combat.attackDamageLoop.content",
+      "sidebarTab": "combat"
+    },
+    {
+      "id": "manualDamage",
+      "selector": "#combat .combat-tracker",
+      "title": "lancer.tour.combat.manualDamage.title",
+      "content": "lancer.tour.combat.manualDamage.content",
+      "sidebarTab": "combat"
+    },
+    {
+      "id": "autoDamagePrompt",
+      "selector": "#combat .combat-tracker",
+      "title": "lancer.tour.combat.autoDamagePrompt.title",
+      "content": "lancer.tour.combat.autoDamagePrompt.content",
+      "sidebarTab": "combat"
+    },
+    {
+      "id": "applyDamage",
+      "selector": "#combat .combat-tracker",
+      "title": "lancer.tour.combat.applyDamage.title",
+      "content": "lancer.tour.combat.applyDamage.content",
+      "sidebarTab": "combat"
     }
   ],
   "suggestedNextTours": [],
@@ -88,6 +116,22 @@
       "combatSettings": {
         "title": "Combat Settings",
         "content": "The settings menu has been customized to allow configuring LANCER specific options."
+      },
+      "attackDamageLoop": {
+        "title": "Attack → Damage → Apply",
+        "content": "LANCER combat flows from an attack roll in chat to a damage roll, then to applying damage on each target. After a weapon attack hits, use the Roll Damage button pinned on the attack card to open the damage HUD."
+      },
+      "manualDamage": {
+        "title": "Manual damage (default)",
+        "content": "By default, you roll damage yourself after reviewing the attack card. Select targets on the damage HUD, confirm damage types, then roll. Each target can be applied from the resulting damage card."
+      },
+      "autoDamagePrompt": {
+        "title": "Optional auto-damage prompt",
+        "content": "GMs can enable <strong>Prompt Damage After Attack</strong> under Configure Settings → Automation. When enabled and an attack records at least one hit, the damage HUD opens automatically after the attack card—cancel closes the HUD without applying damage."
+      },
+      "applyDamage": {
+        "title": "Applying damage",
+        "content": "Damage cards list each target with Apply buttons. Applied damage updates the token's HP or heat on the sheet. Use Undo on a target if you need to reverse an application."
       }
     }
   }

@@ -61,6 +61,8 @@ export const LANCER = {
   setting_dsn_setup: "dsnSetup",
   setting_square_grid_diagonals: "squareGridDiagonals",
   setting_tag_config: "tagConfig",
+  setting_accdiff_remember_advanced: "accdiffRememberAdvanced",
+  setting_accdiff_advanced_expanded: "accdiffAdvancedExpanded",
   // setting_120: "warningFor120", // Old setting, currently unused.
   // setting_beta_warning: "warningForBeta", // Old setting, currently unused.
 } as const;

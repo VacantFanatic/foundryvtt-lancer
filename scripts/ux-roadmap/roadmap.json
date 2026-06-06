@@ -14,16 +14,31 @@
     { "name": "priority/p2", "color": "FBCA04", "description": "Polish and long-term UX work" }
   ],
   "milestones": [
-    { "title": "v2.12.11 — Trust & polish", "description": "Quick wins: import errors, WIP cleanup, cloud spinner, chat layout, HUD drag fix." },
-    { "title": "v2.13.0 — Combat loop", "description": "Auto-damage prompt, Acc/Diff disclosure, combat tour, chat rerolls." },
-    { "title": "v2.14.0 — Import & equip", "description": "Pilot cloud wizard, empty slot picker, unified import dialog." },
+    {
+      "title": "v2.12.11 — Trust & polish",
+      "description": "Quick wins: import errors, WIP cleanup, cloud spinner, chat layout, HUD drag fix."
+    },
+    {
+      "title": "v2.13.0 — Combat loop",
+      "description": "Auto-damage prompt, Acc/Diff disclosure, combat tour, chat rerolls."
+    },
+    {
+      "title": "v2.14.0 — Import & equip",
+      "description": "Pilot cloud wizard, empty slot picker, unified import dialog."
+    },
     { "title": "v2.15.0 — Sheet IA", "description": "Pilot defaults, mech stat sections, NPC tabs." },
-    { "title": "v2.16.0 — A11y & dialogs", "description": "Collapse a11y, action manager labels, DialogV2, HUD focus trap, i18n." },
+    {
+      "title": "v2.16.0 — A11y & dialogs",
+      "description": "Collapse a11y, action manager labels, DialogV2, HUD focus trap, i18n."
+    },
     { "title": "v2.17.0 — Help & tours", "description": "Contextual help, what's new, tour maintenance." },
     { "title": "v2.18.0 — Visual consistency", "description": "SCSS migration, remove legacy LCP HBS." },
     { "title": "v2.19.0 — Finish stubs", "description": "Async loading, mount reset, combat tracker targets." },
     { "title": "v2.20.0 — Interactive sheets", "description": "Svelte cloud island, experimental loadout editor." },
-    { "title": "v3.0.0 — Loadout editor GA", "description": "Optional major: promote loadout editor, remove legacy markup." }
+    {
+      "title": "v3.0.0 — Loadout editor GA",
+      "description": "Optional major: promote loadout editor, remove legacy markup."
+    }
   ],
   "releases": [
     {
@@ -116,7 +131,13 @@
       "priority": "P0",
       "parallel": true,
       "dependsOn": [],
-      "files": ["src/module/actor/import.ts", "src/lancer.ts", "src/module/world_migration.ts", "src/module/apps/lcp-manager/lcp-manager.ts", "lang/en.json"],
+      "files": [
+        "src/module/actor/import.ts",
+        "src/lancer.ts",
+        "src/module/world_migration.ts",
+        "src/module/apps/lcp-manager/lcp-manager.ts",
+        "lang/en.json"
+      ],
       "acceptance": [
         "Failed COMP/CON import shows reason and next step",
         "Missing-core errors include Open LCP Manager action",
@@ -131,7 +152,11 @@
       "priority": "P0",
       "parallel": true,
       "dependsOn": [],
-      "files": ["public/templates/actor/pilot.hbs", "src/module/actor/mech-sheet.ts", "src/module/actor/lancer-actor-sheet.ts"],
+      "files": [
+        "public/templates/actor/pilot.hbs",
+        "src/module/actor/mech-sheet.ts",
+        "src/module/actor/lancer-actor-sheet.ts"
+      ],
       "acceptance": [
         "No user-visible TODO toasts",
         "Pilot upload WIP card hidden until implemented"
@@ -145,7 +170,11 @@
       "priority": "P0",
       "parallel": true,
       "dependsOn": [],
-      "files": ["src/module/actor/pilot-sheet.ts", "public/templates/actor/pilot.hbs", "src/styles/applications/_actor-sheet.scss"],
+      "files": [
+        "src/module/actor/pilot-sheet.ts",
+        "public/templates/actor/pilot.hbs",
+        "src/styles/applications/_actor-sheet.scss"
+      ],
       "acceptance": [
         "Download button disabled with spinner during sync",
         "Double-click cannot fire duplicate downloads"
@@ -159,7 +188,11 @@
       "priority": "P0",
       "parallel": true,
       "dependsOn": [],
-      "files": ["public/templates/chat/attack-card.hbs", "public/templates/chat/tech-attack-card.hbs", "src/module/helpers/chat.ts"],
+      "files": [
+        "public/templates/chat/attack-card.hbs",
+        "public/templates/chat/tech-attack-card.hbs",
+        "src/module/helpers/chat.ts"
+      ],
       "acceptance": [
         "Hit summary visible at top of card",
         "Roll Damage CTA pinned above collapsible sections"
@@ -184,7 +217,12 @@
       "priority": "P0",
       "parallel": false,
       "dependsOn": [4],
-      "files": ["src/module/flows/attack.ts", "src/module/apps/automation-settings.ts", "public/templates/settings/automation-config.hbs", "lang/en.json"],
+      "files": [
+        "src/module/flows/attack.ts",
+        "src/module/apps/automation-settings.ts",
+        "public/templates/settings/automation-config.hbs",
+        "lang/en.json"
+      ],
       "acceptance": [
         "World setting defaults to off",
         "When on and hits exist, Damage HUD opens after attack card",
@@ -236,7 +274,11 @@
       "priority": "P0",
       "parallel": true,
       "dependsOn": [3],
-      "files": ["public/templates/actor/pilot.hbs", "src/styles/applications/_actor-sheet.scss", "src/module/actor/pilot-sheet.ts"],
+      "files": [
+        "public/templates/actor/pilot.hbs",
+        "src/styles/applications/_actor-sheet.scss",
+        "src/module/actor/pilot-sheet.ts"
+      ],
       "acceptance": [
         "Stepped layout: Login → Select → Download/JSON",
         "Unsynced pilots default to Cloud tab",
@@ -251,7 +293,12 @@
       "priority": "P0",
       "parallel": true,
       "dependsOn": [],
-      "files": ["src/module/helpers/refs.ts", "src/module/helpers/dragdrop.ts", "src/module/actor/lancer-actor-sheet.ts", "lang/en.json"],
+      "files": [
+        "src/module/helpers/refs.ts",
+        "src/module/helpers/dragdrop.ts",
+        "src/module/actor/lancer-actor-sheet.ts",
+        "lang/en.json"
+      ],
       "acceptance": [
         "Empty slots show drag hint",
         "Click opens filtered compendium picker",
@@ -343,7 +390,11 @@
       "priority": "P1",
       "parallel": false,
       "dependsOn": [7],
-      "files": ["src/module/apps/acc_diff/AccDiffHUD.svelte", "src/module/apps/damage/DamageHUD.svelte", "src/module/apps/struct_stress/StructStressHUD.svelte"],
+      "files": [
+        "src/module/apps/acc_diff/AccDiffHUD.svelte",
+        "src/module/apps/damage/DamageHUD.svelte",
+        "src/module/apps/struct_stress/StructStressHUD.svelte"
+      ],
       "acceptance": ["aria-modal and focus trap while HUD open; Escape still cancels"]
     },
     {
@@ -409,7 +460,11 @@
       "priority": "P2",
       "parallel": true,
       "dependsOn": [],
-      "files": ["public/templates/actor/pilot.hbs", "public/templates/chat/*.hbs", "src/styles/applications/_actor-sheet.scss"],
+      "files": [
+        "public/templates/actor/pilot.hbs",
+        "public/templates/chat/*.hbs",
+        "src/styles/applications/_actor-sheet.scss"
+      ],
       "acceptance": ["Inline style attributes replaced with SCSS utility classes"]
     },
     {

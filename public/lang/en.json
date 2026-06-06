@@ -226,7 +226,8 @@
         "hit-summary": "{parts} / {total} targets",
         "hit-summary-hits": "{n} hits",
         "hit-summary-crits": "{n} crits",
-        "hit-summary-misses": "{n} misses"
+        "hit-summary-misses": "{n} misses",
+        "reroll": "Reroll this attack"
       },
       "exclamation": {
         "overkill": "OVERKILL!"
@@ -420,7 +421,18 @@
       "npc_recharge": "NPC Recharge",
       "npc_recharge-desc": "Automatically roll to recharge NPC systems at the start of their turn.",
       "token_size": "Manage Token Sizes",
-      "token_size-desc": "Automatically force tokens sizes to match the associated actor's size stat."
+      "token_size-desc": "Automatically force tokens sizes to match the associated actor's size stat.",
+      "prompt_damage_after_attack": "Prompt Damage After Attack",
+      "prompt_damage_after_attack-desc": "When an attack hits at least one target, open the damage roll HUD automatically after the attack card is posted."
+    },
+    "accdiff": {
+      "rememberAdvanced": {
+        "name": "Remember Acc/Diff Advanced Section",
+        "hint": "When enabled, the expanded/collapsed state of the Advanced section in the attack Acc/Diff HUD is remembered per weapon."
+      },
+      "advanced": "Advanced",
+      "showAdvanced": "Show plugins, templates, and per-target modifiers",
+      "hideAdvanced": "Hide advanced options"
     },
     "actionTracker": {
       "menu-name": "Action Tracker",

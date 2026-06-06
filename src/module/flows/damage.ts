@@ -8,6 +8,7 @@ import { Damage, type DamageData } from "../models/bits/damage";
 import type { UUIDRef } from "../source-template";
 import { LancerToken, LancerTokenDocument } from "../token";
 import { renderTemplateStep } from "./_render";
+import type { AttackFlag } from "./interfaces";
 import { Flow, type FlowState, type Step } from "./flow";
 import { LancerFlowState } from "./interfaces";
 
@@ -671,6 +672,65 @@ export async function getCritRoll(normal: Roll) {
   return Roll.fromTerms(terms);
 }
 
+/** Build hit results and start a damage flow from attack chat flag data. */
+export async function beginDamageFlowFromAttackData(attackData: AttackFlag): Promise<boolean> {
+  const actor = (await fromUuid(attackData.attackerUuid)) as LancerActor | null;
+  if (!actor) {
+    ui.notifications?.error("Invalid attacker for damage roll");
+    return false;
+  }
+  if (!actor.isOwner) {
+    ui.notifications?.error(`You do not own ${actor.name}, so you cannot roll damage for them`);
+    return false;
+  }
+  const item = (await fromUuid(attackData.attackerItemUuid || "")) as LancerItem | null;
+  if (item && item.parent !== actor) {
+    ui.notifications?.error(`Item ${item.uuid} is not owned by actor ${actor.uuid}!`);
+    return false;
+  }
+
+  const hit_results: LancerFlowState.HitResult[] = [];
+  for (const t of attackData.targets) {
+    const targetDoc = (await fromUuid(t.uuid)) as unknown;
+    const target = normalizeFlowTargetToken(targetDoc);
+    if (!target || target.document?.documentName !== "Token") {
+      ui.notifications?.error("Invalid target for damage roll");
+      continue;
+    }
+
+    let usedLockOn = false;
+    if (t.setConditions) {
+      usedLockOn = t.setConditions.lockOn === false ? true : false;
+    }
+
+    hit_results.push({
+      target,
+      total: t.total,
+      usedLockOn,
+      hit: t.hit,
+      crit: t.crit,
+    });
+  }
+
+  const damage: DamageData[] = [];
+  const bonus_damage: DamageData[] = [];
+  if (attackData.invade) {
+    damage.push({ type: DamageType.Heat, val: "2" });
+  }
+
+  const flow = new DamageRollFlow(item ? item.uuid : attackData.attackerUuid, {
+    title: `${item?.name || actor.name} DAMAGE`,
+    configurable: true,
+    invade: attackData.invade,
+    hit_results,
+    has_normal_hit: hit_results.some(hr => hr.hit && !hr.crit),
+    has_crit_hit: hit_results.some(hr => hr.crit),
+    damage,
+    bonus_damage,
+  });
+  return await flow.begin();
+}
+
 /*********************************************
     ======== Chat button handlers ==========
 *********************************************/
@@ -687,71 +747,12 @@ export async function rollDamageCallback(event: JQuery.ClickEvent) {
     return;
   }
   const chatMessage = game.messages?.get(chatMessageElement.dataset.messageId);
-  // Get attack data from the chat message
   const attackData = chatMessage?.flags.lancer?.attackData;
   if (!chatMessage || !attackData) {
     ui.notifications?.error("Damage roll button has no attack data available");
     return;
   }
-
-  // Get the attacker and weapon/system from the attack data
-  const actor = (await fromUuid(attackData.attackerUuid)) as LancerActor | null;
-  if (!actor) {
-    ui.notifications?.error("Invalid attacker for damage roll");
-    return;
-  }
-  if (!actor.isOwner) {
-    ui.notifications?.error(`You do not own ${actor.name}, so you cannot roll damage for them`);
-    return;
-  }
-  const item = (await fromUuid(attackData.attackerItemUuid || "")) as LancerItem | null;
-  if (item && item.parent !== actor) {
-    ui.notifications?.error(`Item ${item.uuid} is not owned by actor ${actor.uuid}!`);
-    return;
-  }
-  const hit_results: LancerFlowState.HitResult[] = [];
-  for (const t of attackData.targets) {
-    const targetDoc = (await fromUuid(t.uuid)) as unknown;
-    const target = normalizeFlowTargetToken(targetDoc);
-    if (!target || target.document?.documentName !== "Token") {
-      ui.notifications?.error("Invalid target for damage roll");
-      continue;
-    }
-
-    // Determine whether lock on was used
-    let usedLockOn = false;
-    if (t.setConditions) {
-      usedLockOn = t.setConditions.lockOn === false ? true : false;
-    }
-
-    hit_results.push({
-      target: target,
-      total: t.total,
-      usedLockOn,
-      hit: t.hit,
-      crit: t.crit,
-    });
-  }
-
-  // Collect damage from the item
-  const damage: DamageData[] = [];
-  const bonus_damage: DamageData[] = [];
-  if (attackData.invade) {
-    damage.push({ type: DamageType.Heat, val: "2" });
-  }
-
-  // Start a damage flow, prepopulated with the attack data
-  const flow = new DamageRollFlow(item ? item.uuid : attackData.attackerUuid, {
-    title: `${item?.name || actor.name} DAMAGE`,
-    configurable: true,
-    invade: attackData.invade,
-    hit_results,
-    has_normal_hit: hit_results.some(hr => hr.hit && !hr.crit),
-    has_crit_hit: hit_results.some(hr => hr.crit),
-    damage,
-    bonus_damage,
-  });
-  flow.begin();
+  await beginDamageFlowFromAttackData(attackData);
 }
 
 /**

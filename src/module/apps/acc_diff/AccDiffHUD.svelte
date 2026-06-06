@@ -22,6 +22,8 @@
   import { LancerToken } from "../../token";
   import AccDiffInput from "./AccDiffInput.svelte";
   import type { SystemTemplates } from "../../system-template";
+  import { LANCER } from "../../config";
+  import { onMount } from "svelte";
 
   export let weapon: AccDiffHudWeapon;
   export let base: AccDiffHudBase;
@@ -51,6 +53,48 @@
 
   const dispatch = createEventDispatcher();
   let submitted = false;
+  let showAdvanced = false;
+
+  $: hasAdvancedContent =
+    kind === "attack" &&
+    (accWeaponPlugins.length > 0 ||
+      diffWeaponPlugins.length > 0 ||
+      accTargetPlugins.length > 0 ||
+      diffTargetPlugins.length > 0 ||
+      (ranges && ranges.length > 0) ||
+      targets.length > 1);
+
+  function advancedStorageKey() {
+    return lancerItem?.uuid ?? title;
+  }
+
+  function loadAdvancedPreference() {
+    if (!game.settings.get(game.system.id, LANCER.setting_accdiff_remember_advanced)) return;
+    const expanded = game.settings.get(game.system.id, LANCER.setting_accdiff_advanced_expanded) as Record<
+      string,
+      boolean
+    >;
+    showAdvanced = !!expanded[advancedStorageKey()];
+  }
+
+  function persistAdvancedPreference() {
+    if (!game.settings.get(game.system.id, LANCER.setting_accdiff_remember_advanced)) return;
+    const key = advancedStorageKey();
+    const expanded = {
+      ...(game.settings.get(game.system.id, LANCER.setting_accdiff_advanced_expanded) as Record<string, boolean>),
+    };
+    expanded[key] = showAdvanced;
+    void game.settings.set(game.system.id, LANCER.setting_accdiff_advanced_expanded, expanded);
+  }
+
+  function toggleAdvanced() {
+    showAdvanced = !showAdvanced;
+    persistAdvancedPreference();
+  }
+
+  onMount(() => {
+    loadAdvancedPreference();
+  });
 
   let rollerName = lancerActor ? ` -- ${lancerActor.token?.name || lancerActor.name}` : "";
 
@@ -278,9 +322,6 @@
         <HudCheckbox label="Accurate (+1)" bind:value={weapon.accurate} />
         {#if kind == "attack"}
           <HudCheckbox label="Seeking (*)" bind:value={weapon.seeking} />
-          {#each accWeaponPlugins as plugin}
-            <Plugin data={plugin} />
-          {/each}
         {/if}
       </div>
 
@@ -293,16 +334,12 @@
             <HudCheckbox label="Thrown (*)" bind:value={weapon.thrown} />
           {/if}
           <HudCheckbox label="Engaged (-1)" bind:value={weapon.engaged} />
-          {#each diffWeaponPlugins as plugin}
-            <Plugin data={plugin} />
-          {/each}
         {/if}
       </div>
     </div>
 
-    {#if kind == "attack" && (Object.values(weapon.plugins).length > 0 || targets.length == 1)}
+    {#if kind == "attack" && (targets.length == 1 || useCover)}
       <div transition:slide|global class="accdiff-grid accdiff-grid__section" style="width: 100%">
-        <!-- Target-related Accuracy -->
         <div class="accdiff-grid__column">
           {#if targets.length == 1}
             <HudCheckbox style="grid-area: prone" label="Prone (+1)" bind:value={targets[0].prone} disabled />
@@ -314,18 +351,9 @@
               bind:value={targets[0].consumeLockOn}
               disabled={!targets[0].lockOnAvailable}
             />
-            {#each accTargetPlugins as plugin}
-              <Plugin data={plugin} />
-            {/each}
           {/if}
         </div>
-
-        <!-- Target-related Difficulty -->
         <div class="accdiff-grid__column">
-          {#each diffTargetPlugins as plugin}
-            <Plugin data={plugin} />
-          {/each}
-          <!-- Cover -->
           {#if useCover}
             <div class="grid-enforcement">
               {#if targets.length == 0}
@@ -347,25 +375,68 @@
       </div>
     {/if}
 
+    {#if hasAdvancedContent}
+      <div class="accdiff-advanced-toggle flexrow flex-center">
+        <button class="lancer-button lancer-secondary" type="button" on:click={toggleAdvanced}>
+          <i class="fas fa-{showAdvanced ? 'chevron-up' : 'chevron-down'}" />
+          {
+            showAdvanced ? game.i18n.localize("lancer.accdiff.hideAdvanced") : game.i18n.localize("lancer.accdiff.showAdvanced")
+          }
+        </button>
+      </div>
+      {#if showAdvanced}
+        <div transition:slide|global class="accdiff-advanced">
+          {#if accWeaponPlugins.length > 0 || diffWeaponPlugins.length > 0}
+            <div class="accdiff-grid accdiff-grid__section">
+              <div class="accdiff-grid__column">
+                {#each accWeaponPlugins as plugin}
+                  <Plugin data={plugin} />
+                {/each}
+              </div>
+              <div class="accdiff-grid__column">
+                {#each diffWeaponPlugins as plugin}
+                  <Plugin data={plugin} />
+                {/each}
+              </div>
+            </div>
+          {/if}
+          {#if accTargetPlugins.length > 0 || diffTargetPlugins.length > 0}
+            <div class="accdiff-grid accdiff-grid__section">
+              <div class="accdiff-grid__column">
+                {#each accTargetPlugins as plugin}
+                  <Plugin data={plugin} />
+                {/each}
+              </div>
+              <div class="accdiff-grid__column">
+                {#each diffTargetPlugins as plugin}
+                  <Plugin data={plugin} />
+                {/each}
+              </div>
+            </div>
+          {/if}
+          {#if ranges && ranges.length > 0}
+            <div class="accdiff-grid__section">
+              <span class="accdiff-weight flex-center flexrow">{game.i18n.localize("lancer.accdiff.advanced")}</span>
+              <div class="accdiff-ranges flexrow">
+                {#each ranges as range}
+                  <button class="range-button" type="button" on:click={() => deployTemplate(range)}>
+                    <i class="cci cci-{range.type.toLowerCase()} i--4 i--light" />
+                    {ranges.length && ranges.length < 3 ? range.type.toUpperCase() : ""}
+                    {range.val}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {/if}
+        </div>
+      {/if}
+    {/if}
+
     <!-- Total accuracy / Targets -->
     <div class="flexcol accdiff-grid">
       <div class="flexrow accdiff-grid__section" style="justify-content: space-evenly">
         <AccDiffInput bind:value={base.accuracy} id="accdiff-manual-adjust" />
       </div>
-      {#if ranges && ranges.length > 0}
-        <div class="accdiff-grid__section">
-          <span class="accdiff-weight flex-center flexrow">Targeting</span>
-          <div class="accdiff-ranges flexrow">
-            {#each ranges as range}
-              <button class="range-button" type="button" on:click={() => deployTemplate(range)}>
-                <i class="cci cci-{range.type.toLowerCase()} i--4 i--light" />
-                {ranges.length && ranges.length < 3 ? range.type.toUpperCase() : ""}
-                {range.val}
-              </button>
-            {/each}
-          </div>
-        </div>
-      {/if}
     </div>
     <div class="flexcol accdiff-footer lancer-border-primary">
       <div class="accdiff-total">
@@ -416,34 +487,43 @@
                     <div class="flexrow accdiff-total">
                       <Total bind:target={data} id={`total-display-${i}`} />
                     </div>
-                    <div class="flexrow">
-                      <button
-                        class="i--4 no-grow accdiff-button"
-                        type="button"
-                        on:click={() => (data.accuracy = data.accuracy + 1)}
-                      >
-                        <i class="cci cci-accuracy i--4" style="border: none" />
-                      </button>
-                      <input style="display: none" type="number" bind:value={data.accuracy} min="0" />
-                      {#if useCover}
-                        <Cover
-                          bind:cover={data.cover}
-                          disabled={weapon.seeking}
-                          class="accdiff-targeted-cover flexrow flex-center"
-                          labelClass="i--2"
-                        />
-                      {:else}
-                        <div />
-                      {/if}
-                      <input style="display: none" type="number" bind:value={data.difficulty} min="0" />
-                      <button
-                        class="i--4 no-grow accdiff-button"
-                        type="button"
-                        on:click={() => (data.difficulty = data.difficulty + 1)}
-                      >
-                        <i class="cci cci-difficulty i--4" style="border: none" />
-                      </button>
-                    </div>
+                    {#if showAdvanced}
+                      <div class="flexrow">
+                        <button
+                          class="i--4 no-grow accdiff-button"
+                          type="button"
+                          on:click={() => (data.accuracy = data.accuracy + 1)}
+                        >
+                          <i class="cci cci-accuracy i--4" style="border: none" />
+                        </button>
+                        <input style="display: none" type="number" bind:value={data.accuracy} min="0" />
+                        {#if useCover}
+                          <Cover
+                            bind:cover={data.cover}
+                            disabled={weapon.seeking}
+                            class="accdiff-targeted-cover flexrow flex-center"
+                            labelClass="i--2"
+                          />
+                        {:else}
+                          <div />
+                        {/if}
+                        <input style="display: none" type="number" bind:value={data.difficulty} min="0" />
+                        <button
+                          class="i--4 no-grow accdiff-button"
+                          type="button"
+                          on:click={() => (data.difficulty = data.difficulty + 1)}
+                        >
+                          <i class="cci cci-difficulty i--4" style="border: none" />
+                        </button>
+                      </div>
+                    {:else if useCover}
+                      <Cover
+                        bind:cover={data.cover}
+                        disabled={weapon.seeking}
+                        class="accdiff-targeted-cover flexrow flex-center"
+                        labelClass="i--2"
+                      />
+                    {/if}
                   </div>
                 </div>
               {/each}

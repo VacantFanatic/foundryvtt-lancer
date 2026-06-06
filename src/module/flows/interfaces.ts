@@ -1,10 +1,30 @@
 import { AttackType, DamageType, NpcFeatureType, StabOptions1, StabOptions2, SystemType } from "../enums";
-import { AccDiffHudData } from "../apps/acc_diff";
+import { AccDiffHudData, type AccDiffHudDataSerialized } from "../apps/acc_diff";
 import type { ActionData } from "../models/bits/action";
 import type { DamageData } from "../models/bits/damage";
 import { Tag, type TagData } from "../models/bits/tag";
 import { LancerToken } from "../token";
 import { DamageHudData } from "../apps/damage";
+
+export type AttackFlag = {
+  origin: string;
+  attackerUuid: string;
+  attackerItemUuid?: string;
+  invade?: boolean;
+  targets: {
+    uuid: string;
+    setConditions?: object;
+    total: string;
+    hit: boolean;
+    crit: boolean;
+  }[];
+};
+
+export type AttackRerollFlag = {
+  flow: "weapon" | "tech" | "attack";
+  acc_diff: AccDiffHudDataSerialized;
+  targetUuids: string[];
+};
 
 // -------- Flow state data types -------------------------------------
 // Each flow uses one of these data types to track its state.
@@ -132,6 +152,10 @@ export namespace LancerFlowState {
     hit_results: HitResult[];
     // TODO: deprecate base64 encoded reroll data
     reroll_data: string;
+    /** When true, skip the Acc/Diff HUD (e.g. attack chat reroll). */
+    skip_attack_hud?: boolean;
+    /** When true, skip limited/loading consumption (e.g. attack chat reroll). */
+    is_reroll?: boolean;
   }
 
   // Specifically for weapons

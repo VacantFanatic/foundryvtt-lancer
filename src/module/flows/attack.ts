@@ -11,7 +11,8 @@ import type { SystemTemplates } from "../system-template";
 import { accDiffRollFragment, applyAccDiffDsnColors, colorizeAccDiffTooltip } from "../helpers/dice-colors";
 import { renderTemplateStep } from "./_render";
 import { Flow, type FlowState, type Step } from "./flow";
-import { LancerFlowState } from "./interfaces";
+import { LancerFlowState, type AttackFlag, type AttackRerollFlag } from "./interfaces";
+import { beginDamageFlowFromAttackData } from "./damage";
 
 const lp = LANCER.log_prefix;
 
@@ -40,19 +41,7 @@ export function attackRolls(flat_bonus: number, acc_diff: AccDiffHudData): Lance
   };
 }
 
-export type AttackFlag = {
-  origin: string; // Attacker's ID. Somewhat deprecated, kept because LWFX is probably using it.
-  attackerUuid: string; // Attacker's UUID
-  attackerItemUuid?: string; // Item UUID used for the attack, if applicable
-  invade?: boolean;
-  targets: {
-    uuid: string;
-    setConditions?: object; // keys are statusEffect ids, values are boolean to indicate whether to apply or remove
-    total: string;
-    hit: boolean;
-    crit: boolean;
-  }[];
-};
+export type { AttackFlag, AttackRerollFlag };
 
 export function registerAttackSteps(flowSteps: Map<string, Step<any, any> | Flow<any>>) {
   flowSteps.set("initAttackData", initAttackData);
@@ -64,6 +53,7 @@ export function registerAttackSteps(flowSteps: Map<string, Step<any, any> | Flow
   flowSteps.set("rollAttacks", rollAttacks);
   flowSteps.set("clearTargets", clearTargets);
   flowSteps.set("printAttackCard", printAttackCard);
+  flowSteps.set("promptDamageAfterAttack", promptDamageAfterAttack);
 }
 
 export class BasicAttackFlow extends Flow<LancerFlowState.AttackRollData> {
@@ -121,8 +111,7 @@ export class WeaponAttackFlow extends Flow<LancerFlowState.WeaponRollData> {
     "applySelfHeat",
     "updateItemAfterAction",
     "printAttackCard",
-    // TODO: Start damage flow after attack
-    // "applyDamage"
+    "promptDamageAfterAttack",
   ];
 
   constructor(uuid: UUIDRef | LancerItem | LancerActor, data?: Partial<LancerFlowState.WeaponRollData>) {
@@ -301,6 +290,7 @@ export async function initAttackData(
 }
 
 export async function checkWeaponLoaded(state: FlowState<LancerFlowState.WeaponRollData>): Promise<boolean> {
+  if (state.data?.is_reroll) return true;
   // If this automation option is not enabled, skip the check.
   const { limited_loading, attacks } = game.settings.get(game.system.id, LANCER.setting_automation);
   if (!limited_loading && attacks) return true;
@@ -403,6 +393,7 @@ export async function showAttackHUD(
   options?: {}
 ): Promise<boolean> {
   if (!state.data) throw new TypeError(`Attack flow state missing!`);
+  if (state.data.skip_attack_hud && state.data.acc_diff) return true;
   try {
     state.data.acc_diff = await openSlidingHud("attack", state.data.acc_diff!);
     state.data.grit = state.data.acc_diff.base.grit;
@@ -491,23 +482,30 @@ export async function printAttackCard(
 ): Promise<boolean> {
   if (!state.data) throw new TypeError(`Attack flow state missing!`);
   const template = options?.template || `systems/${game.system.id}/templates/chat/attack-card.hbs`;
-  const flags: { attackData: AttackFlag } = {
-    attackData: {
-      origin: state.actor.id!,
-      attackerUuid: state.actor.uuid!,
-      attackerItemUuid: state.item?.uuid,
-      targets: state.data.hit_results.map(hr => {
-        return {
-          id: hr.target.document.id,
-          uuid: hr.target.document.uuid,
-          setConditions: !!hr.usedLockOn ? { lockon: !hr.usedLockOn } : undefined,
-          total: hr.total,
-          hit: hr.hit,
-          crit: hr.crit,
-        };
-      }),
-    },
+  const attackData: AttackFlag = {
+    origin: state.actor.id!,
+    attackerUuid: state.actor.uuid!,
+    attackerItemUuid: state.item?.uuid,
+    targets: state.data.hit_results.map(hr => {
+      return {
+        uuid: hr.target.document.uuid,
+        setConditions: !!hr.usedLockOn ? { lockon: !hr.usedLockOn } : undefined,
+        total: hr.total,
+        hit: hr.hit,
+        crit: hr.crit,
+      };
+    }),
   };
+  const flags: { attackData: AttackFlag; attackReroll?: AttackRerollFlag } = {
+    attackData,
+  };
+  if (state.data.acc_diff && !state.data.is_reroll) {
+    flags.attackReroll = {
+      flow: state.data.type === "weapon" ? "weapon" : state.data.type === "tech" ? "tech" : "attack",
+      acc_diff: state.data.acc_diff.toObject(),
+      targetUuids: state.data.hit_results.map(hr => hr.target.document.uuid),
+    };
+  }
   state.data.defense = state.data.is_smart ? "E-DEF" : "EVASION";
   // Add roll data to the hit results for the HBS template
   const hitResultsWithRolls: LancerFlowState.HitResultWithRoll[] = [];
@@ -525,6 +523,87 @@ export async function printAttackCard(
   };
   await renderTemplateStep(state.actor, template, templateData, flags);
   return true;
+}
+
+export async function promptDamageAfterAttack(
+  state: FlowState<LancerFlowState.AttackRollData | LancerFlowState.WeaponRollData | LancerFlowState.TechAttackRollData>
+): Promise<boolean> {
+  if (!state.data) throw new TypeError(`Attack flow state missing!`);
+  const { prompt_damage_after_attack } = game.settings.get(game.system.id, LANCER.setting_automation);
+  if (!prompt_damage_after_attack) return true;
+  if (!state.actor.isOwner) return true;
+  if (!state.data.hit_results.some(hr => hr.hit)) return true;
+
+  const attackData: AttackFlag = {
+    origin: state.actor.id!,
+    attackerUuid: state.actor.uuid!,
+    attackerItemUuid: state.item?.uuid,
+    invade: LancerFlowState.isTechRoll(state.data)
+      ? (state.data as LancerFlowState.TechAttackRollData).invade
+      : undefined,
+    targets: state.data.hit_results.map(hr => ({
+      uuid: hr.target.document.uuid,
+      setConditions: hr.usedLockOn ? { lockon: !hr.usedLockOn } : undefined,
+      total: hr.total,
+      hit: hr.hit,
+      crit: hr.crit,
+    })),
+  };
+
+  await beginDamageFlowFromAttackData(attackData);
+  return true;
+}
+
+export async function rerollAttackCallback(event: JQuery.ClickEvent) {
+  const chatMessageElement = event.currentTarget.closest(".chat-message.message");
+  if (!chatMessageElement) return;
+  const chatMessage = game.messages?.get(chatMessageElement.dataset.messageId);
+  const attackData = chatMessage?.flags.lancer?.attackData as AttackFlag | undefined;
+  const rerollData = chatMessage?.flags.lancer?.attackReroll as AttackRerollFlag | undefined;
+  if (!chatMessage || !attackData || !rerollData) {
+    ui.notifications?.error("Attack reroll data is not available for this message");
+    return;
+  }
+
+  const actor = (await fromUuid(attackData.attackerUuid)) as LancerActor | null;
+  if (!actor) {
+    ui.notifications?.error("Invalid attacker for attack reroll");
+    return;
+  }
+  if (!actor.isOwner && !game.user?.isGM) {
+    ui.notifications?.error(`You cannot reroll attacks for ${actor.name}`);
+    return;
+  }
+
+  for (const t of game.user?.targets ?? []) {
+    t.setTarget(false, { releaseOthers: false });
+  }
+  for (const uuid of rerollData.targetUuids) {
+    const tokenDoc = (await fromUuid(uuid)) as { object?: LancerToken } | null;
+    tokenDoc?.object?.setTarget(true, { releaseOthers: false });
+  }
+
+  const flowUuid = attackData.attackerItemUuid ?? attackData.attackerUuid;
+  const flowData = {
+    skip_attack_hud: true,
+    is_reroll: true,
+    acc_diff: rerollData.acc_diff,
+  } as Partial<LancerFlowState.WeaponRollData>;
+
+  const flows = game.lancer.flows as Map<string, typeof Flow>;
+  const FlowClass = flows.get(
+    rerollData.flow === "weapon"
+      ? "WeaponAttackFlow"
+      : rerollData.flow === "tech"
+        ? "TechAttackFlow"
+        : "BasicAttackFlow"
+  );
+  if (!FlowClass) {
+    ui.notifications?.error("Attack reroll flow is not available");
+    return;
+  }
+  const flow = new FlowClass(flowUuid, flowData);
+  await flow.begin(flowData);
 }
 
 // If user is GM, apply status changes to attacked tokens

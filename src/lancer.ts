@@ -81,6 +81,7 @@ import { fulfillImportActor } from "./module/util/requests";
 
 import { dropStatusToCanvas } from "./module/canvas/drop-status";
 import { beginCascadeFlow } from "./module/flows/cascade";
+import { rerollAttackCallback } from "./module/flows/attack";
 import { applyDamage, rollDamageCallback, undoDamage } from "./module/flows/damage";
 import { Flow } from "./module/flows/flow";
 import { onHotbarDrop } from "./module/flows/hotbar";
@@ -812,6 +813,19 @@ Hooks.on("renderChatMessageHTML", async (cm, el, data) => {
   atkDmgTargets.on("mouseleave", hoverCallback);
 
   html.find(".lancer-damage-flow").on("click", rollDamageCallback);
+
+  html.find(".lancer-attack-reroll").each((_i, el) => {
+    const attackData = cm.flags?.lancer?.attackData;
+    const rerollData = cm.flags?.lancer?.attackReroll;
+    const attackerUuid = attackData?.attackerUuid;
+    const actor = attackerUuid ? (fromUuidSync(attackerUuid) as LancerActor | null) : null;
+    const canReroll = !!rerollData && !!actor && (actor.isOwner || game.user?.isGM);
+    if (!canReroll) {
+      el.remove();
+      return;
+    }
+    $(el).on("click", rerollAttackCallback);
+  });
 
   html.find(".lancer-damage-apply").on("click", applyDamage);
 
