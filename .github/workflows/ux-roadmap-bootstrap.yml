@@ -1,0 +1,51 @@
+# Create or refresh the UX Roadmap 2026 GitHub Project, milestones, labels, and issues.
+#
+# Setup (passkey-friendly, no local gh CLI):
+#   1. Create a fine-grained PAT with Issues + Account Projects (read/write) on this repo.
+#   2. Add repo secret UX_ROADMAP_GH_TOKEN (see scripts/ux-roadmap/MANUAL-SETUP.md).
+#   3. Run workflow manually. GITHUB_TOKEN alone cannot create user-owned Projects.
+name: UX Roadmap bootstrap
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Bootstrap mode
+        required: true
+        default: full
+        type: choice
+        options:
+          - full
+          - issues-only
+          - project-only
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Require project token
+        if: ${{ !secrets.UX_ROADMAP_GH_TOKEN }}
+        run: |
+          echo "::error::Add repository secret UX_ROADMAP_GH_TOKEN (fine-grained PAT with Projects + Issues)."
+          echo "See scripts/ux-roadmap/MANUAL-SETUP.md — no local gh credentials required."
+          exit 1
+
+      - name: Bootstrap UX roadmap
+        env:
+          GH_TOKEN: ${{ secrets.UX_ROADMAP_GH_TOKEN }}
+        run: |
+          MODE="${{ github.event.inputs.mode }}"
+          FLAGS=""
+          if [ "$MODE" = "issues-only" ]; then FLAGS="--issues-only"; fi
+          if [ "$MODE" = "project-only" ]; then FLAGS="--project-only"; fi
+          node scripts/ux-roadmap/bootstrap.mjs $FLAGS

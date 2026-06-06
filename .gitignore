@@ -20,3 +20,6 @@ foundry.js
 
 # foundryvtt-cli
 fvttrc.yml
+
+# UX roadmap bootstrap local state
+scripts/ux-roadmap/bootstrap-state.json
