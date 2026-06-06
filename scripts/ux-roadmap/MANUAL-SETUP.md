@@ -8,7 +8,20 @@ Pick **Option A** (recommended, ~5 minutes once) or **Option B** (pure browser, 
 
 ---
 
-## Option A — GitHub Actions + one-time fine-grained PAT (recommended)
+## Why “Projects” is missing on the fine-grained PAT form
+
+**This is expected.** GitHub [does not support fine-grained PATs for user-owned Projects](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#fine-grained-personal-access-tokens-limitations) yet. The **Projects** permission only appears under **Organization permissions** when the resource owner is an org — not for a personal account like `VacantFanatic`.
+
+So you have two real options:
+
+| Option | Token? | Best for |
+|--------|--------|----------|
+| **A** — Classic PAT + Actions | One-time classic token | Automated project + labels + milestones |
+| **B** — Pure GitHub UI | None | Passkey only, no secrets |
+
+---
+
+## Option A — GitHub Actions + classic PAT (automated)
 
 You only use the browser (passkey) once to create a token and paste it into repo secrets. No CLI on any machine.
 
@@ -16,20 +29,19 @@ You only use the browser (passkey) once to create a token and paste it into repo
 
 Merge [PR #86](https://github.com/VacantFanatic/foundryvtt-lancer/pull/86) so the workflow and scripts are on `master`.
 
-### 2. Create a fine-grained personal access token
+### 2. Create a classic personal access token
 
-1. Open [github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new) (passkey sign-in).
-2. **Token name:** `foundryvtt-lancer-ux-roadmap`
-3. **Expiration:** 90 days (or custom; renew when you refresh the project).
-4. **Resource owner:** your account (`VacantFanatic`).
-5. **Repository access:** Only select repositories → `foundryvtt-lancer`.
-6. **Repository permissions:**
-   - **Issues** — Read and write
-   - **Metadata** — Read-only (required)
-   - **Contents** — Read-only (workflow checkout)
-7. **Account permissions:**
-   - **Projects** — Read and write
-8. Generate token and **copy it** (shown once).
+Use **Tokens (classic)** — not fine-grained.
+
+1. Open [github.com/settings/tokens/new](https://github.com/settings/tokens/new) (passkey sign-in).
+2. **Note:** `foundryvtt-lancer-ux-roadmap`
+3. **Expiration:** 90 days (or custom).
+4. **Scopes** — check only what you need:
+   - **`project`** — create and manage GitHub Projects (required)
+   - **`repo`** — create issues, labels, milestones on your repo (required for private repos; use this for `foundryvtt-lancer`)
+5. **Generate token** and **copy it** (shown once).
+
+Do **not** use the fine-grained token page ([`.../personal-access-tokens/new`](https://github.com/settings/personal-access-tokens/new)) for this — it cannot access user-owned Projects.
 
 ### 3. Add the token as a repository secret
 
@@ -59,7 +71,7 @@ Open the new project under your profile **Projects** tab, then:
 
 ### 6. Revoke the token (optional)
 
-After a successful run you can delete the secret and revoke the PAT at [github.com/settings/tokens](https://github.com/settings/tokens). Re-create it only if you run bootstrap again.
+After a successful run you can delete the secret and revoke the classic PAT at [github.com/settings/tokens](https://github.com/settings/tokens) (under **Tokens (classic)**). Re-create it only if you run bootstrap again.
 
 ---
 
