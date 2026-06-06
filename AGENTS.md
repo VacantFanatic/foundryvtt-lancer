@@ -76,10 +76,14 @@ Requires a running Foundry instance (see Docker block above) and Firefox via `np
 
 ```bash
 SKIP_FOUNDRY_DIST_MIRROR=1 npm run build
+./scripts/e2e/start-foundry-docker.sh   # needs FOUNDRY_USERNAME/PASSWORD
+npm run test:e2e:bootstrap
 npm run test:e2e
 ```
 
 Specs live under `e2e/regression/`; see `e2e/README.md`.
+
+**CI:** run manually via GitHub Actions workflow `E2E regression (manual)` (secrets: `FOUNDRY_USERNAME`, `FOUNDRY_PASSWORD`, optional `FOUNDRY_LICENSE_KEY`).
 
 ### Hello-world / E2E in Foundry
 
