@@ -58,7 +58,7 @@ The workflow runs a **Verify token can access Projects** step first and prints a
 
 ### 4. Configure project views
 
-Open **UX Roadmap 2026** under your profile **Projects** tab:
+Open **LANCER UX pass** under your profile **Projects** tab:
 
 | View | Layout | Group by | Sort |
 |------|--------|----------|------|
@@ -78,7 +78,7 @@ After success, revoke at [Tokens (classic)](https://github.com/settings/tokens) 
 
 1. [foundryvtt-lancer → Projects](https://github.com/VacantFanatic/foundryvtt-lancer/projects) → **New project**
 2. Template: **Roadmap** or **Board**
-3. Title: **UX Roadmap 2026**
+3. Title: **LANCER UX pass** (live project on VacantFanatic)
 4. Link repository: `foundryvtt-lancer`
 
 ### 2. Add custom fields
