@@ -52,9 +52,21 @@ export async function checkItemDestroyed(
   return true;
 }
 
+function isAttackReroll(
+  state: FlowState<
+    | LancerFlowState.WeaponRollData
+    | LancerFlowState.TechAttackRollData
+    | LancerFlowState.AttackRollData
+    | LancerFlowState.ActionUseData
+  >
+): boolean {
+  return !!(state.data && "is_reroll" in state.data && state.data.is_reroll);
+}
+
 export async function checkItemLimited(
   state: FlowState<LancerFlowState.WeaponRollData | LancerFlowState.TechAttackRollData | LancerFlowState.ActionUseData>
 ): Promise<boolean> {
+  if (isAttackReroll(state)) return true;
   // If this automation option is not enabled, skip the check.
   const { limited_loading, attacks } = game.settings.get(game.system.id, LANCER.setting_automation);
   if (!limited_loading && attacks) return true;
@@ -102,6 +114,7 @@ export async function checkItemLimited(
 export async function checkItemCharged(
   state: FlowState<LancerFlowState.WeaponRollData | LancerFlowState.TechAttackRollData | LancerFlowState.ActionUseData>
 ): Promise<boolean> {
+  if (isAttackReroll(state)) return true;
   // If this automation option is not enabled, skip the check.
   const { limited_loading, attacks } = game.settings.get(game.system.id, LANCER.setting_automation);
   if (!limited_loading && attacks) return true;
@@ -163,6 +176,7 @@ export async function updateItemAfterAction(
   options?: {}
 ): Promise<boolean> {
   if (!state.data) throw new TypeError(`Flow state missing!`);
+  if (isAttackReroll(state)) return true;
   const { limited_loading, attacks } = game.settings.get(game.system.id, LANCER.setting_automation);
   if (state.item && limited_loading && attacks) {
     let itemChanges: DeepPartial<SourceData.MechWeapon | SourceData.NpcFeature | SourceData.PilotWeapon> = {};

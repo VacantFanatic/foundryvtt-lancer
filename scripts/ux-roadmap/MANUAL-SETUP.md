@@ -60,11 +60,11 @@ The workflow runs a **Verify token can access Projects** step first and prints a
 
 Open **LANCER UX pass** under your profile **Projects** tab:
 
-| View | Layout | Group by | Sort |
-|------|--------|----------|------|
-| Roadmap | Roadmap | Release | PR # |
-| Board | Board | Status | Priority |
-| Table | Table | — | Release, PR # |
+| View    | Layout  | Group by | Sort          |
+| ------- | ------- | -------- | ------------- |
+| Roadmap | Roadmap | Release  | PR #          |
+| Board   | Board   | Status   | Priority      |
+| Table   | Table   | —        | Release, PR # |
 
 ### 5. Revoke token (optional)
 
@@ -83,13 +83,13 @@ After success, revoke at [Tokens (classic)](https://github.com/settings/tokens) 
 
 ### 2. Add custom fields
 
-| Field | Type | Options |
-|-------|------|---------|
-| Type | Single select | Epic, Release, PR |
-| Release | Single select | v2.12.11 … v3.0.0 |
-| Sprint | Single select | A, B, C, D, E, F, G |
-| Priority | Single select | P0, P1, P2 |
-| PR # | Number | — |
+| Field    | Type          | Options             |
+| -------- | ------------- | ------------------- |
+| Type     | Single select | Epic, Release, PR   |
+| Release  | Single select | v2.12.11 … v3.0.0   |
+| Sprint   | Single select | A, B, C, D, E, F, G |
+| Priority | Single select | P0, P1, P2          |
+| PR #     | Number        | —                   |
 
 ### 3. Add issues
 

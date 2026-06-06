@@ -1,3 +1,16 @@
+# 2.13.0 (2026-06-06)
+
+## Added
+
+- World automation setting **Prompt Damage After Attack** (default off): when enabled and an attack hits, the damage HUD opens automatically after the attack card.
+- Acc/Diff attack HUD **Advanced** section for weapon/target plugins, measured templates, and per-target fine modifiers; client setting remembers expanded state per weapon.
+- **Reroll** button on attack and tech-attack chat cards (visible to attacker owner and GM).
+- Combat tracker tour steps documenting the attack → damage → apply loop and the auto-damage setting.
+
+## Changed
+
+- Acc/Diff HUD default view emphasizes targets, totals, and cover; plugins and template tools move under Advanced.
+
 # 2.12.11 (2026-06-06)
 
 ## Added

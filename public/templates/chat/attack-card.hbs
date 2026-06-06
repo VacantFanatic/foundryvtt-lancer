@@ -2,10 +2,13 @@
   <div class="lancer-header lancer-weapon medium">
     <i class="cci cci-weapon i--4 i--light"> </i>
     <span>{{title}}</span>
-    {{!-- TODO: refactor reroll button --}}
-    <!-- <a class="flow-button roll-attack lancer-button lancer-macro" data-macro="{{rerollMacroData}}" title="Reroll this attack">
+    <button
+      class="lancer-attack-reroll lancer-button lancer-macro"
+      type="button"
+      title="{{localize 'lancer.chat-card.attack.reroll'}}"
+    >
       <i class="fas fa-dice-d20 i--4 i--light"></i>
-    </a> -->
+    </button>
   </div>
   {{#if profile}}
     {{{mini-profile profile}}}

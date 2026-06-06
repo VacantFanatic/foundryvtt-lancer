@@ -1,5 +1,5 @@
 import type { LancerActionManager } from "./module/action/action-manager";
-import type { AttackFlag } from "./module/flows/attack";
+import type { AttackFlag, AttackRerollFlag } from "./module/flows/interfaces";
 import type { DamageFlag } from "./module/flows/damage";
 import type { DeployableModel } from "./module/models/actors/deployable";
 import type { MechModel } from "./module/models/actors/mech";
@@ -122,6 +122,7 @@ declare module "fvtt-types/configuration" {
     ChatMessage: {
       lancer: {
         attackData?: AttackFlag;
+        attackReroll?: AttackRerollFlag;
         damageData?: DamageFlag;
       };
     };

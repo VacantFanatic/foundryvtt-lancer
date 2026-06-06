@@ -10,7 +10,7 @@ import { resolveDotpath } from "../helpers/commons";
 import { ActivationType, AttackType } from "../enums";
 import { Flow, type FlowState, type Step } from "./flow";
 import type { UUIDRef } from "../source-template";
-import type { AttackFlag } from "./attack";
+import type { AttackFlag, AttackRerollFlag } from "./interfaces";
 
 const lp = LANCER.log_prefix;
 
@@ -33,6 +33,7 @@ export class TechAttackFlow extends Flow<LancerFlowState.TechAttackRollData> {
     "applySelfHeat",
     "updateItemAfterAction",
     "printTechAttackCard",
+    "promptDamageAfterAttack",
   ];
 
   constructor(uuid: UUIDRef | LancerItem | LancerActor, data?: Partial<LancerFlowState.TechAttackRollData>) {
@@ -192,24 +193,31 @@ export async function printTechAttackCard(
 ): Promise<boolean> {
   if (!state.data) throw new TypeError(`Tech attack flow state missing!`);
   const template = options?.template || `systems/${game.system.id}/templates/chat/tech-attack-card.hbs`;
-  const flags: { attackData: AttackFlag } = {
-    attackData: {
-      origin: state.actor.id!,
-      attackerUuid: state.actor.uuid!,
-      attackerItemUuid: state.item?.uuid,
-      invade: state.data.invade,
-      targets: state.data.hit_results.map(hr => {
-        return {
-          id: hr.target.document.id,
-          uuid: hr.target.document.uuid,
-          setConditions: !!hr.usedLockOn ? { lockon: !hr.usedLockOn } : undefined,
-          total: hr.total,
-          hit: hr.hit,
-          crit: hr.crit,
-        };
-      }),
-    },
+  const attackData: AttackFlag = {
+    origin: state.actor.id!,
+    attackerUuid: state.actor.uuid!,
+    attackerItemUuid: state.item?.uuid,
+    invade: state.data.invade,
+    targets: state.data.hit_results.map(hr => {
+      return {
+        uuid: hr.target.document.uuid,
+        setConditions: !!hr.usedLockOn ? { lockon: !hr.usedLockOn } : undefined,
+        total: hr.total,
+        hit: hr.hit,
+        crit: hr.crit,
+      };
+    }),
   };
+  const flags: { attackData: AttackFlag; attackReroll?: AttackRerollFlag } = {
+    attackData,
+  };
+  if (state.data.acc_diff && !state.data.is_reroll) {
+    flags.attackReroll = {
+      flow: "tech",
+      acc_diff: state.data.acc_diff.toObject(),
+      targetUuids: state.data.hit_results.map(hr => hr.target.document.uuid),
+    };
+  }
   const hitResultsWithRolls: LancerFlowState.HitResultWithRoll[] = [];
   for (const [index, hitResult] of state.data.hit_results.entries()) {
     hitResultsWithRolls.push({

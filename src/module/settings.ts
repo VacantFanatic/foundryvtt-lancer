@@ -55,6 +55,22 @@ export const registerSettings = function () {
     default: false,
   });
 
+  game.settings.register(game.system.id, LANCER.setting_accdiff_remember_advanced, {
+    name: "lancer.accdiff.rememberAdvanced.name",
+    hint: "lancer.accdiff.rememberAdvanced.hint",
+    scope: "client",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  game.settings.register(game.system.id, LANCER.setting_accdiff_advanced_expanded, {
+    scope: "client",
+    config: false,
+    type: Object,
+    default: {},
+  });
+
   game.settings.register(game.system.id, LANCER.setting_autoanimations_enabled, {
     name: "lancer.autoAnimations.enabled.name",
     hint: "lancer.autoAnimations.enabled.hint",
@@ -270,6 +286,11 @@ interface AutomationOptionsSchema extends foundry.data.fields.DataSchema {
    * @defaultValue `true`
    */
   token_size: fields.BooleanField<{ initial: true }>;
+  /**
+   * After a successful attack with hits, open the damage roll HUD automatically.
+   * @defaultValue `false`
+   */
+  prompt_damage_after_attack: fields.BooleanField<{ initial: false }>;
 }
 
 /**
@@ -326,6 +347,12 @@ export class AutomationOptions extends foundry.abstract.DataModel<AutomationOpti
         initial: true,
         label: "lancer.automation.token_size",
         hint: "lancer.automation.token_size-desc",
+      }),
+      prompt_damage_after_attack: new fields.BooleanField({
+        required: true,
+        initial: false,
+        label: "lancer.automation.prompt_damage_after_attack",
+        hint: "lancer.automation.prompt_damage_after_attack-desc",
       }),
     };
   }

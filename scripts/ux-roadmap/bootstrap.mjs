@@ -110,14 +110,7 @@ function createMilestones(state) {
     if (state.milestones[ms.title]) continue;
     try {
       const res = JSON.parse(
-        gh([
-          "api",
-          `repos/${REPO}/milestones`,
-          "-f",
-          `title=${ms.title}`,
-          "-f",
-          `description=${ms.description}`,
-        ])
+        gh(["api", `repos/${REPO}/milestones`, "-f", `title=${ms.title}`, "-f", `description=${ms.description}`])
       );
       state.milestones[ms.title] = res.number;
       log("  milestone", ms.title, "#" + res.number);
@@ -140,11 +133,7 @@ function createIssue(title, body, { milestone, labels: labelNames = [] }) {
     withLabels.push("-l", l);
   }
 
-  const attempts = [
-    labelNames.length ? withLabels : withMilestone,
-    withMilestone,
-    minimal,
-  ];
+  const attempts = [labelNames.length ? withLabels : withMilestone, withMilestone, minimal];
   const seen = new Set();
   let lastError;
   for (const args of attempts) {
@@ -208,7 +197,10 @@ _Tracking issue for [UX Roadmap 2026](https://github.com/${REPO}/issues/${state.
 }
 
 function releaseBody(rel, state) {
-  const prIds = prs.filter(p => p.release === rel.id).map(p => state.issues.pr?.[p.id]).filter(Boolean);
+  const prIds = prs
+    .filter(p => p.release === rel.id)
+    .map(p => state.issues.pr?.[p.id])
+    .filter(Boolean);
   return `## UX Roadmap — Release v${rel.id}
 
 | Field | Value |
@@ -271,11 +263,7 @@ function createIssues(state) {
   log("Creating tracking issues...");
 
   if (!state.issues.epic) {
-    state.issues.epic = createIssue(
-      "[UX Epic] UX Roadmap 2026",
-      epicBody(),
-      { labels: issueLabels("epic", "P0") },
-    );
+    state.issues.epic = createIssue("[UX Epic] UX Roadmap 2026", epicBody(), { labels: issueLabels("epic", "P0") });
   }
 
   state.issues.release = state.issues.release ?? {};
@@ -287,27 +275,25 @@ function createIssues(state) {
       {
         milestone: releaseMilestoneTitle(rel.id),
         labels: issueLabels("epic", rel.priority),
-      },
+      }
     );
   }
 
   state.issues.pr = state.issues.pr ?? {};
   for (const pr of prs) {
     if (state.issues.pr[pr.id]) continue;
-    state.issues.pr[pr.id] = createIssue(
-      `[UX PR${pr.id}] ${pr.title}`,
-      prBody(pr, state),
-      {
-        milestone: releaseMilestoneTitle(pr.release),
-        labels: issueLabels("pr", pr.priority),
-      },
-    );
+    state.issues.pr[pr.id] = createIssue(`[UX PR${pr.id}] ${pr.title}`, prBody(pr, state), {
+      milestone: releaseMilestoneTitle(pr.release),
+      labels: issueLabels("pr", pr.priority),
+    });
   }
 
   // Refresh epic body with issue links
   if (!dryRun && state.issues.epic) {
     const epicNum = state.issues.epic;
-    const updated = epicBody() + "\n### Release issues\n" +
+    const updated =
+      epicBody() +
+      "\n### Release issues\n" +
       releases.map(r => `- v${r.id}: #${state.issues.release[r.id]}`).join("\n");
     try {
       gh(["issue", "edit", String(epicNum), "-R", REPO, "--body", updated]);
@@ -394,17 +380,18 @@ function createProject(state) {
     }
   }
 
-  const existingFields = ghJson([
-    "project",
-    "field-list",
-    String(proj.number),
-    "--owner",
-    projectOwner(),
-    "--format",
-    "json",
-    "--limit",
-    "50",
-  ]).fields ?? [];
+  const existingFields =
+    ghJson([
+      "project",
+      "field-list",
+      String(proj.number),
+      "--owner",
+      projectOwner(),
+      "--format",
+      "json",
+      "--limit",
+      "50",
+    ]).fields ?? [];
   const existingNames = new Set(existingFields.map(f => f.name));
 
   for (const field of PROJECT_FIELD_DEFS) {
