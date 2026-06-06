@@ -57,6 +57,62 @@ import { unpackReserve } from "../models/items/reserve";
 import { unpackFrame } from "../models/items/frame";
 const lp = LANCER.log_prefix;
 
+function unpackClock(clock: PackedClockBurdenData) {
+  return {
+    lid: clock.id,
+    name: clock.title,
+    min: 0,
+    max: clock.segments,
+    value: clock.progress,
+    default_value: 0,
+  };
+}
+
+function showIncompleteImportSummary(
+  pilot: LancerPILOT,
+  missingActors: { name: string; lid: string }[],
+  missingItems: { actor: string; lid: string }[]
+) {
+  if (!missingItems.length && !missingActors.length) {
+    ui.notifications!.info("Successfully loaded pilot new state.");
+    return;
+  }
+
+  let message = `Partially loaded '${pilot.name}'s new state.`;
+  if (missingActors.length) {
+    message += ` ${missingActors.length} actors could not be created/updated.`;
+  }
+  if (missingItems.length) {
+    message += ` ${missingItems.length} items could not be found.`;
+  }
+  message += ` See dialog for details.`;
+  ui.notifications!.warn(message, { permanent: true });
+  console.warn(`${lp} Some actors and/or items were missed during pilot import:`, missingActors, missingItems);
+
+  let content = "";
+  if (missingActors.length) {
+    content += `<div><span>The following Actors could not be created or updated:</span>
+        <ul>${missingActors.map(i => `<li>${i.name} - ${i.lid}</li>`).join("")}</ul></div>`;
+  }
+  if (missingItems.length) {
+    content += `<div><span>The following Items were not found in the compendium and could not be imported:</span>
+        <ul>${missingItems.map(i => `<li>${i.actor} - ${i.lid}</li>`).join("")}</ul>
+        <span>Import all necessary LCPs first using the <b>Lancer Compendium Manager</b>.</span></div>`;
+  }
+  new foundry.applications.api.DialogV2({
+    window: { title: `Incomplete Pilot Import`, icon: "fas fa-triangle-exclamation" },
+    content,
+    buttons: [
+      {
+        action: "close",
+        icon: "fas fa-check",
+        label: "Close",
+        default: true,
+      },
+    ],
+  }).render(true);
+}
+
 /**
  * Updates the Pilot document, given COMP/CON data.
  * @param pilot   - The pilot actor
@@ -73,16 +129,6 @@ async function updatePilot(
   weapons?: string[]
 ) {
   const portrait = data.cloud_portrait ?? data.img?.cloud_portrait ?? data.portrait;
-  const unpackClock = (clock: PackedClockBurdenData) => {
-    return {
-      lid: clock.id,
-      name: clock.title,
-      min: 0,
-      max: clock.segments,
-      value: clock.progress,
-      default_value: 0,
-    };
-  };
 
   await pilot.update({
     name: data.name,
@@ -248,8 +294,7 @@ async function applyImportedBondPowers(bond: LancerBOND, bondPowers: PackedBondP
 
   const bondPack = game.packs.get(get_pack_id(EntryType.BOND));
   await bondPack?.getIndex();
-  const bonds: LancerItem[] | null =
-    ((await bondPack?.getDocuments({ type: EntryType.BOND })) as unknown as LancerItem[]) ?? null;
+  const bonds = ((await bondPack?.getDocuments({ type: EntryType.BOND })) as unknown as LancerItem[]) ?? [];
 
   const unlockAndRefill = (power: PowerData) => {
     power.unlocked = true;
@@ -260,13 +305,13 @@ async function applyImportedBondPowers(bond: LancerBOND, bondPowers: PackedBondP
 
   for (const p of bondPowers) {
     let i = bond.system.powers.findIndex(x => x.name == p.name);
-    if (i != undefined && i != -1) {
+    if (i !== -1) {
       unlockAndRefill(bond.system.powers[i]);
       continue;
     }
 
     let found = false;
-    for (const b of bonds ?? []) {
+    for (const b of bonds) {
       if (!b.is_bond()) continue;
       const newPower = b.system.powers.find(x => x.name == p.name);
       if (newPower) {
@@ -275,7 +320,7 @@ async function applyImportedBondPowers(bond: LancerBOND, bondPowers: PackedBondP
         bond.system.powers.push(newPower);
 
         i = bond.system.powers.findIndex(x => x.veteran);
-        if (i != undefined && i != -1) {
+        if (i !== -1) {
           unlockAndRefill(bond.system.powers[i]);
         }
         break;
@@ -323,10 +368,9 @@ function hasCreatePermissions() {
  * @return The index of the choice made
  */
 async function promptLoadoutSelection(loadouts: string[]) {
-  let contentChoices = "";
-  loadouts.map((l, i) => {
-    contentChoices += `<label><input type="radio" name="choice" value=${i} ${i == 0 ? "checked" : ""}>${l}</label>`;
-  });
+  const contentChoices = loadouts
+    .map((l, i) => `<label><input type="radio" name="choice" value=${i} ${i == 0 ? "checked" : ""}>${l}</label>`)
+    .join("");
 
   // @ts-ignore Please stop yelling at me :sob:
   return foundry.applications.api.DialogV2.prompt({
@@ -405,11 +449,6 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
     ui.notifications!.error("COMP/CON import target is not a pilot actor.", { permanent: true });
     return;
   }
-  if (!importedData) {
-    ui.notifications!.error("COMP/CON import data is missing.", { permanent: true });
-    return;
-  }
-
   const data = importedData.data;
   if (!data?.name || !data?.callsign) {
     ui.notifications!.warn("COMP/CON v3 import data is missing required pilot fields (name/callsign).", {
@@ -500,7 +539,7 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
           pilot,
           pilotItemPool,
           _missingItems
-        )) as LancerPILOT_GEAR | null;
+        )) as LancerPILOT_ARMOR | null;
         const id =
           compendiumItem?.id ??
           (
@@ -530,7 +569,7 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
           pilot,
           pilotItemPool,
           _missingItems
-        )) as LancerPILOT_GEAR | null;
+        )) as LancerPILOT_WEAPON | null;
         const id =
           compendiumItem?.id ??
           (
@@ -651,36 +690,34 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
       });
     }
 
-    // Bonds
-    if (data.bond) {
-      const item = data.bond;
-      const bondName = item.data?.name ?? "Bond";
-      const bond = (await getActorItemByLid(item.bondId, pilot, pilotItemPool, _missingItems)) as LancerBOND | null;
-      const id =
-        bond?.id ??
-        (
-          await pilot.createEmbeddedDocuments("Item", [
-            {
-              type: EntryType.BOND,
-              name: bondName,
-            },
-          ])
-        )[0].id;
+    const bondImport = data.bond;
+    const bondLid = bondImport?.bondId ?? data.bondId;
+    if (bondLid) {
+      const existingBond = (await getActorItemByLid(bondLid, pilot, pilotItemPool, _missingItems)) as LancerBOND | null;
+      let bondDoc = existingBond;
 
-      if (item.data) {
-        const ccData = unpackBond(item.data);
-        pilotItemUpdates.push({
-          ...ccData,
-          _id: id,
-        });
+      if (bondImport) {
+        const bondName = bondImport.data?.name ?? "Bond";
+        const id =
+          existingBond?.id ??
+          (
+            await pilot.createEmbeddedDocuments("Item", [
+              {
+                type: EntryType.BOND,
+                name: bondName,
+              },
+            ])
+          )[0].id;
+
+        if (bondImport.data) {
+          pilotItemUpdates.push({
+            ...unpackBond(bondImport.data),
+            _id: id,
+          });
+        }
+        bondDoc = existingBond ?? (pilot.items.get(id) as LancerBOND | undefined) ?? null;
       }
 
-      const bondDoc = bond ?? (pilot.items.get(id) as LancerBOND | undefined);
-      if (bondDoc?.is_bond() && data.bondPowers?.length) {
-        await applyImportedBondPowers(bondDoc, data.bondPowers);
-      }
-    } else if (data.bondId) {
-      const bondDoc = (await getActorItemByLid(data.bondId, pilot, pilotItemPool, _missingItems)) as LancerBOND | null;
       if (bondDoc?.is_bond() && data.bondPowers?.length) {
         await applyImportedBondPowers(bondDoc, data.bondPowers);
       }
@@ -846,7 +883,6 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
 
       // Mech Systems
       const flatSystems = [...loadout.integratedSystems, ...loadout.systems];
-      // const assocSystemData = new Map<string, PackedMechEquipmentData>();
       for (const item of flatSystems) {
         const compendiumItem = (await getActorItemByLid(
           item.data.id,
@@ -866,7 +902,6 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
           )[0].id;
 
         populatedSystems.push(id);
-        // assocSystemData.set(id, item);
 
         const ccData = unpackMechSystem(item.data, _context);
         mechItemUpdates.push({
@@ -901,7 +936,6 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
         })),
         ...loadout.mounts,
       ].filter(m => m?.slots.some(x => x.weapon));
-      // const assocWeaponData = new Map<string, PackedMechWeaponSaveData>();
 
       for (const mount of flatMounts) {
         const populatedSlots: (typeof populatedMounts)[0]["slots"] = [];
@@ -923,6 +957,8 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
                 },
               ])
             )[0].id;
+          let mod: LancerWEAPON_MOD | null = null;
+          let modId: string | null = null;
 
           if (!weaponSlot.data) {
             console.warn(`${lp} Weapon data missing for ${weaponSlot.id}`);
@@ -942,8 +978,6 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
             },
           });
 
-          let mod: LancerWEAPON_MOD | null = null;
-          let modId: string | null = null;
           if (weaponSlot.mod) {
             mod = (await getActorItemByLid(weaponSlot.mod.id, mech, mechItemPool, _missingItems)) as LancerWEAPON_MOD;
             modId =
@@ -982,8 +1016,6 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
         for (const slot of mount.slots) {
           if (!slot.weapon) continue;
           const { weapon, weaponId, mod, modId } = await processMechWeapon(slot.weapon);
-          // assocWeaponData.set(weaponId, slot.weapon);
-          // if (slot.weapon.mod) assocSystemData.set(weaponId, slot.weapon.mod);
           populatedSlots.push({
             mod: mod ? modId : null,
             weapon: weapon ? weaponId : null,
@@ -1024,9 +1056,8 @@ export async function importCCv3(pilot: LancerPILOT, importedData: PackedPilotWr
     });
 
     pilot.effectHelper.propagateEffects(true);
-    // Reset current data and render all
     pilot.render();
-    ui.notifications!.info("Successfully loaded pilot new state.");
+    showIncompleteImportSummary(pilot, _missingActors, _missingItems);
   } catch (e) {
     console.warn(e);
     ui.notifications!.warn(`Failed to update pilot: ${e instanceof Error ? e.message : e}`, { permanent: true });
@@ -1039,11 +1070,7 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
   console.log(`${lp} Importing v2 Pilot`, pilot, data);
   if (!pilot.is_pilot() || !data) return;
   if (clearFirst) {
-    await pilot.deleteEmbeddedDocuments("Item", Array.from(pilot.items.keys()));
-    let existing_mechs = game.actors?.filter(x => x.is_mech() && x.system.pilot?.value == pilot) ?? [];
-    for (let m of existing_mechs) {
-      await m.deleteEmbeddedDocuments("Item", Array.from(m.items.keys()));
-    }
+    await clearPilotEmbeddedDocuments(pilot);
   }
 
   // Immediately fix the name, so deployables get named properly
@@ -1055,24 +1082,7 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
     let unitFolder = pilot.folder;
     let permission = foundry.utils.duplicate(pilot.ownership);
 
-    // Check whether players are allowed to create Actors
-    const canCreate = game.user?.can("ACTOR_CREATE");
-    const gmsOnline = game.users?.some(u => u.isGM && u.active);
-    if (!canCreate && !gmsOnline) {
-      new foundry.applications.api.DialogV2({
-        window: { title: `Cannot Create Actors`, icon: "fas fa-triangle-exclamation" },
-        content: `<p>You are not permitted to create actors and no GM's are online, so sync will not produce any new mechs or deployables.</p>
-        <p>Your GM can allow Players/Trusted Players to create actors in Settings->Configure Permissions.</p>`,
-        buttons: [
-          {
-            action: "close",
-            icon: "fas fa-check",
-            label: "Close",
-            default: true,
-          },
-        ],
-      }).render(true);
-    }
+    hasCreatePermissions();
 
     // Keep track of which actors and items could not be found/created
     const missingActors: { name: string; lid: string }[] = [];
@@ -1084,27 +1094,13 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
     let populatedWeapons: string[] = [];
     let bond: LancerBOND | null = null;
     if (data.loadout) {
-      // Make a helper to get (a unique copy of) a given lid item, importing if necessary
       let pilotItemPool = [...pilot.items.contents];
-      const getPilotItemByLid = async (lid: string) => {
-        const existingItem = pilotItemPool.findSplice(i => (i as any).system.lid == lid);
-        if (existingItem) {
-          return existingItem;
-        } else {
-          let fromCompendium = (await fromLid(lid)) as LancerItem | null;
-          if (!fromCompendium) {
-            missingItems.push({ actor: pilot.name, lid });
-            return;
-          }
-          return (await insinuate([fromCompendium], pilot!))[0];
-        }
-      };
       let itemUpdates: any = [];
 
       // Do gear
       let flatGear = [...(data.loadout.gear ?? []), ...(data.loadout.extendedGear ?? [])].filter(g => g);
       for (let gear of flatGear as PackedPilotEquipmentState[]) {
-        let g = (await getPilotItemByLid(gear?.id)) as LancerPILOT_GEAR | null;
+        let g = (await getActorItemByLid(gear?.id, pilot, pilotItemPool, missingItems)) as LancerPILOT_GEAR | null;
         if (g) {
           populatedGear.push(g.id!);
         }
@@ -1113,7 +1109,7 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
       // Do armor
       let flatArmor = (data.loadout.armor ?? []).filter(a => a);
       for (let armor of flatArmor as PackedPilotEquipmentState[]) {
-        let a = (await getPilotItemByLid(armor?.id)) as LancerPILOT_ARMOR | null;
+        let a = (await getActorItemByLid(armor?.id, pilot, pilotItemPool, missingItems)) as LancerPILOT_ARMOR | null;
         if (a) {
           populatedArmor.push(a.id!);
         }
@@ -1122,7 +1118,7 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
       // Do weapons
       let flatWeapons = [...(data.loadout.weapons ?? []), ...(data.loadout.extendedWeapons ?? [])].filter(w => w);
       for (let weapon of flatWeapons as PackedPilotEquipmentState[]) {
-        let w = (await getPilotItemByLid(weapon?.id)) as LancerPILOT_WEAPON | null;
+        let w = (await getActorItemByLid(weapon?.id, pilot, pilotItemPool, missingItems)) as LancerPILOT_WEAPON | null;
         if (w) {
           populatedWeapons.push(w.id!);
         }
@@ -1130,7 +1126,7 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
 
       // Do core bonuses
       for (let coreBonus of data.core_bonuses) {
-        (await getPilotItemByLid(coreBonus)) as LancerCORE_BONUS | null;
+        await getActorItemByLid(coreBonus, pilot, pilotItemPool, missingItems);
       }
 
       // Do skills
@@ -1145,7 +1141,7 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
             },
           ]);
         } else {
-          let s = (await getPilotItemByLid(skill.id)) as LancerSKILL | null;
+          let s = (await getActorItemByLid(skill.id, pilot, pilotItemPool, missingItems)) as LancerSKILL | null;
           if (s) {
             itemUpdates.push({
               _id: s.id,
@@ -1157,7 +1153,7 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
 
       // Do talents
       for (let talent of data.talents) {
-        let t = (await getPilotItemByLid(talent.id)) as LancerTALENT | null;
+        let t = (await getActorItemByLid(talent.id, pilot, pilotItemPool, missingItems)) as LancerTALENT | null;
         if (t) {
           itemUpdates.push({
             _id: t.id,
@@ -1167,14 +1163,21 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
       }
 
       // Populate bond data
-      bond = (data.bondId ? await getPilotItemByLid(data.bondId) : null) as LancerBOND | null;
+      bond = data.bondId
+        ? ((await getActorItemByLid(data.bondId, pilot, pilotItemPool, missingItems)) as LancerBOND | null)
+        : null;
       if (bond && data.bondPowers?.length) {
         await applyImportedBondPowers(bond, data.bondPowers);
       }
 
       // Do licenses
       for (let license of data.licenses) {
-        let t = (await getPilotItemByLid(`lic_${license.id}`)) as LancerLICENSE | null;
+        let t = (await getActorItemByLid(
+          EntryTypeLidPrefix(EntryType.LICENSE) + license.id,
+          pilot,
+          pilotItemPool,
+          missingItems
+        )) as LancerLICENSE | null;
         if (t) {
           itemUpdates.push({
             _id: t.id,
@@ -1185,7 +1188,7 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
 
       // Do reserves
       for (let reserve of data.reserves) {
-        let _r = (await getActorItemByLid(reserve.id, pilot, pilotItemPool, missingItems)) as LancerRESERVE | null;
+        await getActorItemByLid(reserve.id, pilot, pilotItemPool, missingItems);
       }
 
       // Update all items
@@ -1231,22 +1234,8 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
               "stress.value": data.stress,
               answers: data.bondAnswers,
               minor_ideal: data.minorIdeal,
-              burdens: data.burdens.map(b => ({
-                lid: b.id,
-                name: b.title,
-                min: 0,
-                max: b.segments,
-                value: b.progress,
-                default_value: 0,
-              })),
-              clocks: data.clocks.map(c => ({
-                lid: c.id,
-                name: c.title,
-                min: 0,
-                max: c.segments,
-                value: c.progress,
-                default_value: 0,
-              })),
+              burdens: data.burdens.map(b => unpackClock(b)),
+              clocks: data.clocks.map(c => unpackClock(c)),
             }
           : undefined,
       },
@@ -1290,34 +1279,20 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
         continue;
       }
 
-      // Make a helper to get (a unique copy of) a given lid item, importing if necessary
       let mechItemPool = [...mech.items.contents];
-      const getMechItemByLid = async (lid: string) => {
-        let foundItem = mechItemPool.findSplice(i => (i as any).system.lid == lid);
-        if (foundItem) {
-          return foundItem;
-        } else {
-          let fromCompendium = (await fromLid(lid)) as LancerItem | null;
-          if (!fromCompendium) {
-            missingItems.push({ actor: mech.name, lid });
-            return;
-          }
-          return (await insinuate([fromCompendium], mech!))[0];
-        }
-      };
 
       // Do our preliminary loadout buildup
       let loadout = cloudMech.loadouts[cloudMech.active_loadout_index];
 
       // Populate our frame
-      let frame = (await getMechItemByLid(cloudMech.frame)) as LancerFRAME | null;
+      let frame = (await getActorItemByLid(cloudMech.frame, mech, mechItemPool, missingItems)) as LancerFRAME | null;
 
       // Populate our systems
       let flatSystems = [...loadout.integratedSystems, ...loadout.systems];
       let populatedSystems: string[] = [];
       let assocSystemData = new Map<string, PackedMechEquipmentData>();
       for (let sys of flatSystems) {
-        let realSys = (await getMechItemByLid(sys.id)) as LancerMECH_SYSTEM | null;
+        let realSys = (await getActorItemByLid(sys.id, mech, mechItemPool, missingItems)) as LancerMECH_SYSTEM | null;
         if (realSys) {
           populatedSystems.push(realSys.id!);
           assocSystemData.set(realSys.id!, sys);
@@ -1351,10 +1326,17 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
       for (let mount of flatMounts) {
         let populatedSlots: (typeof populatedMounts)[0]["slots"] = [];
         for (const slot of mount.slots) {
-          let weapon = slot.weapon ? ((await getMechItemByLid(slot.weapon.id)) as LancerMECH_WEAPON | null) : null;
+          let weapon = slot.weapon
+            ? ((await getActorItemByLid(slot.weapon.id, mech, mechItemPool, missingItems)) as LancerMECH_WEAPON | null)
+            : null;
           let mod =
             weapon && slot.weapon?.mod
-              ? ((await getMechItemByLid(slot.weapon.mod.id)) as LancerWEAPON_MOD | null)
+              ? ((await getActorItemByLid(
+                  slot.weapon.mod.id,
+                  mech,
+                  mechItemPool,
+                  missingItems
+                )) as LancerWEAPON_MOD | null)
               : null;
           populatedSlots.push({
             mod: mod?.id ?? null,
@@ -1364,11 +1346,21 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
           // 2nd weapons are in extra, e.g. aux/aux and flex mounts
           for (const extraSlot of mount.extra) {
             let weapon = extraSlot.weapon
-              ? ((await getMechItemByLid(extraSlot.weapon.id)) as LancerMECH_WEAPON | null)
+              ? ((await getActorItemByLid(
+                  extraSlot.weapon.id,
+                  mech,
+                  mechItemPool,
+                  missingItems
+                )) as LancerMECH_WEAPON | null)
               : null;
             let mod =
               weapon && extraSlot.weapon?.mod
-                ? ((await getMechItemByLid(extraSlot.weapon.mod.id)) as LancerWEAPON_MOD | null)
+                ? ((await getActorItemByLid(
+                    extraSlot.weapon.mod.id,
+                    mech,
+                    mechItemPool,
+                    missingItems
+                  )) as LancerWEAPON_MOD | null)
                 : null;
             populatedSlots.push({
               mod: mod?.id ?? null,
@@ -1499,43 +1491,7 @@ export async function importCCv2(pilot: LancerPILOT, data: PackedPilotData, clea
 
     // Reset curr data and render all
     pilot.render();
-    if (missingItems.length || missingActors.length) {
-      let message = `Partially loaded '${pilot.name}'s new state.`;
-      if (missingActors.length) {
-        message += ` ${missingActors.length} actors could not be created/updated.`;
-      }
-      if (missingItems.length) {
-        message += ` ${missingItems.length} items could not be found.`;
-      }
-      message += ` See dialog for details.`;
-      ui.notifications!.warn(message, { permanent: true });
-      console.warn(`${lp} Some actors and/or items were missed during pilot import:`, missingActors, missingItems);
-
-      let content = "";
-      if (missingActors.length) {
-        content += `<div><span>The following Actors could not be created or updated:</span>
-        <ul>${missingActors.map(i => `<li>${i.name} - ${i.lid}</li>`).join("")}</ul></div>`;
-      }
-      if (missingItems.length) {
-        content += `<div><span>The following Items were not found in the compendium and could not be imported:</span>
-        <ul>${missingItems.map(i => `<li>${i.actor} - ${i.lid}</li>`).join("")}</ul>
-        <span>Import all necessary LCPs first using the <b>Lancer Compendium Manager</b>.</span></div>`;
-      }
-      new foundry.applications.api.DialogV2({
-        window: { title: `Incomplete Pilot Import`, icon: "fas fa-triangle-exclamation" },
-        content,
-        buttons: [
-          {
-            action: "close",
-            icon: "fas fa-check",
-            label: "Close",
-            default: true,
-          },
-        ],
-      }).render(true);
-    } else {
-      ui.notifications!.info("Successfully loaded pilot new state.");
-    }
+    showIncompleteImportSummary(pilot, missingActors, missingItems);
   } catch (e) {
     console.warn(e);
     ui.notifications!.warn(`Failed to update pilot: ${e instanceof Error ? e.message : e}`, { permanent: true });

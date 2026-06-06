@@ -157,9 +157,6 @@ export async function fetchV3PilotViaShareCodes(sharecodes: string[]): Promise<P
   );
 }
 
-/**
- * Wrapper for `fetchV3PilotViaShareCodes`
- */
 export async function fetchV3PilotViaShareCode(sharecode: string): Promise<PackedPilotData> {
   try {
     const pilots = await fetchV3PilotViaShareCodes([sharecode]);

@@ -196,7 +196,7 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
     ui.notifications!.info(`Starting import of ${displayName}, Callsign ${displayCallsign}. Please wait.`);
 
     try {
-      await importCC(this.actor as LancerPILOT, parsed as PackedPilotData);
+      await importCC(this.actor as LancerPILOT, parsed);
       ui.notifications!.info(`Import of ${displayName}, Callsign ${displayCallsign} complete.`);
       this.render();
     } catch (error) {
