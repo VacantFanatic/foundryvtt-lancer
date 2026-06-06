@@ -37,7 +37,14 @@ function normalizeCloudImportId(cloudId: string): string {
 /**
  * Extend the basic ActorSheet
  */
+function cloudImportError(prefix: string, error: unknown): string {
+  const detail = error instanceof Error ? error.message : typeof error === "string" ? error : "";
+  return detail ? `${prefix} ${detail}` : prefix;
+}
+
 export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
+  private _cloudDownloadInFlight = false;
+
   static override DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
     classes: ["lancer", "sheet", "actor", "pilot"],
     position: { width: 900, height: 800 },
@@ -79,9 +86,23 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
       });
 
     const download = $el.find('.cloud-control[data-action*="download"]');
-    download.removeClass("disabled-cloud");
+    const status = $el.find(".cloud-download-status");
+    const setCloudDownloading = (downloading: boolean) => {
+      this._cloudDownloadInFlight = downloading;
+      download.toggleClass("disabled-cloud cloud-downloading", downloading);
+      download.attr("aria-busy", downloading ? "true" : "false");
+      download.find(".cloud-download-idle").prop("hidden", downloading);
+      download.find(".cloud-download-spinner").prop("hidden", !downloading);
+      if (downloading) {
+        status.text(game.i18n.localize("lancer.pilot-sheet.cloud-download.syncing"));
+      }
+    };
+    if (!this._cloudDownloadInFlight) {
+      download.removeClass("disabled-cloud cloud-downloading");
+    }
     download.off("click.lancerCloudDownload").on("click.lancerCloudDownload", async ev => {
       ev.stopPropagation();
+      if (this._cloudDownloadInFlight) return;
 
       let raw_pilot_data: PackedPilotData | null = null;
       const cloudId = normalizeCloudImportId(pilot.system.cloud_id ?? "");
@@ -92,57 +113,72 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
         return;
       }
 
-      if (shareCodeMatcherV3.test(cloudId)) {
-        ui.notifications!.info("Importing character from V3 share code...");
-        try {
-          raw_pilot_data = await fetchV3PilotViaShareCode(cloudId);
-        } catch (error) {
-          ui.notifications!.error("Error importing from V3 share code.");
-          console.error(`Failed import with V3 share code ${cloudId}, error:`, error);
-          return;
-        }
-      } else if (shareCodeMatcherV2.test(cloudId)) {
-        ui.notifications!.info("Importing character from V2 share code...");
-        try {
-          raw_pilot_data = await fetchV2PilotViaShareCode(cloudId);
-        } catch (error) {
-          ui.notifications!.error("Error importing from V2 share code. Share code may need to be refreshed.");
-          console.error(`Failed import with V2 share code ${cloudId}, error:`, error);
-          return;
-        }
-      } else {
-        const cachedPilot = pilotCache().find(p => p.cloudID == cloudId);
-        if (cachedPilot != undefined) {
-          ui.notifications!.info("Importing character from COMP/CON account...");
+      const lastSyncText = status.text();
+      setCloudDownloading(true);
+      try {
+        if (shareCodeMatcherV3.test(cloudId)) {
+          ui.notifications!.info("Importing character from V3 share code...");
           try {
-            raw_pilot_data = await fetchPilotViaCache(cachedPilot);
+            raw_pilot_data = await fetchV3PilotViaShareCode(cloudId);
+          } catch (error) {
+            ui.notifications!.error(cloudImportError("Error importing from V3 share code.", error));
+            console.error(`Failed import with V3 share code ${cloudId}, error:`, error);
+            return;
+          }
+        } else if (shareCodeMatcherV2.test(cloudId)) {
+          ui.notifications!.info("Importing character from V2 share code...");
+          try {
+            raw_pilot_data = await fetchV2PilotViaShareCode(cloudId);
           } catch (error) {
             ui.notifications!.error(
-              "Failed to import from COMP/CON account. Try refreshing the page to reload pilot list."
+              cloudImportError("Error importing from V2 share code. Share code may need to be refreshed.", error)
             );
-            console.error(`Failed to import vaultID ${cloudId} via pilot list, error:`, error);
+            console.error(`Failed import with V2 share code ${cloudId}, error:`, error);
             return;
           }
         } else {
-          ui.notifications!.info("Importing character from share code...");
-          try {
-            raw_pilot_data = await fetchPilotViaShareCode(cloudId);
-          } catch (error) {
-            ui.notifications!.error(
-              "Failed to import from COMP/CON. Check the share code, vault selection, or try JSON import."
-            );
-            console.error(`Failed import for cloud id ${cloudId}, error:`, error);
-            return;
+          const cachedPilot = pilotCache().find(p => p.cloudID == cloudId);
+          if (cachedPilot != undefined) {
+            ui.notifications!.info("Importing character from COMP/CON account...");
+            try {
+              raw_pilot_data = await fetchPilotViaCache(cachedPilot);
+            } catch (error) {
+              ui.notifications!.error(
+                cloudImportError(
+                  "Failed to import from COMP/CON account. Try refreshing the page to reload pilot list.",
+                  error
+                )
+              );
+              console.error(`Failed to import vaultID ${cloudId} via pilot list, error:`, error);
+              return;
+            }
+          } else {
+            ui.notifications!.info("Importing character from share code...");
+            try {
+              raw_pilot_data = await fetchPilotViaShareCode(cloudId);
+            } catch (error) {
+              ui.notifications!.error(
+                cloudImportError(
+                  "Failed to import from COMP/CON. Check the share code, vault selection, or try JSON import.",
+                  error
+                )
+              );
+              console.error(`Failed import for cloud id ${cloudId}, error:`, error);
+              return;
+            }
           }
         }
-      }
 
-      try {
         await importCC(this.actor as LancerPILOT, raw_pilot_data);
         this.render();
       } catch (error) {
-        ui.notifications!.error("COMP/CON import failed. See the console for details.");
+        ui.notifications!.error(cloudImportError("COMP/CON import failed.", error));
         console.error(`${lp} COMP/CON import failed for cloud id ${cloudId}:`, error);
+      } finally {
+        setCloudDownloading(false);
+        if (!this._cloudDownloadInFlight) {
+          status.text(lastSyncText);
+        }
       }
     });
 

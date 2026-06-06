@@ -59,6 +59,31 @@ export function miniProfile(
     </div>`;
 }
 
+export function attackHitSummary(hitResults: LancerFlowState.HitResultWithRoll[], _options: HelperOptions): string {
+  if (!hitResults?.length) return "";
+
+  let hits = 0;
+  let crits = 0;
+  let misses = 0;
+  for (const hit of hitResults) {
+    if (hit.crit) crits++;
+    else if (hit.hit) hits++;
+    else misses++;
+  }
+
+  const parts: string[] = [];
+  if (hits) parts.push(game.i18n.format("lancer.chat-card.attack.hit-summary-hits", { n: hits }));
+  if (crits) parts.push(game.i18n.format("lancer.chat-card.attack.hit-summary-crits", { n: crits }));
+  if (misses) parts.push(game.i18n.format("lancer.chat-card.attack.hit-summary-misses", { n: misses }));
+
+  const summary = game.i18n.format("lancer.chat-card.attack.hit-summary", {
+    parts: parts.join(", "),
+    total: hitResults.length,
+  });
+
+  return `<div class="lancer-attack-hit-summary card clipped">${summary}</div>`;
+}
+
 export function attackTarget(hit: LancerFlowState.HitResultWithRoll, options: HelperOptions): string {
   const hitChip = hit.crit
     ? `<span class="card clipped lancer-hit-chip crit">${game.i18n.format("lancer.chat-card.attack.crit")}</span>`

@@ -437,6 +437,18 @@
     cursor: default;
   }
 
+  .cloud-download-button.cloud-downloading {
+    cursor: wait;
+  }
+
+  .cloud-download-button .cloud-download-spinner[hidden] {
+    display: none;
+  }
+
+  .cloud-download-button.cloud-downloading .cloud-download-idle[hidden] {
+    display: none;
+  }
+
   // TODO: use a mixin, specify actor sheet, echo in _item-sheet.scss
   /* Default text and background color for sheets */
   .lancer.sheet .window-content {

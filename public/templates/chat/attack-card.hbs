@@ -10,6 +10,15 @@
   {{#if profile}}
     {{{mini-profile profile}}}
   {{/if}}
+  {{#if hit_results.length}}
+    {{{attack-hit-summary hit_results}}}
+    <button
+      class="lancer-button lancer-damage-flow lancer-secondary lancer-attack-primary-action"
+      label="lancer.chat-card.attack.roll-all-damage"
+    >
+      <i class="mdi mdi-dice-multiple i--3 i--light"></i>&nbsp;{{localize "lancer.chat-card.attack.roll-all-damage"}}
+    </button>
+  {{/if}}
   {{#if (not hit_results.length)}}
     <div class="card clipped">
       <div class="lancer-mini-header collapse-trigger" data-collapse-id="{{_uuid}}-attacks">
@@ -76,10 +85,4 @@
     </div>
   {{/if}}
   {{{tag-list "tags"}}}
-  <button
-    class="lancer-button lancer-damage-flow lancer-secondary"
-    label="lancer.chat-card.attack.roll-all-damage"
-  >
-    <i class="mdi mdi-dice-multiple i--3 i--light"></i>&nbsp;{{localize "lancer.chat-card.attack.roll-all-damage"}}
-  </button>
 </div>
