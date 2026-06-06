@@ -260,10 +260,6 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
         this.actor.update({ "system.loadout.systems": [] });
         break;
       case "reset-wep":
-        if (!path) return;
-        ui.notifications?.info("TODO: Reset the weapons");
-        // let wep_mount = resolveDotpath(data, path) as WeaponMount;
-        // wep_mount?.reset();
         break;
       default:
         return; // no-op

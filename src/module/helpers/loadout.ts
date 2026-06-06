@@ -129,7 +129,6 @@ function weaponMount(mount_path: string, options: HelperOptions): string {
       <div class="lancer-header lancer-primary mount-type-ctx-root" data-path="${mount_path}">
         <span>${mount.type} Weapon Mount</span>
         <a class="gen-control fas fa-trash" data-action="splice" data-path="${mount_path}"></a>
-        <a class="reset-weapon-mount-button fas fa-redo" data-path="${mount_path}"></a>
       </div>
       <div class="lancer-body">
         <span class="major">LOCKED: BRACING</span>
@@ -174,7 +173,6 @@ function weaponMount(mount_path: string, options: HelperOptions): string {
       <div class="lancer-header lancer-primary mount-type-ctx-root" data-path="${mount_path}">
         <span>${mount.type} Weapon Mount</span>
         <a class="gen-control fas fa-trash" data-action="splice" data-path="${mount_path}"></a>
-        <a class="reset-weapon-mount-button fas fa-redo" data-path="${mount_path}"></a>
       </div>
       ${inc_if(`<span class="lancer-header lancer-primary error">${err.toUpperCase()}</span>`, err)}
       <div class="lancer-body">

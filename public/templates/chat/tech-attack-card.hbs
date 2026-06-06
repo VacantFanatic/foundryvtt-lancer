@@ -14,6 +14,9 @@
   {{#if profile}}
     {{{mini-profile profile}}}
   {{/if}}
+  {{#if hit_results.length}}
+    {{{attack-hit-summary hit_results}}}
+  {{/if}}
   {{#if (not hit_results.length)}}
     <div class="card clipped">
       <div class="lancer-mini-header collapse-trigger" data-collapse-id="{{_uuid}}-attacks">

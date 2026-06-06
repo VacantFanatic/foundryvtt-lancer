@@ -1,3 +1,21 @@
+# 2.12.11 (2026-06-06)
+
+## Added
+
+- Pilot Cloud **download** shows a spinner and “Syncing…” status while COMP/CON import is in progress.
+- Attack chat cards show a **hit summary** (hits / crits / misses) and pin **Roll Damage** above collapsible sections.
+
+## Changed
+
+- COMP/CON and import errors surface the **actual failure message** in notifications instead of “see console for details”.
+- Missing core data prompts GMs with an **Open LCP Manager** confirmation dialog.
+- Partial import summary notification points users to the dialog and Compendium Manager.
+
+## Fixed
+
+- Sliding HUD panels are **non-interactive** while faded during token drag (prevents mis-clicks).
+- Removed pilot Cloud **upload WIP** card and per-mount weapon reset control until implemented (no more TODO toasts).
+
 # 2.12.10 (2026-06-06)
 
 ## Fixed

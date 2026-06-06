@@ -57,6 +57,25 @@ import { unpackReserve } from "../models/items/reserve";
 import { unpackFrame } from "../models/items/frame";
 const lp = LANCER.log_prefix;
 
+async function notifyCoreDataRequired(): Promise<void> {
+  const message = game.i18n.localize("lancer.import.errors.core-data-required");
+  ui.notifications!.warn(message, { permanent: true });
+  if (!game.user?.isGM) return;
+
+  const { LCPManager } = await import("../apps/lcp-manager/lcp-manager");
+  const open = await foundry.applications.api.DialogV2.confirm({
+    window: { title: game.i18n.localize("lancer.import.errors.core-data-title") },
+    content: `<p>${message}</p>`,
+    yes: {
+      icon: "cci cci-content-manager",
+      label: game.i18n.localize("lancer.import.errors.core-data-open-lcp"),
+      default: true,
+    },
+    no: { icon: "fas fa-times", label: "Close" },
+  });
+  if (open) new LCPManager().render(true);
+}
+
 function unpackClock(clock: PackedClockBurdenData) {
   return {
     lid: clock.id,
@@ -85,7 +104,7 @@ function showIncompleteImportSummary(
   if (missingItems.length) {
     message += ` ${missingItems.length} items could not be found.`;
   }
-  message += ` See dialog for details.`;
+  message += ` Open the dialog for missing LIDs and install required LCPs via the Compendium Manager.`;
   ui.notifications!.warn(message, { permanent: true });
   console.warn(`${lp} Some actors and/or items were missed during pilot import:`, missingActors, missingItems);
 
@@ -278,10 +297,7 @@ async function clearPilotEmbeddedDocuments(pilot: LancerPILOT) {
 function requireCoreDataForImport(): boolean {
   const coreVersion = game.settings.get(game.system.id, LANCER.setting_core_data);
   if (!coreVersion) {
-    ui.notifications!.warn(
-      "You must import the Core Book Data in the Lancer Compendium Manager before importing a pilot.",
-      { permanent: true }
-    );
+    void notifyCoreDataRequired();
     return false;
   }
   return true;

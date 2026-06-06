@@ -50,6 +50,13 @@
     "placeholder": {
       "name": "Name"
     },
+    "import": {
+      "errors": {
+        "core-data-title": "Core data required",
+        "core-data-required": "Import Core Book Data in the Lancer Compendium Manager (Compendiums tab) before importing a pilot.",
+        "core-data-open-lcp": "Open LCP Manager"
+      }
+    },
     "common-sheet": {
       "tabs": {
         "effects": "<EFFECTS//ACTIVE>"
@@ -134,7 +141,8 @@
       },
       "cloud-download": {
         "label": "DOWNLOAD",
-        "lastSync": "Last synced: {timestamp}"
+        "lastSync": "Last synced: {timestamp}",
+        "syncing": "Syncing…"
       },
       "cloud-upload": {
         "label": "UPLOAD",
@@ -214,7 +222,11 @@
         "crit": "CRIT",
         "hit": "HIT",
         "miss": "MISS",
-        "roll-all-damage": "ROLL DAMAGE"
+        "roll-all-damage": "ROLL DAMAGE",
+        "hit-summary": "{parts} / {total} targets",
+        "hit-summary-hits": "{n} hits",
+        "hit-summary-crits": "{n} crits",
+        "hit-summary-misses": "{n} misses"
       },
       "exclamation": {
         "overkill": "OVERKILL!"

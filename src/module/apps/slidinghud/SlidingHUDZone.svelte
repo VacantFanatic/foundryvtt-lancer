@@ -152,7 +152,7 @@
       }
 
       #hudzone.faded > .component {
-        pointer-events: unset;
+        pointer-events: none;
       }
     }
   }
