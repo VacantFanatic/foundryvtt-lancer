@@ -26,7 +26,7 @@ import {
   activationStyle,
   activationIcon,
 } from "./commons";
-import { limitedUsesIndicator, loadingIndicator, ref_params, reserveUsesIndicator } from "./refs";
+import { limitedUsesIndicator, loadingIndicator, ref_params, refSlotEmptyHintHtml, reserveUsesIndicator } from "./refs";
 import {
   ActivationType,
   ChipIcons,
@@ -361,11 +361,12 @@ export function pilotArmorSlot(armor_path: string, options: HelperOptions): stri
   // Generate commons
   if (!armor) {
     // Make an empty ref. Note that it still has path stuff if we are going to be dropping things here
-    return `<div class="${EntryType.PILOT_ARMOR} ref drop-settable card"
+    return `<div class="${EntryType.PILOT_ARMOR} ref slot drop-settable click-settable card"
                         data-path="${armor_path}"
                         data-accept-types="${EntryType.PILOT_ARMOR}">
           <img class="ref-icon" src="${TypeIcon(EntryType.PILOT_ARMOR)}"></img>
-          <span class="major">Equip armor</span>
+          <span class="major">${game.i18n.localize("lancer.ref-slot.equip-armor")}</span>
+          ${refSlotEmptyHintHtml()}
       </div>`;
   }
 
@@ -434,11 +435,12 @@ export function pilotWeaponRefview(weapon_path: string, options: HelperOptions):
   // Generate commons
   if (!weapon) {
     // Make an empty ref. Note that it still has path stuff if we are going to be dropping things here
-    return `<div class="${EntryType.PILOT_WEAPON} ref drop-settable card flexrow"
+    return `<div class="${EntryType.PILOT_WEAPON} ref slot drop-settable click-settable card flexrow"
                         data-path="${weapon_path}"
                         data-accept-types="${EntryType.PILOT_WEAPON}">
           <img class="ref-icon" src="${TypeIcon(EntryType.PILOT_WEAPON)}"></img>
-          <span class="major">Equip weapon</span>
+          <span class="major">${game.i18n.localize("lancer.ref-slot.equip-weapon")}</span>
+          ${refSlotEmptyHintHtml()}
       </div>`;
   }
 
@@ -506,11 +508,12 @@ export function pilotGearRefview(gear_path: string, options: HelperOptions): str
 
   if (!gear) {
     // Make an empty ref. Note that it still has path stuff if we are going to be dropping things here
-    return `<div class="${EntryType.PILOT_GEAR} ref drop-settable card flexrow"
+    return `<div class="${EntryType.PILOT_GEAR} ref slot drop-settable click-settable card flexrow"
                         data-path="${gear_path}"
                         data-accept-types="${EntryType.PILOT_GEAR}">
           <img class="ref-icon" src="${TypeIcon(EntryType.PILOT_GEAR)}"></img>
-          <span class="major">Equip gear</span>
+          <span class="major">${game.i18n.localize("lancer.ref-slot.equip-gear")}</span>
+          ${refSlotEmptyHintHtml()}
       </div>`;
   }
 
@@ -568,11 +571,12 @@ export function reserveRefView(reserve_path: string, options: HelperOptions): st
   // Generate commons
   if (!reserve) {
     // Make an empty ref. Note that it still has path stuff if we are going to be dropping things here
-    return `<div class="${EntryType.RESERVE} ref drop-settable card flexrow"
+    return `<div class="${EntryType.RESERVE} ref slot drop-settable click-settable card flexrow"
                         data-path="${reserve_path}"
                         data-accept-types="${EntryType.RESERVE}">
           <img class="ref-icon" src="${TypeIcon(EntryType.RESERVE)}"></img>
-          <span class="major">Equip reserve</span>
+          <span class="major">${game.i18n.localize("lancer.ref-slot.equip-reserve")}</span>
+          ${refSlotEmptyHintHtml()}
       </div>`;
   }
 
@@ -664,11 +668,12 @@ export function mechLoadoutWeaponSlot(
         : size
       : "any";
     return `
-      <div class="${EntryType.MECH_WEAPON} ref slot drop-settable card flexrow"
+      <div class="${EntryType.MECH_WEAPON} ref slot drop-settable click-settable card flexrow"
            data-path="${weapon_path}"
            data-accept-types="${EntryType.MECH_WEAPON}">
         <img class="ref-icon" src="${TypeIcon(EntryType.MECH_WEAPON)}"></img>
-        <span class="major">Insert ${slotSize} weapon</span>
+        <span class="major">${game.i18n.format("lancer.ref-slot.insert-weapon", { size: slotSize })}</span>
+        ${refSlotEmptyHintHtml()}
       </div>`;
   } else {
     return mechWeaponDisplay(weapon_path, mod_path, options);
@@ -785,11 +790,12 @@ export function weaponModView(mod_path: string, weapon_path: string | null, opti
   let mod: LancerWEAPON_MOD | null = resolveHelperDotpath(options, mod_path);
   let weapon: LancerMECH_WEAPON | null = weapon_path ? resolveHelperDotpath(options, weapon_path) : null;
   if (!mod) {
-    return `<div class="${EntryType.WEAPON_MOD} ref slot drop-settable card flexrow"
+    return `<div class="${EntryType.WEAPON_MOD} ref slot drop-settable click-settable card flexrow"
         data-path="${mod_path}"
         data-accept-types="${EntryType.WEAPON_MOD}">
       <i class="cci cci-weaponmod i--4 i--light"> </i>
-      <span>No Mod Installed</span>
+      <span class="major">${game.i18n.localize("lancer.ref-slot.equip-mod")}</span>
+      ${refSlotEmptyHintHtml()}
     </div>`;
   }
 

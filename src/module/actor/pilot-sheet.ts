@@ -12,14 +12,16 @@ import {
   fetchPilotViaShareCode,
   fetchV2PilotViaShareCode,
   fetchV3PilotViaShareCode,
+  isCompconLoggedIn,
   pilotCache,
 } from "../util/compcon";
+import CompconLoginForm from "../helpers/compcon-login-form";
 import type { LancerFRAME } from "../item/lancer-item";
 import { clicker_num_input } from "../helpers/actor";
 import type { ResolvedDropData } from "../helpers/dragdrop";
 import { EntryType } from "../enums";
 import type { PackedPilotData } from "../util/unpacking/packed-types";
-import { importCC } from "./import";
+import { importCC, showImportResultDialog } from "./import";
 
 const shareCodeMatcherV2 = /^[A-Z0-9]{6}$/;
 const shareCodeMatcherV3 = /^[A-Z0-9]{12}$/;
@@ -169,7 +171,7 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
           }
         }
 
-        await importCC(this.actor as LancerPILOT, raw_pilot_data);
+        await importCC(this.actor as LancerPILOT, raw_pilot_data, true, "cloud");
         this.render();
       } catch (error) {
         ui.notifications!.error(cloudImportError("COMP/CON import failed.", error));
@@ -181,6 +183,28 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
         }
       }
     });
+
+    $el
+      .find('[data-action="compconLogin"]')
+      .off("click.lancerCompconLogin")
+      .on("click.lancerCompconLogin", async ev => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const app = new CompconLoginForm();
+        app.addEventListener("close", () => this.render(), { once: true });
+        await app.render(true);
+      });
+
+    $el
+      .find('[data-action="startPilotImportTour"]')
+      .off("click.lancerPilotImportTour")
+      .on("click.lancerPilotImportTour", async ev => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const tour = game.tours.get(`${game.system.id}.pilot-import`);
+        if (tour) await tour.start();
+        else ui.notifications!.warn(game.i18n.localize("lancer.pilot-sheet.cloud-wizard.tour-missing"));
+      });
 
     $el.find<HTMLInputElement>("input#pilot-json-import").on("change", ev => this._onPilotJsonUpload(ev));
 
@@ -219,8 +243,13 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
     try {
       parsed = JSON.parse(fileData) as PackedPilotData & { data?: PackedPilotData };
     } catch (error) {
-      ui.notifications!.error("Selected file is not valid JSON.");
       console.error(`${lp} Failed to parse pilot JSON:`, error);
+      await showImportResultDialog({
+        status: "failure",
+        pilotName: this.actor.name,
+        source: "json",
+        message: game.i18n.localize("lancer.import.errors.invalid-json"),
+      });
       return;
     }
 
@@ -228,16 +257,18 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
 
     if (!parsed) return;
     const displayName = parsed.name ?? parsed.data?.name ?? "Pilot";
-    const displayCallsign = parsed.callsign ?? parsed.data?.callsign ?? "";
-    ui.notifications!.info(`Starting import of ${displayName}, Callsign ${displayCallsign}. Please wait.`);
 
     try {
-      await importCC(this.actor as LancerPILOT, parsed);
-      ui.notifications!.info(`Import of ${displayName}, Callsign ${displayCallsign} complete.`);
+      await importCC(this.actor as LancerPILOT, parsed, true, "json");
       this.render();
     } catch (error) {
-      ui.notifications!.error(`Import of ${displayName} failed. See the console for details.`);
       console.error(`${lp} JSON pilot import failed:`, error);
+      await showImportResultDialog({
+        status: "failure",
+        pilotName: displayName,
+        source: "json",
+        message: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -260,6 +291,8 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
   ): Promise<LancerActorSheetData<EntryType.PILOT>> {
     const data = (await super._prepareContext(options)) as LancerActorSheetData<EntryType.PILOT>;
 
+    data.compConLoggedIn = await isCompconLoggedIn();
+    data.compConPilotCount = pilotCache().length;
     data.compConPilotList = pilotCache()
       .sort((p1, p2) => {
         if (p1.callsign < p2.callsign) return -1;
@@ -277,6 +310,16 @@ export class LancerPilotSheet extends LancerActorSheet<EntryType.PILOT> {
       );
 
     return data;
+  }
+
+  protected override _ensureDefaultTabsIfBlank(): void {
+    const pilot = this.actor as LancerPILOT;
+    const root = (this.form ?? this.element) as HTMLElement;
+    if (pilot.system.last_cloud_update === "never" && !root.querySelector('.tab.active[data-group="primary"]')) {
+      this.changeTab("cloud", "primary", { force: true });
+      return;
+    }
+    super._ensureDefaultTabsIfBlank();
   }
 
   protected override _processFormData(

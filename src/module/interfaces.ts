@@ -51,6 +51,8 @@ export interface LancerActorSheetData<T extends LancerActorType> {
   pilot?: LancerPILOT;
   // Store cloud pilot cache and potential cloud ids at the root level (pilot sheet)
   compConPilotList?: Record<string, string>;
+  compConLoggedIn?: boolean;
+  compConPilotCount?: number;
   cleanedOwnerID?: string;
   vaultID?: string;
   rawID?: string;

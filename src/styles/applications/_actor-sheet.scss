@@ -449,6 +449,115 @@
     display: none;
   }
 
+  .cloud-wizard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .cloud-wizard-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .cloud-wizard-step-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .cloud-wizard-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 999px;
+    background: var(--primary-color);
+    color: var(--light-text);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .cloud-wizard-panels {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .cloud-wizard-import-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .cloud-wizard-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .cloud-login-status--ok {
+    color: var(--secondary-color);
+  }
+
+  .cloud-wizard-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .ref.slot.click-settable {
+    cursor: pointer;
+  }
+
+  .ref-slot-hint {
+    opacity: 0.85;
+    font-style: italic;
+  }
+
+  .compendium-slot-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 12rem;
+  }
+
+  .compendium-slot-picker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-height: 22rem;
+    overflow-y: auto;
+  }
+
+  .compendium-slot-picker-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: left;
+    width: 100%;
+
+    img {
+      width: 2rem;
+      height: 2rem;
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
+  }
+
+  .import-result-section {
+    margin-top: 0.75rem;
+  }
+
+  .import-result-list {
+    margin: 0.35rem 0 0;
+    padding-left: 1.25rem;
+  }
+
   // TODO: use a mixin, specify actor sheet, echo in _item-sheet.scss
   /* Default text and background color for sheets */
   .lancer.sheet .window-content {

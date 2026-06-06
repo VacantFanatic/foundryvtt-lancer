@@ -27,6 +27,7 @@ import {
   handleRefClickOpen,
   handleRefDragging,
   handleRefSlotDropping,
+  handleRefSlotPicking,
   handleUsesInteraction,
 } from "../helpers/refs";
 import { LancerItem } from "../item/lancer-item";
@@ -154,7 +155,9 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     handlePowerUsesInteraction($el, this.actor);
     handleContextMenus($el, this.actor);
     this._activateInventoryButton($el);
-    handleRefSlotDropping($el, this.actor, x => this.quickOwnDrop(x).then(v => v[0]));
+    const preFinalizeDrop = (x: ResolvedDropData) => this.quickOwnDrop(x).then(v => v[0]);
+    handleRefSlotDropping($el, this.actor, preFinalizeDrop);
+    handleRefSlotPicking($el, this.actor, preFinalizeDrop);
     handleGenControls($el, this.actor);
     handlePopoutTextEditor($el, this.actor);
     handleDocDropping(
