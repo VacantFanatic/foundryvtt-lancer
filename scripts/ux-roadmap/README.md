@@ -1,4 +1,4 @@
-# UX Roadmap 2026 — GitHub Project bootstrap
+# LANCER UX pass — GitHub Project bootstrap
 
 This folder defines the **UX Roadmap 2026** release plan and a script to create:
 
