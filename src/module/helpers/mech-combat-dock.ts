@@ -37,7 +37,9 @@ function compactCoreToggle(checked: boolean): string {
   return `
     <div class="mech-combat-dock-core card clipped" data-tooltip="Core power">
       <span class="minor">CORE</span>
-      <input name="system.core_energy" class="core-power-toggle" type="checkbox" data-dtype="Boolean" ${checked ? "checked" : ""} />
+      <div class="stat-container core-power-stat-container">
+        <input name="system.core_energy" class="core-power-toggle" type="checkbox" data-dtype="Boolean" ${checked ? "checked" : ""} />
+      </div>
     </div>`;
 }
 
