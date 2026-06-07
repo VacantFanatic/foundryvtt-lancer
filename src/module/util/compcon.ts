@@ -1,6 +1,9 @@
 import type { CachedCloudPilot } from "../interfaces";
 import { LANCER } from "../config";
+import { normalizeCompconPilotData } from "./compcon-normalize";
 import type { PackedPilotData } from "./unpacking/packed-types";
+
+// Full COMP/CON v3 import is in progress upstream: https://github.com/Eranziel/foundryvtt-lancer/issues/878
 
 // we only cache the id, cloud ids, and name; we're going to fetch all other data on user input
 // the point of the cache is not have the pilot actor window to wait for network calls
@@ -125,7 +128,7 @@ export async function fetchV2PilotViaShareCode(sharecode: string): Promise<Packe
   if (!pilotResponse.ok) {
     throw new Error(`V2 presigned pilot fetch returned HTTP ${pilotResponse.status}`);
   }
-  return await pilotResponse.json();
+  return normalizeCompconPilotData(await pilotResponse.json());
 }
 
 /**
@@ -214,7 +217,7 @@ async function fetchPilotViaLegacyV3ShareCode(sharecode: string, officialErr: un
     throw new Error(`V3 legacy cloudfront pilot fetch returned HTTP ${pilotResponse.status}`);
   }
 
-  return (await pilotResponse.json()) as PackedPilotData;
+  return normalizeCompconPilotData(await pilotResponse.json());
 }
 
 /** Tries v3 then v2 share endpoints when code format is unknown. */
@@ -254,8 +257,7 @@ export async function fetchPilotViaCache(cachedPilot: CachedCloudPilot): Promise
 
   const res = (await Storage.get(documentID, req)) as any;
   const text = await res.Body.text();
-  const json = JSON.parse(text);
-  return json;
+  return normalizeCompconPilotData(JSON.parse(text));
 }
 
 export async function fetchPilot(cloudID: string, cloudOwnerID?: string): Promise<PackedPilotData> {
@@ -289,5 +291,7 @@ export async function fetchPilot(cloudID: string, cloudOwnerID?: string): Promis
   }
   const res = (await Storage.get(cloudID, req)) as any;
   const text = await res.Body.text();
-  return JSON.parse(text);
+  return normalizeCompconPilotData(JSON.parse(text));
 }
+
+export { isCompconV3WrappedPayload, normalizeCompconPilotData } from "./compcon-normalize";

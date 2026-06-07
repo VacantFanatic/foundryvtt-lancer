@@ -1,3 +1,9 @@
+# 3.0.1 (2026-06-06)
+
+## Changed
+
+- Mech sheet Stats tab uses a **sectioned compact layout** (Combat, Defense & Mobility, Offense, Systems) with smaller stat chips, a systems toolbar for Overcharge/Core/HASE, and a slim pilot sidebar — replacing the legacy stat card grid.
+
 # 3.0.0 (2026-06-07)
 
 ## Added

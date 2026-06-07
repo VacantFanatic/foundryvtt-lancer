@@ -115,6 +115,15 @@
         "loadout": "<MECH//LOADOUT>",
         "talents": "<PILOT//TALENTS>"
       },
+      "sections": {
+        "combat": "COMBAT",
+        "defense": "DEFENSE & MOBILITY",
+        "offense": "OFFENSE",
+        "systems": "SYSTEMS"
+      },
+      "inventory": {
+        "label": "View Inventory"
+      },
       "core": {
         "label": "CORE"
       },

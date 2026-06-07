@@ -218,7 +218,7 @@
   }
 
   .mech-stat-section {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
   }
 
   .sheet-section-header.sticky {
@@ -228,33 +228,20 @@
     margin-bottom: 0.35rem;
   }
 
-  .mech-combat-stat-grid {
-    grid-template: repeat(3, minmax(3.25em, auto)) / repeat(5, 1fr);
+  .mech-stats-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .mech-stats-subsection {
+    margin: 0 0 0.25rem;
   }
 
   .mech-systems-panel {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-  }
-
-  .mech-systems-utilities {
-    align-items: stretch;
-    gap: 0.5rem;
-
-    .size-card,
-    .inventory {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 6rem;
-      padding: 0.35rem;
-    }
-
-    .hase {
-      flex: 1 1 12rem;
-      margin: 0;
-    }
   }
 
   .flow-button-sep {
@@ -284,99 +271,280 @@
     font-size: 0.75rem;
   }
 
-  /* Mech stats: class on the grid so layout survives App V2 host/class quirks */
-  .lancer-mech-stat-grid {
-    display: grid;
-    /* Rows grow past 3.25em when stat-cards need header (~2em) + body space */
-    grid-template: repeat(5, minmax(3.25em, auto)) / repeat(5, 1fr);
+  /* Mech stats tab: sectioned compact layout (replaces legacy 5×5 stat grid) */
+  .mech-stats-layout {
+    align-items: flex-start;
+    gap: 0;
+    margin: 0 3px;
 
-    > .stat-card {
-      grid-template: minmax(2em, auto) minmax(2.25em, auto) / 1fr;
+    .mech-stats-main {
+      flex: 1 1 auto;
+      min-width: 0;
     }
 
-    .pilot-summary {
-      grid-column-start: 5;
-      grid-row: 1/3;
-    }
+    .mech-stats-sidebar {
+      flex: 0 0 7.5rem;
+      min-width: 7.5rem;
+      max-width: 7.5rem;
+      margin: 3px 6px 3px 0;
 
-    .size-card {
-      grid-column-start: 5;
-      grid-row: 3 / 5;
-      margin: auto;
-    }
+      .pilot-summary {
+        position: relative;
+        margin: 0 0 0.35rem;
+        padding: 0;
+        min-height: 6.5rem;
+        max-height: 7.5rem;
+        overflow: hidden;
 
-    .inventory {
-      grid-column-start: 5;
-      grid-row: 5 / 6;
-      margin: auto;
-    }
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
 
-    .hase {
-      grid-row: -4/-2;
-      grid-column: 4/5;
-      margin: 0px 7px;
-      flex-grow: unset;
-
-      .stat-flow-container {
-        grid-template: auto / fit-content(75%) auto;
-      }
-    }
-
-    /* Core energy: MDI glyph is only on ::before — avoid `mdi` on <input> (CDN .mdi::before is inline-block
-     * and fights layout). Fixed box + flex centers the icon; caps width if sheet flex stretches inputs. */
-    .core-power-stat-container {
-      justify-content: center;
-    }
-
-    input.core-power-toggle {
-      -webkit-appearance: none;
-      appearance: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
-      width: 30px;
-      height: 30px;
-      min-width: 30px;
-      max-width: 30px;
-      flex: 0 0 auto;
-      margin: 0;
-      padding: 0;
-      cursor: pointer;
-      outline: 0;
-      border: none;
-      background: transparent;
-      background-repeat: no-repeat;
-      background-position: center center;
-      background-size: contain;
-      font: normal normal normal 24px/1 "Material Design Icons";
-      -webkit-filter: none !important;
-      filter: none !important;
-
-      &::before {
-        display: block;
-        line-height: 1;
+        .license-level {
+          position: absolute;
+          right: 0;
+          top: 0;
+          font-size: 0.85rem;
+          width: 55%;
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 32% 100%);
+        }
       }
 
-      &:checked::before {
-        content: "\F0079";
-        color: green;
-      }
+      .inventory {
+        margin: 0;
 
-      &:not(:checked)::before {
-        content: "\F007A";
-        color: grey;
+        .lancer-button {
+          width: 100%;
+          padding: 0.35rem 0.25rem;
+          font-size: 0.65rem;
+          line-height: 1.2;
+        }
       }
     }
   }
 
-  /* Flex-column cards in the mech grid: allow headers to shrink within fixed row tracks.
-   * Exclude .stat-card: those use an internal CSS grid (1fr / 1fr); min-height: 0 here lets
-   * the header track collapse (~8px) because .lancer-header's flex-basis does not apply to grid items. */
-  .lancer-mech-stat-grid > .card:not(.stat-card) > .lancer-header {
-    min-height: 0;
-    padding-top: 0.15em;
-    padding-bottom: 0.15em;
+  .mech-stats-section {
+    margin: 3px 6px;
+
+    > .lancer-header.submajor {
+      flex: 0 0 1.5em;
+      min-height: 1.5em;
+      font-size: 0.8rem;
+    }
+  }
+
+  .mech-stat-row {
+    padding: 0.15rem 0.25rem 0.35rem;
+  }
+
+  .mech-stat-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.1rem;
+    background-color: var(--darken-2);
+    padding: 0.2rem 0.15rem 0.3rem;
+    min-height: 2.75rem;
+    box-sizing: border-box;
+
+    .mech-stat-label {
+      font-family: var(--header-font-family);
+      font-size: 0.58rem;
+      line-height: 1.1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: color-mix(in srgb, var(--light-text), transparent 35%);
+      white-space: nowrap;
+    }
+
+    .compact-stat {
+      justify-content: center;
+      width: 100%;
+      padding: 0;
+
+      i {
+        font-size: 0.95rem;
+      }
+    }
+
+    .lancer-stat.minor {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    input[type="number"].lancer-stat {
+      max-width: 2.5rem;
+      min-width: 1.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0 2px;
+    }
+
+    &.mech-stat-chip--size {
+      justify-content: center;
+
+      .size-icon {
+        font-size: 1.35rem;
+        line-height: 1;
+      }
+    }
+
+    &.mech-stat-chip--action {
+      min-height: 3.25rem;
+
+      > .stat-card,
+      > .card {
+        width: 100%;
+        margin: 0;
+        background: transparent;
+
+        > .lancer-header {
+          display: none;
+        }
+      }
+
+      .stat-flow-container {
+        grid-template-columns: auto 1fr auto;
+        gap: 0.15rem;
+      }
+
+      .lancer-stat.major {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .mech-systems-toolbar {
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.35rem;
+    padding: 0.25rem 0.35rem 0.45rem;
+
+    > .card {
+      margin: 0;
+      flex: 1 1 auto;
+      min-width: 6.5rem;
+    }
+
+    > .card.flexcol > .lancer-header {
+      flex: 0 0 1.1em;
+      min-height: 1.1em;
+      font-size: 0.62rem;
+      padding: 0.05em 0;
+    }
+
+    .mech-stat-label {
+      display: block;
+      font-family: var(--header-font-family);
+      font-size: 0.58rem;
+      line-height: 1.1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: color-mix(in srgb, var(--light-text), transparent 35%);
+      text-align: center;
+      margin-bottom: 0.15rem;
+    }
+
+    .overcharge-container {
+      min-height: 1.75rem;
+    }
+  }
+
+  .mech-system-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.35rem;
+    min-width: 4.5rem;
+  }
+
+  .mech-hase-toolbar {
+    flex: 2 1 14rem;
+    min-width: 12rem;
+  }
+
+  .mech-hase-row {
+    flex-wrap: nowrap;
+    gap: 0.15rem;
+    width: 100%;
+
+    > .stat-card {
+      flex: 1 1 0;
+      min-width: 0;
+      margin: 0;
+      grid-template: auto / 1fr;
+      background: transparent;
+
+      > .lancer-header {
+        flex: 0 0 1.1em;
+        min-height: 1.1em;
+        font-size: 0.62rem;
+        padding: 0.05em 0;
+
+        .header-icon {
+          display: none;
+        }
+      }
+
+      .stat-flow-container {
+        grid-template-columns: auto 1fr;
+      }
+
+      .lancer-stat.major {
+        font-size: 0.85rem;
+      }
+    }
+  }
+
+  /* Core energy toggle in systems toolbar */
+  .mech-systems-toolbar .core-power-stat-container {
+    justify-content: center;
+  }
+
+  .mech-systems-toolbar input.core-power-toggle {
+    -webkit-appearance: none;
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    max-width: 26px;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    outline: 0;
+    border: none;
+    background: transparent;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+    font: normal normal normal 22px/1 "Material Design Icons";
+    -webkit-filter: none !important;
+    filter: none !important;
+
+    &::before {
+      display: block;
+      line-height: 1;
+    }
+
+    &:checked::before {
+      content: "\F0079";
+      color: green;
+    }
+
+    &:not(:checked)::before {
+      content: "\F007A";
+      color: grey;
+    }
   }
 
   /* Mech nameplate: name uses remaining header width; minmax(0,1fr) avoids grid min-content blowout */
@@ -466,6 +634,20 @@
     img {
       border: unset;
       object-fit: cover;
+    }
+  }
+
+  .mech-stats-sidebar .pilot-summary {
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 0;
+    flex: 0 0 auto;
+    min-height: 6.5rem;
+    max-height: 7.5rem;
+
+    .license-level {
+      font-size: 0.85rem;
+      width: 55%;
     }
   }
 

@@ -55,151 +55,178 @@
   {{!-- Sheet Body --}}
   <section class="sheet-body scroll-body">
     <div class="tab stats {{tabs.primary.stats.cssClass}}" data-group="primary" data-tab="stats">
-      <section class="mech-stat-section" data-mech-section="combat">
-        <div class="lancer-header lancer-primary sheet-section-header sticky">
-          <i
-            class="mdi mdi-unfold-less-horizontal collapse-trigger collapse-icon"
-            data-collapse-id="mech-stats-combat"
-          ></i>
-          <span class="major">{{localize "lancer.mech-sheet.sections.combat"}}</span>
-        </div>
-        <div class="collapse lancer-mech-stat-grid mech-combat-stat-grid" data-collapse-id="mech-stats-combat">
-          {{{stat-edit-max-card "HP" "mdi mdi-heart-outline" "system.hp.value" "system.hp.max"}}}
-          {{{stat-edit-max-card "HEAT" "cci cci-heat" "system.heat.value" "system.heat.max"}}}
-          {{{stat-view-card "EVASION" "cci cci-evasion" "system.evasion"}}}
-          {{{stat-view-card "ARMOR" "mdi mdi-shield-outline" "system.armor"}}}
-          {{{stat-edit-max-card "STRUCTURE" "cci cci-structure" "system.structure.value" "system.structure.max"}}}
-          {{{stat-edit-max-card "STRESS" "cci cci-reactor" "system.stress.value" "system.stress.max"}}}
-          {{{stat-view-card "E-DEF" "cci cci-edef" "system.edef"}}}
-          {{{stat-view-card "SPEED" "mdi mdi-arrow-right-bold-hexagon-outline" "system.speed"}}}
-          {{{stat-view-card "SAVE" "cci cci-save" "system.save"}}}
-          {{{stat-view-card "SENSORS" "cci cci-sensor" "system.sensor_range"}}}
-          {{{tech-flow-card "TECH ATK" "cci cci-tech-full" "system.tech_attack"}}}
-          {{{stat-edit-rollable-card "BURN" "cci cci-burn" "system.burn"}}}
-          {{{stat-edit-card "O.SHIELD" "mdi mdi-shield-star-outline" "system.overshield.value"}}}
-          {{{stat-edit-max-card "REPAIRS" "cci cci-repair" "system.repairs.value" "system.repairs.max"}}}
-        </div>
-      </section>
-
-      <section class="mech-stat-section" data-mech-section="systems">
-        <div class="lancer-header lancer-primary sheet-section-header sticky">
-          <i
-            class="mdi mdi-unfold-less-horizontal collapse-trigger collapse-icon"
-            data-collapse-id="mech-stats-systems"
-          ></i>
-          <span class="major">{{localize "lancer.mech-sheet.sections.systems"}}</span>
-        </div>
-        <div class="collapse mech-systems-panel" data-collapse-id="mech-stats-systems">
-          <div class="mech-systems-utilities flexrow wraprow">
-            <div class="size-card card clipped">
-              {{#if (eq system.size 0.5)}}
-                <i class="cci cci-size-half size-icon theme--main"></i>
-              {{else}}
-                <i class="cci cci-size-{{system.size}} size-icon theme--main"></i>
-              {{/if}}
+      <div class="mech-stats-layout flexrow">
+        <div class="mech-stats-main flexcol">
+          <section class="mech-stat-section" data-mech-section="combat">
+            <div class="lancer-header lancer-primary sheet-section-header sticky">
+              <i
+                class="mdi mdi-unfold-less-horizontal collapse-trigger collapse-icon"
+                data-collapse-id="mech-stats-combat"
+              ></i>
+              <span class="major">{{localize "lancer.mech-sheet.sections.combat"}}</span>
             </div>
-            {{{overcharge-button actor "system.overcharge"}}}
-            <div class="flexcol card clipped">
-              <div class="lancer-header lancer-primary">
-                <span class="major">{{localize "lancer.mech-sheet.core.label"}}</span>
-              </div>
-              <div class="flexrow stat-container core-power-stat-container">
-                <input
-                  name="system.core_energy"
-                  class="core-power-toggle"
-                  type="checkbox"
-                  data-dtype="Boolean"
-                  {{checked system.core_energy}}
-                />
-              </div>
-            </div>
-            {{{stat-rollable-card "GRIT" "cci cci-armor" "system.grit"}}}
-            {{{pilot-slot "system.pilot" value=pilot}}}
-            <div class="wraprow double hase card clipped">
-              {{{stat-rollable-card "HUL" "" "system.hull"}}}
-              {{{stat-rollable-card "AGI" "" "system.agi"}}}
-              {{{stat-rollable-card "SYS" "" "system.sys"}}}
-              {{{stat-rollable-card "ENG" "" "system.eng"}}}
-            </div>
-            <div class="inventory card clipped">
-              <button class="lancer-button" type="button">{{localize "lancer.mech-sheet.inventory.label"}}</button>
-            </div>
-          </div>
-
-          <div class="pilot-frame-wrapper flexrow">
-            <div class="card">
-              <span class="lancer-header lancer-primary submajor clipped-top">
-                {{localize "lancer.mech-sheet.macros.label"}}
-              </span>
-              <div class="lancer-flow-button-grid">
-                {{{flow-button "STABILIZE" "Stabilize"}}}
-                {{{flow-button "FULL REPAIR" "FullRepair"}}}
-                <div class="flow-button-sep"></div>
-                {{{flow-button "STRUCTURE" "Structure"}}}
-                {{{flow-button "OVERHEAT" "Overheat"}}}
-              </div>
-            </div>
-            {{#if (is-combatant actor)}}
-              <div class="card mech-combat-actions">
-                <span class="lancer-header lancer-primary submajor clipped-top">
-                  {{localize "lancer.mech-sheet.actions.label"}}
-                </span>
-                <div class="lancer-flow-button-grid">
-                  {{{action-button "Protocol" "system.action_tracker.protocol" "protocol"}}}
-                  {{{action-button "Movement" "system.action_tracker.move" "move"}}}
-                  {{{action-button "Full Action" "system.action_tracker.full" "full"}}}
-                  {{{action-button "Quick Action" "system.action_tracker.quick" "quick"}}}
-                  {{{action-button "Reaction" "system.action_tracker.reaction" "reaction"}}}
+            <div class="collapse mech-stats-panel" data-collapse-id="mech-stats-combat">
+              <div class="card clipped mech-stats-subsection">
+                <div class="wraprow hextuple mech-stat-row">
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">HP</span>
+                    {{{compact-stat-edit "mdi mdi-heart-outline" "system.hp.value" "system.hp.max"}}}
+                  </div>
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">HEAT</span>
+                    {{{compact-stat-edit "cci cci-heat" "system.heat.value" "system.heat.max"}}}
+                  </div>
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">STRUCTURE</span>
+                    {{{compact-stat-edit "cci cci-structure" "system.structure.value" "system.structure.max"}}}
+                  </div>
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">STRESS</span>
+                    {{{compact-stat-edit "cci cci-reactor" "system.stress.value" "system.stress.max"}}}
+                  </div>
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">REPAIRS</span>
+                    {{{compact-stat-edit "cci cci-repair" "system.repairs.value" "system.repairs.max"}}}
+                  </div>
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">O.SHIELD</span>
+                    {{{compact-stat-edit "mdi mdi-shield-star-outline" "system.overshield.value" ""}}}
+                  </div>
                 </div>
               </div>
-            {{/if}}
+
+              <div class="card clipped mech-stats-subsection">
+                <span class="lancer-header lancer-primary submajor">{{
+                    localize "lancer.mech-sheet.sections.defense"
+                  }}</span>
+                <div class="wraprow hextuple mech-stat-row">
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">EVASION</span>
+                    {{{compact-stat-view "cci cci-evasion" "system.evasion"}}}
+                  </div>
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">ARMOR</span>
+                    {{{compact-stat-view "mdi mdi-shield-outline" "system.armor"}}}
+                  </div>
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">E-DEF</span>
+                    {{{compact-stat-view "cci cci-edef" "system.edef"}}}
+                  </div>
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">SAVE</span>
+                    {{{compact-stat-view "cci cci-save" "system.save"}}}
+                  </div>
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">SPEED</span>
+                    {{{compact-stat-view "mdi mdi-arrow-right-bold-hexagon-outline" "system.speed"}}}
+                  </div>
+                  <div class="mech-stat-chip">
+                    <span class="mech-stat-label">SENSORS</span>
+                    {{{compact-stat-view "cci cci-sensor" "system.sensor_range"}}}
+                  </div>
+                  <div class="mech-stat-chip mech-stat-chip--size">
+                    <span class="mech-stat-label">SIZE</span>
+                    {{#if (eq system.size 0.5)}}
+                      <i class="cci cci-size-half size-icon theme--main"></i>
+                    {{else}}
+                      <i class="cci cci-size-{{system.size}} size-icon theme--main"></i>
+                    {{/if}}
+                  </div>
+                </div>
+              </div>
+
+              <div class="card clipped mech-stats-subsection">
+                <span class="lancer-header lancer-primary submajor">{{
+                    localize "lancer.mech-sheet.sections.offense"
+                  }}</span>
+                <div class="wraprow triple mech-stat-row mech-stat-row--action">
+                  <div class="mech-stat-chip mech-stat-chip--action">
+                    <span class="mech-stat-label">TECH ATK</span>
+                    {{{tech-flow-card "TECH ATK" "cci cci-tech-full" "system.tech_attack"}}}
+                  </div>
+                  <div class="mech-stat-chip mech-stat-chip--action">
+                    <span class="mech-stat-label">BURN</span>
+                    {{{stat-edit-rollable-card "BURN" "cci cci-burn" "system.burn"}}}
+                  </div>
+                  <div class="mech-stat-chip mech-stat-chip--action">
+                    <span class="mech-stat-label">GRIT</span>
+                    {{{stat-rollable-card "GRIT" "cci cci-armor" "system.grit"}}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="mech-stat-section" data-mech-section="systems">
+            <div class="lancer-header lancer-primary sheet-section-header sticky">
+              <i
+                class="mdi mdi-unfold-less-horizontal collapse-trigger collapse-icon"
+                data-collapse-id="mech-stats-systems"
+              ></i>
+              <span class="major">{{localize "lancer.mech-sheet.sections.systems"}}</span>
+            </div>
+            <div class="collapse mech-systems-panel" data-collapse-id="mech-stats-systems">
+              <div class="mech-systems-toolbar flexrow">
+                {{{overcharge-button actor "system.overcharge"}}}
+                <div class="mech-system-control card clipped">
+                  <span class="mech-stat-label">{{localize "lancer.mech-sheet.core.label"}}</span>
+                  <div class="core-power-stat-container">
+                    <input
+                      name="system.core_energy"
+                      class="core-power-toggle"
+                      type="checkbox"
+                      data-dtype="Boolean"
+                      {{checked system.core_energy}}
+                    />
+                  </div>
+                </div>
+                <div class="mech-system-control mech-hase-toolbar card clipped">
+                  <span class="mech-stat-label">HASE</span>
+                  <div class="mech-hase-row flexrow">
+                    {{{stat-rollable-card "HUL" "" "system.hull"}}}
+                    {{{stat-rollable-card "AGI" "" "system.agi"}}}
+                    {{{stat-rollable-card "SYS" "" "system.sys"}}}
+                    {{{stat-rollable-card "ENG" "" "system.eng"}}}
+                  </div>
+                </div>
+              </div>
+
+              <div class="pilot-frame-wrapper flexrow">
+                <div class="card">
+                  <span class="lancer-header lancer-primary submajor clipped-top">
+                    {{localize "lancer.mech-sheet.macros.label"}}
+                  </span>
+                  <div class="lancer-flow-button-grid">
+                    {{{flow-button "STABILIZE" "Stabilize"}}}
+                    {{{flow-button "FULL REPAIR" "FullRepair"}}}
+                    <div class="flow-button-sep"></div>
+                    {{{flow-button "STRUCTURE" "Structure"}}}
+                    {{{flow-button "OVERHEAT" "Overheat"}}}
+                  </div>
+                </div>
+                {{#if (is-combatant actor)}}
+                  <div class="card mech-combat-actions">
+                    <span class="lancer-header lancer-primary submajor clipped-top">
+                      {{localize "lancer.mech-sheet.actions.label"}}
+                    </span>
+                    <div class="lancer-flow-button-grid">
+                      {{{action-button "Protocol" "system.action_tracker.protocol" "protocol"}}}
+                      {{{action-button "Movement" "system.action_tracker.move" "move"}}}
+                      {{{action-button "Full Action" "system.action_tracker.full" "full"}}}
+                      {{{action-button "Quick Action" "system.action_tracker.quick" "quick"}}}
+                      {{{action-button "Reaction" "system.action_tracker.reaction" "reaction"}}}
+                    </div>
+                  </div>
+                {{/if}}
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="mech-stats-sidebar flexcol">
+          {{{pilot-slot "system.pilot" value=pilot}}}
+          <div class="inventory">
+            <button class="lancer-button" type="button">{{localize "lancer.mech-sheet.inventory.label"}}</button>
           </div>
-        </div>
-      </section>
-    </div>
-
-    <div class="tab loadout {{tabs.primary.loadout.cssClass}}" data-group="primary" data-tab="loadout">
-      {{{mech-frame "system.loadout.frame.value" system.core_energy}}}
-      <div class="card clipped">
-        <span class="lancer-header lancer-primary submajor">ATTACK UTILITIES</span>
-        <div class="lancer-flow-button-grid">
-          {{{flow-button "MELEE/RANGED" "BasicAttack"}}}
-          {{{flow-button "DAMAGE" "Damage"}}}
-          {{{flow-button "TECH" "TechAttack"}}}
-        </div>
+        </aside>
       </div>
-      <div class="card">
-        <div class="lancer-header lancer-primary major">
-          <span>
-            {{{localize "lancer.mech-sheet.system.label"}}}
-          </span>
-          <span class="mech-sp-counter">
-            <i class="cci cci-system-point i--4"></i>
-            {{system.loadout.sp.value}} / {{system.loadout.sp.max}}
-            {{localize "lancer.mech-sheet.system.sp-used"}}
-          </span>
-        </div>
-        <div class="loadout-editor-mount" data-loadout-editor-mount></div>
-        {{{mech-loadout}}}
-      </div>
-    </div>
-
-    <div class="tab talents {{tabs.primary.talents.cssClass}}" data-group="primary" data-tab="talents">
-      {{!-- Talents --}}
-      {{#if system.pilot.value}}
-        <div class="card clipped">
-          <h2 class="lancer-header lancer-primary major clipped">
-            {{localize "lancer.pilot-sheet.abilities.talents"}}
-          </h2>
-          {{#each system.pilot.value.itemTypes.talent as |talent index|}}
-            {{{item-preview (concat "system.pilot.value.itemTypes.talent." index) null}}}
-          {{/each}}
-        </div>
-      {{/if}}
-    </div>
-
-    <div class="tab effects {{tabs.primary.effects.cssClass}}" data-group="primary" data-tab="effects">
-      {{{effect-categories-view actor effect_categories}}}
-    </div>
-  </section>
-</section>
