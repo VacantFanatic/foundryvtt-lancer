@@ -1,0 +1,38 @@
+# Close completed UX Roadmap 2026 tracking issues (shipped in PRs #92–#102).
+#
+# Run manually after release PRs merge. Uses GITHUB_TOKEN (issues: write).
+# Optional: set UX_ROADMAP_GH_TOKEN if the default token lacks issue permissions.
+name: UX Roadmap close completed issues
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Dry run (list issues only, do not close)
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  close-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Close completed UX roadmap issues
+        env:
+          GH_TOKEN: ${{ secrets.UX_ROADMAP_GH_TOKEN || github.token }}
+        run: |
+          FLAGS=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            FLAGS="--dry-run"
+          fi
+          node scripts/ux-roadmap/close-completed-issues.mjs $FLAGS
