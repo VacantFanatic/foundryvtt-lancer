@@ -567,7 +567,7 @@
         "hint": "When enabled, the expanded/collapsed state of the Advanced section in the attack Acc/Diff HUD is remembered per weapon."
       },
       "advanced": "Advanced",
-      "showAdvanced": "Show plugins, templates, and per-target modifiers",
+      "showAdvanced": "Show advanced options",
       "hideAdvanced": "Hide advanced options"
     },
     "actionTracker": {
@@ -647,6 +647,7 @@
         "prone": "Prone (+1)",
         "stunned": "Stunned (EVA=5)",
         "lock-on": "Lock On (+1)",
+        "manual-adjust": "Manual Adjust",
         "add-global-accuracy": "Add global accuracy",
         "global-accuracy-difficulty": "Global Accuracy/Difficulty Adjustment",
         "add-global-difficulty": "Add global difficulty",
