@@ -74,6 +74,7 @@ import {
 } from "./refs";
 import { mechLoadout, pilotSlot, frameView } from "./loadout";
 import { mechCombatDock } from "./mech-combat-dock";
+import { mechCombatPilotRow } from "./mech-pilot-row";
 import { mechCombatSystems, mechCombatWeapons } from "./mech-combat-gear";
 import {
   item_edit_arrayed_actions,
@@ -360,6 +361,7 @@ export function registerHandlebarsHelpers() {
   Handlebars.registerHelper("mech-loadout", mechLoadout);
   Handlebars.registerHelper("mech-frame", frameView);
   Handlebars.registerHelper("mech-combat-dock", mechCombatDock);
+  Handlebars.registerHelper("mech-combat-pilot-row", mechCombatPilotRow);
   Handlebars.registerHelper("mech-combat-weapons", mechCombatWeapons);
   Handlebars.registerHelper("mech-combat-systems", mechCombatSystems);
 

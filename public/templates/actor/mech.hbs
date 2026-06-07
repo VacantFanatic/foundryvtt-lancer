@@ -107,19 +107,7 @@
         </div>
       </section>
 
-      <div class="mech-combat-pilot-row flexrow wraprow">
-        {{{pilot-slot "system.pilot" value=pilot}}}
-        {{{stat-rollable-card "GRIT" "cci cci-armor" "system.grit"}}}
-        <div class="wraprow double hase card clipped">
-          {{{stat-rollable-card "HUL" "" "system.hull"}}}
-          {{{stat-rollable-card "AGI" "" "system.agi"}}}
-          {{{stat-rollable-card "SYS" "" "system.sys"}}}
-          {{{stat-rollable-card "ENG" "" "system.eng"}}}
-        </div>
-        <div class="inventory card clipped">
-          <button class="lancer-button" type="button">{{localize "lancer.mech-sheet.inventory.label"}}</button>
-        </div>
-      </div>
+      {{{mech-combat-pilot-row pilot=pilot}}}
     </div>
 
     <div class="tab gear {{tabs.primary.gear.cssClass}}" data-group="primary" data-tab="gear" data-gear-mode="play">

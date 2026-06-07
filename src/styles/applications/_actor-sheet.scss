@@ -393,21 +393,79 @@
   }
 
   .mech-combat-pilot-row {
-    gap: 0.5rem;
-    align-items: stretch;
+    gap: 0.35rem;
+    align-items: center;
     margin-bottom: 0.75rem;
+    flex-wrap: wrap;
 
-    .hase {
-      flex: 1 1 12rem;
+    .pilot-summary {
+      flex: 0 0 3rem;
+      width: 3rem;
+      height: 3rem;
       margin: 0;
+      min-height: 0;
+      padding: 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .license-level {
+        font-size: 0.85rem;
+      }
+    }
+
+    .mech-pilot-roll-chips {
+      flex: 1 1 auto;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .mech-pilot-roll-chip {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.45rem;
+      margin: 0;
+      min-width: 4.75rem;
+      flex: 0 1 auto;
+    }
+
+    .mech-pilot-roll-chip-label {
+      font-size: 0.65rem;
+      opacity: 0.85;
+      min-width: 2rem;
+      text-transform: uppercase;
+    }
+
+    .mech-pilot-roll-chip-value {
+      font-size: 0.85rem;
+      min-width: 1rem;
+      text-align: center;
+    }
+
+    .mech-pilot-roll-chip-actions {
+      gap: 0.15rem;
+      margin-left: auto;
+      align-items: center;
+
+      .lancer-button {
+        padding: 0.1rem 0.2rem;
+      }
     }
 
     .inventory {
       display: flex;
       align-items: center;
       justify-content: center;
-      min-width: 6rem;
-      padding: 0.35rem;
+      flex: 0 0 auto;
+      margin: 0;
+      padding: 0.2rem 0.5rem;
     }
   }
 
