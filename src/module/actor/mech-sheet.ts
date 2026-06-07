@@ -6,7 +6,7 @@ import type { ResolvedDropData } from "../helpers/dragdrop";
 import { EntryType, fittingsForMount, MountType } from "../enums";
 import type { SourceData } from "../source-template";
 import { LANCER } from "../config";
-import { mountLoadoutEditor } from "../apps/loadout/mount";
+import { countActiveEffects } from "../helpers/mech-sheet-ux-core";
 import { unmount } from "svelte";
 
 import ContextMenu = foundry.applications.ux.ContextMenu;
@@ -32,7 +32,7 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
       tabs: [
         { id: "combat", group: "primary" },
         { id: "gear", group: "primary" },
-        { id: "talents", group: "primary" },
+        { id: "abilities", group: "primary" },
         { id: "effects", group: "primary" },
       ],
     },
@@ -367,6 +367,7 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
     (data as Record<string, unknown>).pilot = this.actor.system.pilot?.value;
     (data as Record<string, unknown>).is_active =
       this.actor.system.pilot?.value?.system.active_mech?.value == this.actor;
+    (data as Record<string, unknown>).effect_count = countActiveEffects(data.effect_categories);
     return data;
   }
 }

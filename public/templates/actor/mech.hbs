@@ -40,17 +40,17 @@
         data-tab="gear"
       >{{localize "lancer.mech-sheet.tabs.gear"}}</a>
       <a
-        class="item lancer-tab medium {{tabs.primary.talents.cssClass}}"
+        class="item lancer-tab medium {{tabs.primary.abilities.cssClass}}"
         data-action="tab"
         data-group="primary"
-        data-tab="talents"
-      >{{localize "lancer.mech-sheet.tabs.talents"}}</a>
+        data-tab="abilities"
+      >{{localize "lancer.mech-sheet.tabs.abilities"}}</a>
       <a
         class="item lancer-tab medium {{tabs.primary.effects.cssClass}}"
         data-action="tab"
         data-group="primary"
         data-tab="effects"
-      >{{localize "lancer.common-sheet.tabs.effects"}}</a>
+      >{{localize "lancer.mech-sheet.tabs.effects"}}{{#if effect_count}} ({{effect_count}}){{/if}}</a>
     </nav>
   </div>
 
@@ -193,8 +193,8 @@
       </div>
     </div>
 
-    <div class="tab talents {{tabs.primary.talents.cssClass}}" data-group="primary" data-tab="talents">
-      {{!-- Talents --}}
+    <div class="tab abilities {{tabs.primary.abilities.cssClass}}" data-group="primary" data-tab="abilities">
+      {{{mech-frame "system.loadout.frame.value" system.core_energy}}}
       {{#if system.pilot.value}}
         <div class="card clipped">
           <h2 class="lancer-header lancer-primary major clipped">
@@ -203,6 +203,10 @@
           {{#each system.pilot.value.itemTypes.talent as |talent index|}}
             {{{item-preview (concat "system.pilot.value.itemTypes.talent." index) null}}}
           {{/each}}
+        </div>
+      {{else}}
+        <div class="card clipped mech-abilities-empty">
+          <p class="note">{{localize "lancer.mech-sheet.abilities.no-pilot"}}</p>
         </div>
       {{/if}}
     </div>

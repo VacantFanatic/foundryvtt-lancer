@@ -1,3 +1,11 @@
+# 3.1.1 (2026-06-07)
+
+## Added
+
+- **Abilities tab** merges frame details with pilot talents (replaces the Talents tab).
+- **Effects tab badge** shows active effect count when non-zero.
+- **Empty state** on the Abilities tab when no pilot is assigned.
+
 # 3.1.0 (2026-06-07)
 
 ## Added

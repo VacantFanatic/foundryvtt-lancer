@@ -113,7 +113,11 @@
       "tabs": {
         "combat": "<COMBAT//PRIMARY>",
         "gear": "<MECH//GEAR>",
-        "talents": "<PILOT//TALENTS>"
+        "abilities": "<ABILITIES//ALL>",
+        "effects": "<EFFECTS//ACTIVE>"
+      },
+      "abilities": {
+        "no-pilot": "No pilot is assigned to this mech. Assign a pilot on the Combat tab to view talents and frame bonuses."
       },
       "gear-mode": {
         "play": "PLAY VIEW",
