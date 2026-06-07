@@ -127,34 +127,29 @@
               <button class="lancer-button" type="button">{{localize "lancer.mech-sheet.inventory.label"}}</button>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div class="pilot-frame-wrapper flexrow">
-            <div class="card">
-              <span class="lancer-header lancer-primary submajor clipped-top">
-                {{localize "lancer.mech-sheet.macros.label"}}
-              </span>
-              <div class="lancer-flow-button-grid">
-                {{{flow-button "STABILIZE" "Stabilize"}}}
-                {{{flow-button "FULL REPAIR" "FullRepair"}}}
-                <div class="flow-button-sep"></div>
-                {{{flow-button "STRUCTURE" "Structure"}}}
-                {{{flow-button "OVERHEAT" "Overheat"}}}
-              </div>
+      {{{mech-combat-weapons}}}
+      {{{mech-combat-systems}}}
+
+      <section class="mech-stat-section" data-mech-section="macros">
+        <div class="lancer-header lancer-primary sheet-section-header sticky">
+          <i
+            class="mdi mdi-unfold-more-horizontal collapse-trigger collapse-icon"
+            data-collapse-id="mech-stats-macros"
+          ></i>
+          <span class="major">{{localize "lancer.mech-sheet.macros.label"}}</span>
+        </div>
+        <div class="collapse collapsed pilot-frame-wrapper flexrow" data-collapse-id="mech-stats-macros">
+          <div class="card">
+            <div class="lancer-flow-button-grid">
+              {{{flow-button "STABILIZE" "Stabilize"}}}
+              {{{flow-button "FULL REPAIR" "FullRepair"}}}
+              <div class="flow-button-sep"></div>
+              {{{flow-button "STRUCTURE" "Structure"}}}
+              {{{flow-button "OVERHEAT" "Overheat"}}}
             </div>
-            {{#if (is-combatant actor)}}
-              <div class="card mech-combat-actions">
-                <span class="lancer-header lancer-primary submajor clipped-top">
-                  {{localize "lancer.mech-sheet.actions.label"}}
-                </span>
-                <div class="lancer-flow-button-grid">
-                  {{{action-button "Protocol" "system.action_tracker.protocol" "protocol"}}}
-                  {{{action-button "Movement" "system.action_tracker.move" "move"}}}
-                  {{{action-button "Full Action" "system.action_tracker.full" "full"}}}
-                  {{{action-button "Quick Action" "system.action_tracker.quick" "quick"}}}
-                  {{{action-button "Reaction" "system.action_tracker.reaction" "reaction"}}}
-                </div>
-              </div>
-            {{/if}}
           </div>
         </div>
       </section>

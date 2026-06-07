@@ -135,6 +135,12 @@
       "combat-dock": {
         "label": "Combat quick controls"
       },
+      "combat-gear": {
+        "weapons": "WEAPONS",
+        "systems": "SYSTEMS",
+        "no-weapons": "No weapons mounted.",
+        "no-systems": "No systems mounted."
+      },
       "inventory": {
         "label": "View Inventory"
       },

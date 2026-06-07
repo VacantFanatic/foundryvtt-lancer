@@ -43,4 +43,60 @@ test.describe("Mech sheet UX @regression", () => {
     }, mechId);
     expect(dockOnTalentsTab).toBe(true);
   });
+
+  test("combat gear cards and collapsed macros on stats tab", async ({ page }) => {
+    const { mechId } = await seedRegressionWorld(page);
+    await page.evaluate(async id => {
+      const actor = game.actors.get(id);
+      if (!actor) throw new Error("mech missing");
+      const weapon = await Item.create(
+        {
+          name: "E2E Test Rifle",
+          type: "mech_weapon",
+          img: `systems/${game.system.id}/assets/icons/mech_weapon.svg`,
+          system: {
+            size: "Main",
+            sp: 0,
+            profiles: [
+              {
+                name: "Standard",
+                type: "Rifle",
+                range: [{ type: "Range", val: 10 }],
+                damage: [{ type: "Kinetic", val: "1d6" }],
+                actions: [],
+                tags: [],
+                effect: "",
+                on_attack: "",
+                on_hit: "",
+                on_crit: "",
+              },
+            ],
+            selected_profile_index: 0,
+            tags: [],
+            actions: [],
+          },
+        },
+        { parent: actor }
+      );
+      const mounts = foundry.utils.deepClone(actor.system.loadout.weapon_mounts);
+      mounts[0].slots[0].weapon = weapon.id;
+      await actor.update({ "system.loadout.weapon_mounts": mounts });
+      await actor.sheet.render(true);
+      actor.sheet.changeTab("stats", "primary", { force: true });
+    }, mechId);
+
+    const result = await page.evaluate(async id => {
+      const actor = game.actors.get(id);
+      if (!actor?.sheet) return null;
+      const root = actor.sheet.element as HTMLElement;
+      const statsTab = root.querySelector('.tab.stats[data-tab="stats"]');
+      return {
+        hasWeaponCard: !!statsTab?.querySelector(".mech-combat-gear-card .roll-attack"),
+        macrosCollapsed: !!statsTab?.querySelector('[data-collapse-id="mech-stats-macros"].collapsed'),
+      };
+    }, mechId);
+
+    expect(result?.hasWeaponCard).toBe(true);
+    expect(result?.macrosCollapsed).toBe(true);
+  });
 });

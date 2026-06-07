@@ -298,6 +298,38 @@
     }
   }
 
+  .mech-combat-gear-section {
+    margin-bottom: 0.75rem;
+  }
+
+  .mech-combat-gear-grid {
+    gap: 0.35rem;
+    align-items: stretch;
+  }
+
+  .mech-combat-gear-card {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.45rem;
+    min-width: 8rem;
+    flex: 1 1 10rem;
+  }
+
+  .mech-combat-gear-name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mech-combat-gear-empty {
+    margin: 0.25rem 0 0.75rem;
+    opacity: 0.75;
+    font-size: 0.85rem;
+  }
+
   .sheet-section-header.sticky {
     position: sticky;
     top: 0;

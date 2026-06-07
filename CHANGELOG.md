@@ -1,3 +1,13 @@
+# 3.0.2 (2026-06-07)
+
+## Added
+
+- **Compact weapon and system cards** on the mech Stats tab with FIRE and USE controls for in-combat gear access.
+
+## Changed
+
+- **Macros section** on the mech Stats tab is **collapsed by default** to reduce scroll during play.
+
 # 3.0.1 (2026-06-07)
 
 ## Added
