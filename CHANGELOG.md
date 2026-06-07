@@ -1,3 +1,13 @@
+# 3.0.1 (2026-06-07)
+
+## Added
+
+- **Persistent combat dock** on the mech sheet — HP, Heat, Structure, Stress, Overcharge, Core, action tracker, and attack utilities stay visible across all tabs.
+
+## Changed
+
+- **Attack utilities** (Melee/Ranged, Damage, Tech) moved from the Loadout tab into the combat dock.
+
 # 3.0.0 (2026-06-07)
 
 ## Added

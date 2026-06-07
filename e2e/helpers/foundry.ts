@@ -98,8 +98,9 @@ export async function completeFoundrySetup(page: Page, worldId = FOUNDRY_WORLD_I
   }
 
   if (page.url().includes("/setup")) {
-    await page.locator(`li.world[data-package-id="${worldId}"]`).waitFor({ state: "visible", timeout: 120_000 });
+    await dismissFoundryLaunchDialogs(page);
     await dismissFoundryTours(page);
+    await page.locator(`li.world[data-package-id="${worldId}"]`).waitFor({ state: "visible", timeout: 120_000 });
   }
 }
 

@@ -2,11 +2,12 @@
   "title": "Lancer Dev Test",
   "system": "lancer",
   "id": "lancer-dev-test",
+  "coreVersion": "14.363",
   "compatibility": {
     "minimum": "14",
     "verified": "14"
   },
-  "systemVersion": "2.13.0",
+  "systemVersion": "3.0.1",
   "description": "Minimal world for Lancer Playwright E2E regression tests.",
   "flags": {}
 }

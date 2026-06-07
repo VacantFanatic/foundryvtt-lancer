@@ -221,6 +221,83 @@
     margin-bottom: 0.75rem;
   }
 
+  .mech-combat-dock {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin: 0.35rem 0 0.5rem;
+    padding: 0.35rem 0.5rem;
+    background-color: var(--darken-2, #1a1a1a);
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
+
+  .mech-combat-dock-stats {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: stretch;
+  }
+
+  .mech-combat-dock-stat {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.45rem;
+    min-width: 5.5rem;
+    flex: 1 1 auto;
+  }
+
+  .mech-combat-dock-stat-label {
+    font-size: 0.65rem;
+    opacity: 0.85;
+    min-width: 2.75rem;
+  }
+
+  .mech-combat-dock-stat-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1rem;
+    font-size: 0.8rem;
+
+    input.lancer-stat {
+      width: 2.25rem;
+      min-width: 2rem;
+      padding: 0 0.15rem;
+      text-align: center;
+    }
+  }
+
+  .mech-combat-dock-controls {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+  }
+
+  .mech-combat-dock-overcharge,
+  .mech-combat-dock-core {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.35rem;
+  }
+
+  .mech-combat-dock-actions,
+  .mech-combat-dock-attacks {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+
+    .lancer-action-button,
+    .lancer-flow-button {
+      min-width: 2.25rem;
+      padding: 0.2rem 0.4rem;
+      font-size: 0.7rem;
+    }
+  }
+
   .sheet-section-header.sticky {
     position: sticky;
     top: 0;
