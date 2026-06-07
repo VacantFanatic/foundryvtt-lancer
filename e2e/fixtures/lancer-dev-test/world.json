@@ -7,7 +7,7 @@
     "minimum": "14",
     "verified": "14"
   },
-  "systemVersion": "3.1.0",
+  "systemVersion": "3.1.1",
   "description": "Minimal world for Lancer Playwright E2E regression tests.",
   "flags": {}
 }

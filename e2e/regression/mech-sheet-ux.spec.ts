@@ -38,7 +38,7 @@ test.describe("Mech sheet UX @regression", () => {
     const dockOnTalentsTab = await page.evaluate(async id => {
       const actor = game.actors.get(id);
       if (!actor?.sheet) return false;
-      actor.sheet.changeTab("talents", "primary", { force: true });
+      actor.sheet.changeTab("abilities", "primary", { force: true });
       const root = actor.sheet.element as HTMLElement;
       return !!root.querySelector(".mech-combat-dock");
     }, mechId);
@@ -132,5 +132,27 @@ test.describe("Mech sheet UX @regression", () => {
     }, mechId);
 
     expect(edited).toBe("edit");
+  });
+
+  test("abilities tab shows empty state without pilot and effects tab shows count badge", async ({ page }) => {
+    const { mechId } = await seedRegressionWorld(page);
+    await openActorSheet(page, mechId);
+
+    const emptyState = await page.evaluate(async id => {
+      const actor = game.actors.get(id);
+      if (!actor?.sheet) return false;
+      actor.sheet.changeTab("abilities", "primary", { force: true });
+      const root = actor.sheet.element as HTMLElement;
+      return !!root.querySelector(".mech-abilities-empty");
+    }, mechId);
+    expect(emptyState).toBe(true);
+
+    const effectsLabel = await page.evaluate(async id => {
+      const actor = game.actors.get(id);
+      if (!actor?.sheet) return "";
+      const nav = actor.sheet.element?.querySelector('a[data-tab="effects"]');
+      return nav?.textContent?.trim() ?? "";
+    }, mechId);
+    expect(effectsLabel).toContain("<EFFECTS//ACTIVE>");
   });
 });
