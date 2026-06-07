@@ -111,9 +111,13 @@
         "inactive-warning": "Warning: Inactive Mech - Pilot bonuses not tracked"
       },
       "tabs": {
-        "stats": "<MECH//STATS>",
-        "loadout": "<MECH//LOADOUT>",
+        "combat": "<COMBAT//PRIMARY>",
+        "gear": "<MECH//GEAR>",
         "talents": "<PILOT//TALENTS>"
+      },
+      "gear-mode": {
+        "play": "PLAY VIEW",
+        "edit": "EDIT LOADOUT"
       },
       "core": {
         "label": "CORE"

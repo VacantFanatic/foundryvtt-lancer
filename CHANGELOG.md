@@ -1,3 +1,13 @@
+# 3.1.0 (2026-06-07)
+
+## Added
+
+- **Gear tab play/edit toggle** — Play View shows compact gear cards; Edit Loadout exposes the full drag-and-drop editor.
+
+## Changed
+
+- Mech sheet tabs renamed for play intent: **COMBAT** (default), **GEAR**, **PILOT//TALENTS**, **EFFECTS//ACTIVE** (tab ids: `combat`, `gear`, `talents`, `effects`).
+
 # 3.0.2 (2026-06-07)
 
 ## Added

@@ -330,6 +330,24 @@
     font-size: 0.85rem;
   }
 
+  .gear-mode-toggle {
+    gap: 0.35rem;
+    padding: 0.35rem;
+    margin: 0.5rem 0;
+
+    .gear-mode-button.active {
+      background-color: var(--primary-highlight, fuchsia);
+    }
+  }
+
+  .tab.gear[data-gear-mode="play"] .gear-edit-panel {
+    display: none;
+  }
+
+  .tab.gear[data-gear-mode="edit"] .gear-play-panel {
+    display: none;
+  }
+
   .sheet-section-header.sticky {
     position: sticky;
     top: 0;

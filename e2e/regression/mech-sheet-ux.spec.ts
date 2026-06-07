@@ -22,9 +22,10 @@ test.describe("Mech sheet UX @regression", () => {
     const loadoutAttackUtilities = await page.evaluate(async id => {
       const actor = game.actors.get(id);
       if (!actor?.sheet) return { onLoadout: true, onDock: false };
-      actor.sheet.changeTab("loadout", "primary", { force: true });
+      actor.sheet.changeTab("gear", "primary", { force: true });
       const root = actor.sheet.element as HTMLElement;
-      const loadoutTab = root.querySelector('.tab.loadout[data-tab="loadout"]');
+      const gearTab = root.querySelector('.tab.gear[data-tab="gear"]');
+      const loadoutTab = root.querySelector('.tab.gear[data-tab="gear"] .gear-edit-panel');
       const dock = root.querySelector(".mech-combat-dock");
       const loadoutButtons = loadoutTab?.querySelectorAll('[data-flow-type="BasicAttack"]') ?? [];
       const dockButtons = dock?.querySelectorAll('[data-flow-type="BasicAttack"]') ?? [];
@@ -82,14 +83,14 @@ test.describe("Mech sheet UX @regression", () => {
       mounts[0].slots[0].weapon = weapon.id;
       await actor.update({ "system.loadout.weapon_mounts": mounts });
       await actor.sheet.render(true);
-      actor.sheet.changeTab("stats", "primary", { force: true });
+      actor.sheet.changeTab("combat", "primary", { force: true });
     }, mechId);
 
     const result = await page.evaluate(async id => {
       const actor = game.actors.get(id);
       if (!actor?.sheet) return null;
       const root = actor.sheet.element as HTMLElement;
-      const statsTab = root.querySelector('.tab.stats[data-tab="stats"]');
+      const statsTab = root.querySelector('.tab.combat[data-tab="combat"]');
       return {
         hasWeaponCard: !!statsTab?.querySelector(".mech-combat-gear-card .roll-attack"),
         macrosCollapsed: !!statsTab?.querySelector('[data-collapse-id="mech-stats-macros"].collapsed'),
@@ -98,5 +99,38 @@ test.describe("Mech sheet UX @regression", () => {
 
     expect(result?.hasWeaponCard).toBe(true);
     expect(result?.macrosCollapsed).toBe(true);
+  });
+
+  test("gear tab defaults to play view and can switch to edit loadout", async ({ page }) => {
+    const { mechId } = await seedRegressionWorld(page);
+    await openActorSheet(page, mechId);
+
+    const initial = await page.evaluate(async id => {
+      const actor = game.actors.get(id);
+      if (!actor?.sheet) return null;
+      actor.sheet.changeTab("gear", "primary", { force: true });
+      const gearTab = actor.sheet.element?.querySelector('.tab.gear[data-tab="gear"]') as HTMLElement | null;
+      return {
+        mode: gearTab?.getAttribute("data-gear-mode"),
+        playVisible: gearTab?.querySelector(".gear-play-panel")?.checkVisibility?.() ?? true,
+        editHidden: gearTab?.querySelector(".gear-edit-panel")?.checkVisibility?.() === false,
+      };
+    }, mechId);
+
+    expect(initial?.mode).toBe("play");
+
+    await page.evaluate(async id => {
+      const actor = game.actors.get(id);
+      const gearTab = actor?.sheet?.element?.querySelector('.tab.gear[data-tab="gear"]');
+      gearTab?.querySelector<HTMLButtonElement>('.gear-mode-button[data-gear-mode="edit"]')?.click();
+    }, mechId);
+
+    const edited = await page.evaluate(async id => {
+      const actor = game.actors.get(id);
+      const gearTab = actor?.sheet?.element?.querySelector('.tab.gear[data-tab="gear"]') as HTMLElement | null;
+      return gearTab?.getAttribute("data-gear-mode");
+    }, mechId);
+
+    expect(edited).toBe("edit");
   });
 });

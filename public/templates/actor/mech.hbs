@@ -28,17 +28,17 @@
     {{!-- Sheet Tab Navigation --}}
     <nav class="tabs lancer-tabs" data-group="primary">
       <a
-        class="item lancer-tab medium {{tabs.primary.stats.cssClass}}"
+        class="item lancer-tab medium {{tabs.primary.combat.cssClass}}"
         data-action="tab"
         data-group="primary"
-        data-tab="stats"
-      >{{localize "lancer.mech-sheet.tabs.stats"}}</a>
+        data-tab="combat"
+      >{{localize "lancer.mech-sheet.tabs.combat"}}</a>
       <a
-        class="item lancer-tab medium {{tabs.primary.loadout.cssClass}}"
+        class="item lancer-tab medium {{tabs.primary.gear.cssClass}}"
         data-action="tab"
         data-group="primary"
-        data-tab="loadout"
-      >{{localize "lancer.mech-sheet.tabs.loadout"}}</a>
+        data-tab="gear"
+      >{{localize "lancer.mech-sheet.tabs.gear"}}</a>
       <a
         class="item lancer-tab medium {{tabs.primary.talents.cssClass}}"
         data-action="tab"
@@ -56,7 +56,7 @@
 
   {{!-- Sheet Body --}}
   <section class="sheet-body scroll-body">
-    <div class="tab stats {{tabs.primary.stats.cssClass}}" data-group="primary" data-tab="stats">
+    <div class="tab combat {{tabs.primary.combat.cssClass}}" data-group="primary" data-tab="combat">
       <section class="mech-stat-section" data-mech-section="combat">
         <div class="lancer-header lancer-primary sheet-section-header sticky">
           <i
@@ -155,21 +155,41 @@
       </section>
     </div>
 
-    <div class="tab loadout {{tabs.primary.loadout.cssClass}}" data-group="primary" data-tab="loadout">
+    <div class="tab gear {{tabs.primary.gear.cssClass}}" data-group="primary" data-tab="gear" data-gear-mode="play">
       {{{mech-frame "system.loadout.frame.value" system.core_energy}}}
-      <div class="card">
-        <div class="lancer-header lancer-primary major">
-          <span>
-            {{{localize "lancer.mech-sheet.system.label"}}}
-          </span>
-          <span class="mech-sp-counter">
-            <i class="cci cci-system-point i--4"></i>
-            {{system.loadout.sp.value}} / {{system.loadout.sp.max}}
-            {{localize "lancer.mech-sheet.system.sp-used"}}
-          </span>
+      <div class="gear-mode-toggle card clipped flexrow">
+        <button
+          type="button"
+          class="lancer-button gear-mode-button active"
+          data-gear-mode="play"
+        >
+          {{localize "lancer.mech-sheet.gear-mode.play"}}
+        </button>
+        <button
+          type="button"
+          class="lancer-button gear-mode-button"
+          data-gear-mode="edit"
+        >
+          {{localize "lancer.mech-sheet.gear-mode.edit"}}
+        </button>
+      </div>
+      <div class="gear-play-panel">
+        {{{mech-combat-weapons}}}
+        {{{mech-combat-systems}}}
+      </div>
+      <div class="gear-edit-panel">
+        <div class="card">
+          <div class="lancer-header lancer-primary major">
+            <span>{{localize "lancer.mech-sheet.system.label"}}</span>
+            <span class="mech-sp-counter">
+              <i class="cci cci-system-point i--4"></i>
+              {{system.loadout.sp.value}} / {{system.loadout.sp.max}}
+              {{localize "lancer.mech-sheet.system.sp-used"}}
+            </span>
+          </div>
+          <div class="loadout-editor-mount" data-loadout-editor-mount></div>
+          {{{mech-loadout}}}
         </div>
-        <div class="loadout-editor-mount" data-loadout-editor-mount></div>
-        {{{mech-loadout}}}
       </div>
     </div>
 
