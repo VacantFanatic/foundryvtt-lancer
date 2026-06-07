@@ -28,10 +28,10 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
 
   static override TABS = {
     primary: {
-      initial: "stats",
+      initial: "combat",
       tabs: [
-        { id: "stats", group: "primary" },
-        { id: "loadout", group: "primary" },
+        { id: "combat", group: "primary" },
+        { id: "gear", group: "primary" },
         { id: "talents", group: "primary" },
         { id: "effects", group: "primary" },
       ],
@@ -51,6 +51,7 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
     this._activateOverchargeControls($html);
     this._activateLoadoutControls($html);
     this._activateMountContextMenus($html);
+    this._activateGearModeToggle($html);
   }
 
   override activateListeners(html: HTMLElement): void {
@@ -167,6 +168,22 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
     if (this.isEditable && !is_new && drop.type === "Item" && drop.document.is_mech_system()) {
       this._onSortItem(event, drop.document.toObject());
     }
+  }
+
+  /**
+   * Toggle play vs edit mode on the Gear tab.
+   */
+  _activateGearModeToggle(html: JQuery<HTMLElement>) {
+    html.off("click.lancerGearMode");
+    html.on("click.lancerGearMode", ".gear-mode-button", ev => {
+      ev.preventDefault();
+      const mode = ev.currentTarget?.dataset?.gearMode;
+      if (!mode) return;
+      const tab = html.find('.tab.gear[data-tab="gear"]');
+      tab.attr("data-gear-mode", mode);
+      tab.find(".gear-mode-button").removeClass("active");
+      $(ev.currentTarget).addClass("active");
+    });
   }
 
   /**

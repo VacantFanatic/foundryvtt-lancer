@@ -41,7 +41,7 @@ test.describe("Sprint G features @regression", () => {
       const actor = game.actors.get(id);
       if (!actor) throw new Error("mech missing");
       await actor.sheet.render(true);
-      actor.sheet.changeTab("loadout", "primary", { force: true });
+      actor.sheet.changeTab("gear", "primary", { force: true });
     }, mechId);
 
     expect(await waitForSheetSelector(page, mechId, "[data-loadout-editor-mount] .loadout-editor")).toBe(true);
@@ -49,6 +49,9 @@ test.describe("Sprint G features @regression", () => {
     const controls = await page.evaluate(async id => {
       const actor = game.actors.get(id);
       if (!actor) throw new Error("mech missing");
+      actor.sheet.changeTab("gear", "primary", { force: true });
+      actor.sheet.element?.querySelector('.tab.gear[data-tab="gear"]')?.setAttribute("data-gear-mode", "edit");
+      await actor.sheet.render(false);
       const root = actor.sheet.element as HTMLElement;
       return {
         all: !!root.querySelector(".reset-all-weapon-mounts-button"),
