@@ -45,6 +45,33 @@ test.describe("Mech sheet UX @regression", () => {
     expect(dockOnTalentsTab).toBe(true);
   });
 
+  test("combat tab orders gear before stats and omits redundant systems panel", async ({ page }) => {
+    const { mechId } = await seedRegressionWorld(page);
+    await openActorSheet(page, mechId);
+
+    const layout = await page.evaluate(async id => {
+      const actor = game.actors.get(id);
+      if (!actor?.sheet) return null;
+      actor.sheet.changeTab("combat", "primary", { force: true });
+      const tab = actor.sheet.element?.querySelector('.tab.combat[data-tab="combat"]') as HTMLElement | null;
+      if (!tab) return null;
+      const sections = [...tab.querySelectorAll("[data-mech-section]")].map(el =>
+        el.getAttribute("data-mech-section")
+      );
+      const weaponsIndex = sections.indexOf("combat-weapons");
+      const combatIndex = sections.indexOf("combat");
+      return {
+        hasSystemsPanel: !!tab.querySelector('[data-mech-section="systems"]'),
+        gearBeforeCombat: weaponsIndex >= 0 && combatIndex > weaponsIndex,
+        sections,
+      };
+    }, mechId);
+
+    expect(layout?.hasSystemsPanel).toBe(false);
+    expect(layout?.gearBeforeCombat).toBe(true);
+    expect(layout?.sections?.at(-1)).toBe("combat");
+  });
+
   test("combat gear cards and collapsed macros on stats tab", async ({ page }) => {
     const { mechId } = await seedRegressionWorld(page);
     await page.evaluate(async id => {

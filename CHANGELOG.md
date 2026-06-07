@@ -1,3 +1,10 @@
+# 3.1.2 (2026-06-07)
+
+## Changed
+
+- **Combat tab layout** — Weapons, mounted systems, and macros moved to the top; full stat grid directly below. Removed the redundant Systems utilities panel (overcharge, core, and size already live in the combat dock). Pilot link, GRIT/HASE rolls, and inventory kept in a compact row at the bottom of the tab.
+- **Combat dock core toggle** — Core checkbox matches the full-size sheet control (30px) instead of rendering as a tiny native checkbox.
+
 # 3.1.1 (2026-06-07)
 
 ## Added

@@ -284,6 +284,50 @@
     padding: 0.2rem 0.35rem;
   }
 
+  .mech-combat-dock-core {
+    .core-power-stat-container {
+      justify-content: center;
+    }
+
+    input.core-power-toggle {
+      -webkit-appearance: none;
+      appearance: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
+      max-width: 30px;
+      flex: 0 0 auto;
+      margin: 0;
+      padding: 0;
+      cursor: pointer;
+      outline: 0;
+      border: none;
+      background: transparent;
+      font: normal normal normal 24px/1 "Material Design Icons";
+      -webkit-filter: none !important;
+      filter: none !important;
+
+      &::before {
+        display: block;
+        line-height: 1;
+      }
+
+      &:checked::before {
+        content: "\F0079";
+        color: var(--primary-color, #e67e22);
+      }
+
+      &:not(:checked)::before {
+        content: "\F007A";
+        color: grey;
+      }
+    }
+  }
+
   .mech-combat-dock-actions,
   .mech-combat-dock-attacks {
     flex-wrap: wrap;
@@ -346,6 +390,25 @@
 
   .tab.gear[data-gear-mode="edit"] .gear-play-panel {
     display: none;
+  }
+
+  .mech-combat-pilot-row {
+    gap: 0.5rem;
+    align-items: stretch;
+    margin-bottom: 0.75rem;
+
+    .hase {
+      flex: 1 1 12rem;
+      margin: 0;
+    }
+
+    .inventory {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 6rem;
+      padding: 0.35rem;
+    }
   }
 
   .mech-abilities-empty {

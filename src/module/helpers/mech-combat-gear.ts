@@ -64,16 +64,15 @@ export function mechCombatWeapons(options: HelperOptions): string {
   if (!actor?.is_mech()) return "";
 
   const cards = renderWeaponCards(actor, options);
-  if (!cards) {
-    return `<p class="mech-combat-gear-empty note">${game.i18n.localize("lancer.mech-sheet.combat-gear.no-weapons")}</p>`;
-  }
+  const body = cards
+    || `<p class="mech-combat-gear-empty note">${game.i18n.localize("lancer.mech-sheet.combat-gear.no-weapons")}</p>`;
 
   return `
     <section class="mech-combat-gear-section" data-mech-section="combat-weapons">
       <div class="lancer-header lancer-primary sheet-section-header">
         <span class="major">${game.i18n.localize("lancer.mech-sheet.combat-gear.weapons")}</span>
       </div>
-      <div class="mech-combat-gear-grid flexrow wraprow">${cards}</div>
+      <div class="mech-combat-gear-grid flexrow wraprow">${body}</div>
     </section>`;
 }
 
@@ -83,15 +82,14 @@ export function mechCombatSystems(options: HelperOptions): string {
   if (!actor?.is_mech()) return "";
 
   const cards = renderSystemCards(actor);
-  if (!cards) {
-    return `<p class="mech-combat-gear-empty note">${game.i18n.localize("lancer.mech-sheet.combat-gear.no-systems")}</p>`;
-  }
+  const body = cards
+    || `<p class="mech-combat-gear-empty note">${game.i18n.localize("lancer.mech-sheet.combat-gear.no-systems")}</p>`;
 
   return `
     <section class="mech-combat-gear-section" data-mech-section="combat-systems">
       <div class="lancer-header lancer-primary sheet-section-header">
         <span class="major">${game.i18n.localize("lancer.mech-sheet.combat-gear.systems")}</span>
       </div>
-      <div class="mech-combat-gear-grid flexrow wraprow">${cards}</div>
+      <div class="mech-combat-gear-grid flexrow wraprow">${body}</div>
     </section>`;
 }
