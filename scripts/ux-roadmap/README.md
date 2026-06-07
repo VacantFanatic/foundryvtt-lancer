@@ -62,6 +62,17 @@ Enable **Status** field (built-in) for Todo / In Progress / Done.
 
 Re-run `bootstrap.mjs` as repo owner to create labels, milestones, the GitHub Project, and refresh epic/release bodies with cross-links.
 
+## Close completed tracking issues
+
+After release PRs merge, close stale roadmap issues with a comment linking the shipping PR:
+
+```bash
+node scripts/ux-roadmap/close-completed-issues.mjs --dry-run
+node scripts/ux-roadmap/close-completed-issues.mjs
+```
+
+**Cursor cloud / limited tokens:** run the **UX Roadmap close completed issues** workflow (`workflow_dispatch`) — it uses `GITHUB_TOKEN` with `issues: write`, or `UX_ROADMAP_GH_TOKEN` if set.
+
 ## Cursor cloud agents
 
 Implementation branches: `cursor/ux-<slug>-4b38`\
