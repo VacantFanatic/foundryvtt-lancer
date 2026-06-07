@@ -49,6 +49,16 @@ function _basicFlowButton(uuid: string, type = "BasicAttack", overrides: ButtonO
   return _flowButton("lancer-flow-button", data, overrides);
 }
 
+/** Roll-stat control for inline pilot-row chips and stat cards. */
+export function rollStatButton(uuid: string, path: string, overrides: ButtonOverrides = {}): string {
+  return _statFlowButton(uuid, path, overrides);
+}
+
+/** Basic-attack flow control (e.g. on grit chip). */
+export function basicAttackButton(uuid: string, overrides: ButtonOverrides = {}): string {
+  return _basicFlowButton(uuid, "BasicAttack", overrides);
+}
+
 export function getActorUUID(options: HelperOptions): string | null {
   // Determine whether this is an unlinked token, so we can encode the correct id for the macro.
   const rActor = options.data.root.actor as LancerActor | undefined;

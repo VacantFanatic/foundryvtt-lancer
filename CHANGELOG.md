@@ -1,3 +1,9 @@
+# 3.1.6 (2026-06-07)
+
+## Changed
+
+- **Mech combat pilot row** — GRIT and HASE stats now use inline roll chips (matching the combat dock style) instead of tall stat cards. Portrait, rolls, and inventory fit on one compact horizontal row.
+
 # 3.1.4 (2026-06-07)
 
 ## Fixed
