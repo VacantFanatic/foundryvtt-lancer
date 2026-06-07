@@ -42,9 +42,19 @@ describe("mech pilot row roll chips", () => {
 
   it("styles the pilot row as inline chips instead of stat-cards", () => {
     const styles = readFileSync("src/styles/applications/_actor-sheet.scss", "utf8");
-    const block = styles.match(/\.mech-combat-pilot-row\s*\{[\s\S]*?\n  \}/);
-    assert.ok(block, "expected .mech-combat-pilot-row styles");
+    const block = styles.match(/\.mech-header-pilot-row\s*\{[\s\S]*?\n  \}/);
+    assert.ok(block, "expected .mech-header-pilot-row styles");
     assert.match(block[0], /\.mech-pilot-roll-chip/);
     assert.doesNotMatch(block[0], /\.stat-card/);
+  });
+
+  it("renders pilot row in the mech sheet header, not the combat tab body", () => {
+    const template = readFileSync("public/templates/actor/mech.hbs", "utf8");
+    const headerBlock = template.match(/<header[\s\S]*?<\/header>/);
+    assert.ok(headerBlock, "expected mech sheet header");
+    assert.match(headerBlock[0], /mech-combat-pilot-row/);
+    const combatTab = template.match(/tab combat[\s\S]*?<\/div>\s*<div class="tab gear/);
+    assert.ok(combatTab, "expected combat tab");
+    assert.doesNotMatch(combatTab[0], /mech-combat-pilot-row/);
   });
 });

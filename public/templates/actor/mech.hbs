@@ -21,6 +21,7 @@
             {{itemTypes.frame.0.name}}</span>
         {{/if}}
       </div>
+      {{{mech-combat-pilot-row pilot=pilot}}}
     </header>
 
     {{{mech-combat-dock}}}
@@ -106,8 +107,6 @@
           {{{stat-edit-max-card "REPAIRS" "cci cci-repair" "system.repairs.value" "system.repairs.max"}}}
         </div>
       </section>
-
-      {{{mech-combat-pilot-row pilot=pilot}}}
     </div>
 
     <div class="tab gear {{tabs.primary.gear.cssClass}}" data-group="primary" data-tab="gear" data-gear-mode="play">

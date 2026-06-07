@@ -1,3 +1,9 @@
+# 3.1.7 (2026-06-07)
+
+## Changed
+
+- **Mech sheet header** — pilot portrait, GRIT/HASE roll chips, and inventory moved from the combat tab into the sheet header so they stay visible on every tab.
+
 # 3.1.6 (2026-06-07)
 
 ## Changed
