@@ -73,6 +73,7 @@ import {
   loadingIndicator,
 } from "./refs";
 import { mechLoadout, pilotSlot, frameView } from "./loadout";
+import { mechCombatDock } from "./mech-combat-dock";
 import {
   item_edit_arrayed_actions,
   item_edit_arrayed_damage,
@@ -357,6 +358,7 @@ export function registerHandlebarsHelpers() {
   // Mech components
   Handlebars.registerHelper("mech-loadout", mechLoadout);
   Handlebars.registerHelper("mech-frame", frameView);
+  Handlebars.registerHelper("mech-combat-dock", mechCombatDock);
 
   // ------------------------------------------------------------------------
   // NPC components

@@ -132,6 +132,9 @@
         "combat": "COMBAT",
         "systems": "SYSTEMS"
       },
+      "combat-dock": {
+        "label": "Combat quick controls"
+      },
       "inventory": {
         "label": "View Inventory"
       },
