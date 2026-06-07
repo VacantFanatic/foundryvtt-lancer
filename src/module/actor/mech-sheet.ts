@@ -350,10 +350,6 @@ export class LancerMechSheet extends LancerActorSheet<EntryType.MECH> {
     (data as Record<string, unknown>).pilot = this.actor.system.pilot?.value;
     (data as Record<string, unknown>).is_active =
       this.actor.system.pilot?.value?.system.active_mech?.value == this.actor;
-    (data as Record<string, unknown>).experimentalLoadoutEditor = game.settings.get(
-      game.system.id,
-      LANCER.setting_experimental_loadout_editor
-    );
     return data;
   }
 }

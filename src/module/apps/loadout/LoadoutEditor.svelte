@@ -9,7 +9,6 @@
 <div class="loadout-editor lancer card clipped">
   <div class="lancer-header lancer-primary major">
     <span>{game.i18n.localize("lancer.loadout-editor.title")}</span>
-    <span class="minor">{game.i18n.localize("lancer.loadout-editor.experimental")}</span>
   </div>
   <p class="minor desc-text">{game.i18n.localize("lancer.loadout-editor.hint")}</p>
   <div class="loadout-editor-summary flexrow">
@@ -33,7 +32,6 @@
       {/each}
     </ul>
   {/if}
-  <p class="minor desc-text">{game.i18n.localize("lancer.loadout-editor.legacy-hint")}</p>
 </div>
 
 <style lang="scss">

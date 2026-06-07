@@ -1,3 +1,25 @@
+# 3.0.0 (2026-06-07)
+
+## Added
+
+- Mech Loadout tab **hybrid layout**: Svelte loadout overview above the full legacy drag-and-drop editor.
+
+## Changed
+
+- **Loadout editor promoted to GA** — always shown on the mech Loadout tab (no client setting).
+
+## Removed
+
+- Client setting **`experimentalLoadoutEditor`** (users who enabled overview-only mode now get overview plus legacy editor).
+
+## Fixed
+
+- Pilot sheet **header and narrative tab** Handlebars syntax for compact stat helpers (sheet render in Foundry).
+
+## Migration
+
+- No world data migration required. The removed client setting is ignored if still present in browser storage.
+
 # 2.20.0 (2026-06-06)
 
 ## Added
