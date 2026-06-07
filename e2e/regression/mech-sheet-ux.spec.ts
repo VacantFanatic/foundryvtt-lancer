@@ -55,9 +55,7 @@ test.describe("Mech sheet UX @regression", () => {
       actor.sheet.changeTab("combat", "primary", { force: true });
       const tab = actor.sheet.element?.querySelector('.tab.combat[data-tab="combat"]') as HTMLElement | null;
       if (!tab) return null;
-      const sections = [...tab.querySelectorAll("[data-mech-section]")].map(el =>
-        el.getAttribute("data-mech-section")
-      );
+      const sections = [...tab.querySelectorAll("[data-mech-section]")].map(el => el.getAttribute("data-mech-section"));
       const weaponsIndex = sections.indexOf("combat-weapons");
       const combatIndex = sections.indexOf("combat");
       return {

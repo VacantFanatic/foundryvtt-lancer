@@ -71,6 +71,30 @@ export class HTMLEditDialog extends HandlebarsApplicationMixin(ApplicationV2) {
     });
   }
 
+  protected override _onRender(context: object, options: Record<string, unknown>): void {
+    super._onRender(context, options);
+    this._mountProseMirrorEditor();
+  }
+
+  /** App V2 cannot use the legacy {{editor}} helper; mount prose-mirror programmatically. */
+  _mountProseMirrorEditor(): void {
+    const root = this.element;
+    if (!(root instanceof HTMLElement)) return;
+
+    const mount = root.querySelector<HTMLElement>("[data-prose-mirror-mount]");
+    if (!mount || mount.querySelector("prose-mirror")) return;
+
+    const text = resolveDotpath(this.target, this.textPath);
+    mount.appendChild(
+      // @ts-expect-error The missing stuff is definitely optional
+      foundry.applications.elements.HTMLProseMirrorElement.create({
+        name: "text",
+        toggled: false,
+        value: typeof text === "string" ? text : "",
+      })
+    );
+  }
+
   static async #onSubmitForm(this: HTMLEditDialog, _event: SubmitEvent, _form: HTMLFormElement, formData: any) {
     let newText = formData.object.text;
 

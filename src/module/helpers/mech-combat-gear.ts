@@ -64,8 +64,9 @@ export function mechCombatWeapons(options: HelperOptions): string {
   if (!actor?.is_mech()) return "";
 
   const cards = renderWeaponCards(actor, options);
-  const body = cards
-    || `<p class="mech-combat-gear-empty note">${game.i18n.localize("lancer.mech-sheet.combat-gear.no-weapons")}</p>`;
+  const body =
+    cards ||
+    `<p class="mech-combat-gear-empty note">${game.i18n.localize("lancer.mech-sheet.combat-gear.no-weapons")}</p>`;
 
   return `
     <section class="mech-combat-gear-section" data-mech-section="combat-weapons">
@@ -82,8 +83,9 @@ export function mechCombatSystems(options: HelperOptions): string {
   if (!actor?.is_mech()) return "";
 
   const cards = renderSystemCards(actor);
-  const body = cards
-    || `<p class="mech-combat-gear-empty note">${game.i18n.localize("lancer.mech-sheet.combat-gear.no-systems")}</p>`;
+  const body =
+    cards ||
+    `<p class="mech-combat-gear-empty note">${game.i18n.localize("lancer.mech-sheet.combat-gear.no-systems")}</p>`;
 
   return `
     <section class="mech-combat-gear-section" data-mech-section="combat-systems">
