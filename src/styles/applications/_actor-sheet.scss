@@ -348,6 +348,25 @@
     display: none;
   }
 
+  .mech-combat-pilot-row {
+    gap: 0.5rem;
+    align-items: stretch;
+    margin-bottom: 0.75rem;
+
+    .hase {
+      flex: 1 1 12rem;
+      margin: 0;
+    }
+
+    .inventory {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 6rem;
+      padding: 0.35rem;
+    }
+  }
+
   .mech-abilities-empty {
     padding: 0.75rem 1rem;
 
