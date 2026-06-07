@@ -1,3 +1,9 @@
+# 3.1.3 (2026-06-07)
+
+## Fixed
+
+- **History and popout text editor** — the Edit Text dialog now mounts Foundry's `prose-mirror` editor instead of the legacy `{{editor}}` helper, which does not render in Application V2 on Foundry v14.
+
 # 3.1.1 (2026-06-07)
 
 ## Added
