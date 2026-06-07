@@ -1,3 +1,9 @@
+# 3.1.5 (2026-06-07)
+
+## Fixed
+
+- **Mech combat pilot row** — GRIT and HASE stat cards no longer stretch to match the pilot portrait height. The row uses compact fixed grid tracks, smaller labels, and a constrained portrait slot.
+
 # 3.1.4 (2026-06-07)
 
 ## Fixed

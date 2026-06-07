@@ -394,11 +394,46 @@
 
   .mech-combat-pilot-row {
     gap: 0.5rem;
-    align-items: stretch;
+    align-items: flex-start;
     margin-bottom: 0.75rem;
 
+    .pilot-summary {
+      flex: 0 0 4.75rem;
+      width: 4.75rem;
+      margin: 0;
+      align-self: center;
+    }
+
+    > .stat-card,
+    .hase > .stat-card {
+      grid-template: minmax(1.4em, auto) minmax(1.6em, auto) / 1fr;
+      margin: 0;
+    }
+
+    > .stat-card {
+      flex: 0 0 4.75rem;
+    }
+
+    .stat-card .lancer-header {
+      flex: unset;
+      min-height: 0;
+      padding-top: 0.1em;
+      padding-bottom: 0.1em;
+
+      .major {
+        font-size: 0.8rem;
+        line-height: 1.1;
+      }
+    }
+
+    .stat-card .lancer-stat.major {
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
     .hase {
-      flex: 1 1 12rem;
+      flex: 1 1 9.5rem;
+      max-width: 13rem;
       margin: 0;
     }
 
@@ -408,6 +443,8 @@
       justify-content: center;
       min-width: 6rem;
       padding: 0.35rem;
+      margin: 0;
+      align-self: center;
     }
   }
 
