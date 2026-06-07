@@ -54,7 +54,7 @@ export function mechCombatPilotRow(options: HelperOptions): string {
   const inventoryLabel = game.i18n.localize("lancer.mech-sheet.inventory.label");
 
   return `
-    <div class="mech-combat-pilot-row flexrow">
+    <div class="mech-header-pilot-row flexrow">
       ${portrait}
       ${stats}
       <div class="inventory card clipped">

@@ -392,10 +392,9 @@
     display: none;
   }
 
-  .mech-combat-pilot-row {
+  .mech-header-pilot-row {
     gap: 0.35rem;
     align-items: center;
-    margin-bottom: 0.75rem;
     flex-wrap: wrap;
 
     .pilot-summary {
@@ -640,12 +639,30 @@
   .lancer.sheet header.sheet-header.lancer-mech-sheet-header {
     min-height: 5.9rem;
     padding: 0.35em 0.5em 0.35em 0.75em;
-    grid-template-rows: minmax(3.25rem, auto) auto;
+    grid-template-rows: minmax(3.25rem, auto) auto auto;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(112px, 170px);
+    grid-template-areas:
+      "name name name img"
+      "details details details img"
+      "pilot pilot pilot img";
 
     .header-details {
+      grid-area: details;
       min-width: 0;
       flex-wrap: wrap;
+    }
+
+    .mech-header-pilot-row {
+      grid-area: pilot;
+      margin: 0;
+      padding-top: 0.2rem;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .portrait-img-container {
+      grid-area: img;
+      align-self: stretch;
     }
 
     h1.name {
