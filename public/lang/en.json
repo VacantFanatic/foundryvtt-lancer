@@ -146,16 +146,10 @@
     },
     "loadout-editor": {
       "title": "Loadout overview",
-      "experimental": "(experimental)",
-      "hint": "Visual summary of this mech's loadout. Drag-and-drop editing remains on the legacy loadout view.",
+      "hint": "Summary of weapon mounts, systems, and SP usage. Use the editor below to drag items and manage mounts.",
       "mounts": "Weapon mounts",
       "systems": "Systems",
-      "sp": "System points",
-      "legacy-hint": "Disable the experimental loadout editor in client settings to return to the full legacy editor.",
-      "setting": {
-        "name": "Experimental loadout editor",
-        "hint": "Show a Svelte loadout overview on the mech Loadout tab instead of the legacy HTML editor."
-      }
+      "sp": "System points"
     },
     "async-ui": {
       "loading": "Loading…",

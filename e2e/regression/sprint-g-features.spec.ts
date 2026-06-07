@@ -35,15 +35,20 @@ test.describe("Sprint G features @regression", () => {
     await page.keyboard.press("Escape");
   });
 
-  test("mech loadout shows mount reset controls", async ({ page }) => {
+  test("mech loadout shows hybrid overview and legacy editor controls", async ({ page }) => {
     const { mechId } = await seedRegressionWorld(page);
+    await page.evaluate(async id => {
+      const actor = game.actors.get(id);
+      if (!actor) throw new Error("mech missing");
+      await actor.sheet.render(true);
+      actor.sheet.changeTab("loadout", "primary", { force: true });
+    }, mechId);
+
+    expect(await waitForSheetSelector(page, mechId, "[data-loadout-editor-mount] .loadout-editor")).toBe(true);
+
     const controls = await page.evaluate(async id => {
       const actor = game.actors.get(id);
       if (!actor) throw new Error("mech missing");
-      await game.settings.set("lancer", "experimentalLoadoutEditor", false);
-      await actor.sheet.render(true);
-      actor.sheet.changeTab("loadout", "primary", { force: true });
-      await new Promise(r => setTimeout(r, 500));
       const root = actor.sheet.element as HTMLElement;
       return {
         all: !!root.querySelector(".reset-all-weapon-mounts-button"),
@@ -54,23 +59,6 @@ test.describe("Sprint G features @regression", () => {
     expect(controls.all).toBe(true);
     expect(controls.mount).toBe(true);
     expect(controls.sys).toBe(true);
-  });
-
-  test("experimental loadout editor renders when enabled", async ({ page }) => {
-    const { mechId } = await seedRegressionWorld(page);
-    await page.evaluate(async id => {
-      await game.settings.set("lancer", "experimentalLoadoutEditor", true);
-      const actor = game.actors.get(id);
-      if (!actor) throw new Error("mech missing");
-      await actor.sheet.render(true);
-      actor.sheet.changeTab("loadout", "primary", { force: true });
-    }, mechId);
-
-    expect(await waitForSheetSelector(page, mechId, "[data-loadout-editor-mount] .loadout-editor")).toBe(true);
-
-    await page.evaluate(async () => {
-      await game.settings.set("lancer", "experimentalLoadoutEditor", false);
-    });
   });
 
   test("combat tracker template includes target toggle control", async ({ page }) => {

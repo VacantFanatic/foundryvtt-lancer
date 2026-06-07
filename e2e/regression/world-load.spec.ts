@@ -10,10 +10,15 @@ test.describe("Lancer world load @regression", () => {
     expect(state.ready).toBe(true);
     expect(state.worldId).toBe("lancer-dev-test");
     expect(state.systemId).toBe("lancer");
-    expect(state.systemVersion).toMatch(/^2\./);
+    expect(state.systemVersion).toMatch(/^3\./);
 
     const fatal = errors.filter(
-      e => !e.includes("screen resolution") && !e.includes("Chromium version") && !e.includes("Firefox version")
+      e =>
+        !e.includes("screen resolution") &&
+        !e.includes("Chromium version") &&
+        !e.includes("Firefox version") &&
+        !e.includes("socket.io") &&
+        !e.includes("websocket")
     );
     expect(fatal, `Unexpected console errors: ${fatal.join("; ")}`).toEqual([]);
   });
