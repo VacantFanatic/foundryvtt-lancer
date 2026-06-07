@@ -12,6 +12,10 @@ on:
         required: false
         default: false
         type: boolean
+  push:
+    branches: [master]
+    paths:
+      - .github/workflows/ux-roadmap-close-issues.yml
 
 permissions:
   issues: write
@@ -32,7 +36,7 @@ jobs:
           GH_TOKEN: ${{ secrets.UX_ROADMAP_GH_TOKEN || github.token }}
         run: |
           FLAGS=""
-          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
             FLAGS="--dry-run"
           fi
           node scripts/ux-roadmap/close-completed-issues.mjs $FLAGS
