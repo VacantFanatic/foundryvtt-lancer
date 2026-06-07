@@ -8,6 +8,35 @@ test.describe("Acc/Diff HUD @regression", () => {
     await seedRegressionWorld(page);
   });
 
+  test("advanced toggle and manual adjust do not overlap", async ({ page }) => {
+    await page.evaluate(() => {
+      const npc = game.actors.find(a => a.name === "E2E Test NPC");
+      const weapon = npc?.items.find(i => i.name === "E2E Test Weapon");
+      if (!weapon) throw new Error("E2E weapon missing");
+      void weapon.beginWeaponAttackFlow();
+    });
+
+    await expect(page.locator("#hudzone #accdiff")).toBeVisible({ timeout: 30_000 });
+
+    const layout = await page.evaluate(() => {
+      const toggle = document.querySelector<HTMLElement>("#hudzone #accdiff .accdiff-advanced-toggle__button");
+      const manual = document.querySelector<HTMLElement>("#hudzone #accdiff .accdiff-manual-adjust-input");
+      if (!toggle || !manual) throw new Error("Acc/Diff layout controls missing");
+      const toggleBox = toggle.getBoundingClientRect();
+      const manualBox = manual.getBoundingClientRect();
+      return {
+        separated: toggleBox.bottom <= manualBox.top + 1,
+        toggleBottom: toggleBox.bottom,
+        manualTop: manualBox.top,
+      };
+    });
+
+    expect(layout.separated).toBe(true);
+
+    await page.locator("#hudzone #accdiff .lancer-hud-buttons .cancel").click();
+    await expect(page.locator("#hudzone #accdiff")).toBeHidden({ timeout: 10_000 });
+  });
+
   test("advanced section collapses plugins and template tools by default", async ({ page }) => {
     await page.evaluate(() => {
       const npc = game.actors.find(a => a.name === "E2E Test NPC");

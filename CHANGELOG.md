@@ -1,3 +1,9 @@
+# 3.1.4 (2026-06-07)
+
+## Fixed
+
+- **Attack Acc/Diff HUD layout** — advanced toggle and Manual Adjust no longer overlap on blast/AoE weapons (e.g. Missile Rack). Each block now has its own section spacing, the advanced button wraps cleanly, and manual adjust controls render in a single row.
+
 # 3.1.3 (2026-06-07)
 
 ## Fixed

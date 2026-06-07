@@ -417,8 +417,13 @@
     {/if}
 
     {#if hasAdvancedContent}
-      <div class="accdiff-advanced-toggle flexrow flex-center">
-        <button class="lancer-button lancer-secondary" type="button" on:click={toggleAdvanced}>
+      <div class="accdiff-advanced-toggle accdiff-grid__section">
+        <button
+          class="lancer-button lancer-secondary accdiff-advanced-toggle__button"
+          type="button"
+          aria-expanded={showAdvanced}
+          on:click={toggleAdvanced}
+        >
           <i class="fas fa-{showAdvanced ? 'chevron-up' : 'chevron-down'}" />
           {
             showAdvanced ? game.i18n.localize("lancer.accdiff.hideAdvanced") : game.i18n.localize("lancer.accdiff.showAdvanced")
@@ -474,10 +479,8 @@
     {/if}
 
     <!-- Total accuracy / Targets -->
-    <div class="flexcol accdiff-grid">
-      <div class="flexrow accdiff-grid__section" style="justify-content: space-evenly">
-        <AccDiffInput bind:value={base.accuracy} id="accdiff-manual-adjust" />
-      </div>
+    <div class="accdiff-manual-adjust accdiff-grid__section">
+      <AccDiffInput bind:value={base.accuracy} id="accdiff-manual-adjust" />
     </div>
     <div class="flexcol accdiff-footer lancer-border-primary">
       <div class="accdiff-total">
@@ -608,6 +611,25 @@
       #accdiff :global(.accdiff-grid) {
         display: flex;
         justify-content: space-between;
+      }
+
+      .accdiff-advanced-toggle {
+        display: flex;
+        justify-content: center;
+
+        &__button {
+          width: 100%;
+          max-width: 100%;
+          white-space: normal;
+          text-align: center;
+          line-height: 1.35;
+          padding: 0.45em 0.6em;
+        }
+      }
+
+      .accdiff-manual-adjust {
+        display: block;
+        width: 100%;
       }
 
       .accdiff-flat-bonus {
