@@ -1,3 +1,11 @@
+# 3.1.8 (2026-06-08)
+
+## Changed
+
+- **Mech sheet header portrait** — pilot thumbnail enlarged with a visible frame, brightness boost, and a lighter license badge overlay so portraits read clearly on dark headers.
+- **Mech header controls** — GRIT/HASE roll chips and the View Inventory button use gradient fills, accent borders, and hover glow for clearer affordance.
+- **Combat gear cards** — compact weapon and system rows show item thumbnails plus polished FIRE (weapon accent) and USE (system accent) action buttons.
+
 # 3.1.7 (2026-06-07)
 
 ## Changed

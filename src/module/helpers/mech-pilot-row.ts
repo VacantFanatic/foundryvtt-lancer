@@ -3,9 +3,15 @@ import type { LancerMECH, LancerPILOT } from "../actor/lancer-actor";
 import { basicAttackButton, getActorUUID, rollStatButton } from "./actor";
 import { resolveHelperDotpath } from "./commons";
 import { pilotSlot } from "./loadout";
-import { buildMechPilotRowStatsHtml, buildRollStatChipHtml, MECH_PILOT_HASE_PATHS } from "./mech-pilot-row-core";
+import {
+  buildInventoryButtonHtml,
+  buildMechPilotRowStatsHtml,
+  buildRollStatChipHtml,
+  MECH_PILOT_HASE_PATHS,
+} from "./mech-pilot-row-core";
 
 export {
+  buildInventoryButtonHtml,
   buildMechPilotRowStatsHtml,
   buildRollStatChipHtml,
   MECH_PILOT_HASE_PATHS,
@@ -52,13 +58,14 @@ export function mechCombatPilotRow(options: HelperOptions): string {
 
   const stats = buildMechPilotRowStatsHtml([gritChip, ...haseChips]);
   const inventoryLabel = game.i18n.localize("lancer.mech-sheet.inventory.label");
+  const inventoryButton = buildInventoryButtonHtml(inventoryLabel);
 
   return `
     <div class="mech-header-pilot-row flexrow">
       ${portrait}
       ${stats}
       <div class="inventory card clipped">
-        <button class="lancer-button" type="button">${inventoryLabel}</button>
+        ${inventoryButton}
       </div>
     </div>`;
 }
