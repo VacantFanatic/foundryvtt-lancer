@@ -3,9 +3,18 @@ import type { LancerMECH } from "../actor/lancer-actor";
 import { LancerFlowState } from "../flows/interfaces";
 import { resolveHelperDotpath } from "./commons";
 import { action_button, actor_flow_button, is_combatant } from "./actor";
-import { buildCombatDockStatChipsHtml, COMBAT_DOCK_ATTACK_FLOW_TYPES } from "./mech-combat-dock-core";
+import {
+  buildCombatDockCoreToggleHtml,
+  buildCombatDockStatChipsHtml,
+  COMBAT_DOCK_ATTACK_FLOW_TYPES,
+} from "./mech-combat-dock-core";
 
-export { buildCombatDockStatChipsHtml, COMBAT_DOCK_ATTACK_FLOW_TYPES } from "./mech-combat-dock-core";
+export {
+  buildCombatDockCoreToggleHtml,
+  buildCombatDockStatChipsHtml,
+  COMBAT_DOCK_ATTACK_FLOW_TYPES,
+  normalizeCoreEnergyFormValue,
+} from "./mech-combat-dock-core";
 export type { CombatDockStatSnapshot } from "./mech-combat-dock-core";
 
 /** Attack utility buttons rendered in the persistent combat dock. */
@@ -30,16 +39,6 @@ function compactOverchargeDock(actor: LancerMECH, overchargeLevel: number): stri
       </button>
       <button type="button" class="overcharge-text lancer-button lancer-secondary">${value}</button>
       <button type="button" class="overcharge-reset mdi mdi-restore" aria-label="Reset overcharge"></button>
-    </div>`;
-}
-
-function compactCoreToggle(checked: boolean): string {
-  return `
-    <div class="mech-combat-dock-core card clipped" data-tooltip="Core power">
-      <span class="minor">CORE</span>
-      <div class="stat-container core-power-stat-container">
-        <input name="system.core_energy" class="core-power-toggle" type="checkbox" data-dtype="Boolean" ${checked ? "checked" : ""} />
-      </div>
     </div>`;
 }
 
@@ -68,7 +67,7 @@ export function mechCombatDock(options: HelperOptions): string {
     stress: system.stress,
   });
   const overcharge = compactOverchargeDock(actor, system.overcharge);
-  const core = compactCoreToggle(system.core_energy);
+  const core = buildCombatDockCoreToggleHtml(system.core_energy);
   const actions = compactActionTracker(actor, options);
   const attacks = buildCombatDockAttackUtilitiesHtml();
 

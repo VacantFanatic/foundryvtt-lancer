@@ -1,3 +1,9 @@
+# 3.1.9 (2026-06-08)
+
+## Fixed
+
+- **Combat dock core toggle** — the CORE checkbox now submits `0`/`1` for `system.core_energy` (NumberField) instead of boolean values, which caused a validation error when toggling core power on the mech sheet. Fixes [#117](https://github.com/VacantFanatic/foundryvtt-lancer/issues/117).
+
 # 3.1.8 (2026-06-08)
 
 ## Changed

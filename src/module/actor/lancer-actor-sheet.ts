@@ -31,6 +31,7 @@ import {
   handleUsesInteraction,
 } from "../helpers/refs";
 import { LancerItem } from "../item/lancer-item";
+import { normalizeCoreEnergyFormValue } from "../helpers/mech-combat-dock-core";
 import { lookupOwnedDeployables } from "../util/lid";
 import type { LancerActorSheetData } from "../interfaces";
 import { LancerActor, type LancerActorType } from "./lancer-actor";
@@ -107,6 +108,9 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
   ): Promise<void> {
     event.preventDefault();
     const updateData = { ...formData.object };
+    if ("system.core_energy" in updateData) {
+      updateData["system.core_energy"] = normalizeCoreEnergyFormValue(updateData["system.core_energy"]);
+    }
     this._propagateData(updateData);
     await this.actor.update(updateData);
   }
