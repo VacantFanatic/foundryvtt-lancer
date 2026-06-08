@@ -7,6 +7,24 @@ export interface CombatDockStatSnapshot {
 
 export const COMBAT_DOCK_ATTACK_FLOW_TYPES = ["BasicAttack", "Damage", "TechAttack"] as const;
 
+/** Coerce form values for `system.core_energy` (NumberField 0|1). */
+export function normalizeCoreEnergyFormValue(value: unknown): number {
+  if (value === true || value === 1 || value === "1") return 1;
+  return 0;
+}
+
+/** Core power checkbox for the combat dock; must use Number dtype to match MechModel. */
+export function buildCombatDockCoreToggleHtml(coreEnergy: number): string {
+  const checked = coreEnergy > 0;
+  return `
+    <div class="mech-combat-dock-core card clipped" data-tooltip="Core power">
+      <span class="minor">CORE</span>
+      <div class="stat-container core-power-stat-container">
+        <input name="system.core_energy" class="core-power-toggle" type="checkbox" data-dtype="Number" value="1" ${checked ? "checked" : ""} />
+      </div>
+    </div>`;
+}
+
 /** Pure stat chip markup for unit tests and sheet render. */
 export function buildCombatDockStatChipsHtml(stats: CombatDockStatSnapshot): string {
   const chip = (label: string, value: number, max: number, valuePath: string, icon: string) =>

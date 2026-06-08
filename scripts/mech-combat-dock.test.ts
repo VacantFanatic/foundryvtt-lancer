@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  buildCombatDockCoreToggleHtml,
   buildCombatDockStatChipsHtml,
   COMBAT_DOCK_ATTACK_FLOW_TYPES,
+  normalizeCoreEnergyFormValue,
 } from "../src/module/helpers/mech-combat-dock-core.ts";
 
 describe("mech combat dock helpers", () => {
@@ -22,5 +24,28 @@ describe("mech combat dock helpers", () => {
 
   it("combat dock attack utilities include all three flow types", () => {
     assert.deepEqual(COMBAT_DOCK_ATTACK_FLOW_TYPES, ["BasicAttack", "Damage", "TechAttack"]);
+  });
+
+  it("buildCombatDockCoreToggleHtml uses Number dtype for core_energy schema", () => {
+    const html = buildCombatDockCoreToggleHtml(1);
+    assert.match(html, /name="system\.core_energy"/);
+    assert.match(html, /data-dtype="Number"/);
+    assert.match(html, /value="1"/);
+    assert.doesNotMatch(html, /data-dtype="Boolean"/);
+    assert.match(html, /checked/);
+  });
+
+  it("buildCombatDockCoreToggleHtml omits checked when core energy is spent", () => {
+    const html = buildCombatDockCoreToggleHtml(0);
+    assert.doesNotMatch(html, /checked/);
+  });
+
+  it("normalizeCoreEnergyFormValue coerces legacy boolean form values to 0 or 1", () => {
+    assert.equal(normalizeCoreEnergyFormValue(true), 1);
+    assert.equal(normalizeCoreEnergyFormValue(false), 0);
+    assert.equal(normalizeCoreEnergyFormValue(1), 1);
+    assert.equal(normalizeCoreEnergyFormValue(0), 0);
+    assert.equal(normalizeCoreEnergyFormValue("1"), 1);
+    assert.equal(normalizeCoreEnergyFormValue("0"), 0);
   });
 });
