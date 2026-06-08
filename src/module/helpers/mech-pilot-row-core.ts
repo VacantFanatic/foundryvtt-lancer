@@ -35,3 +35,8 @@ export function buildRollStatChipHtml(spec: RollStatChipSpec): string {
 export function buildMechPilotRowStatsHtml(chips: string[]): string {
   return `<div class="mech-pilot-roll-chips flexrow">${chips.join("")}</div>`;
 }
+
+/** Polished inventory opener for the mech header pilot row. */
+export function buildInventoryButtonHtml(label: string): string {
+  return `<button class="lancer-button lancer-secondary mech-inventory-button" type="button"><i class="fas fa-box-open i--2" aria-hidden="true"></i><span>${label}</span></button>`;
+}

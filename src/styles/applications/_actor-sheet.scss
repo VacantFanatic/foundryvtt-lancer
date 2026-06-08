@@ -359,6 +359,57 @@
     padding: 0.25rem 0.45rem;
     min-width: 8rem;
     flex: 1 1 10rem;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--darken-1), #fff 6%),
+      var(--darken-1)
+    );
+    border-top: 1px solid color-mix(in srgb, var(--light-text), transparent 82%);
+
+    .mech-combat-gear-thumb {
+      flex: 0 0 2rem;
+      width: 2rem;
+      height: 2rem;
+      object-fit: cover;
+      border: 1px solid color-mix(in srgb, var(--light-text), transparent 68%);
+      border-radius: 3px;
+      background-color: var(--background-color);
+      filter: brightness(1.12) contrast(1.08);
+      box-shadow: 0 0 4px color-mix(in srgb, var(--light-text), transparent 80%);
+    }
+
+    .mech-combat-action-button.lancer-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      min-width: 3.25rem;
+      height: 2.25rem;
+      margin: 0;
+      padding: 0.15rem 0.45rem;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--light-gray-color), #fff 10%),
+        var(--light-gray-color)
+      );
+      box-shadow:
+        var(--button-shadow),
+        inset 0 1px 0 color-mix(in srgb, #fff, transparent 88%);
+
+      &:hover {
+        box-shadow:
+          var(--button-shadow),
+          var(--hover-bright),
+          0 0 6px color-mix(in srgb, var(--primary-highlight), transparent 55%);
+      }
+    }
+
+    .roll-attack.mech-combat-action-button {
+      border-left: 3px solid var(--primary-color);
+    }
+
+    .chat-flow-button.mech-combat-action-button {
+      border-left: 3px solid var(--system-color);
+    }
   }
 
   .mech-combat-gear-name {
@@ -398,21 +449,30 @@
     flex-wrap: wrap;
 
     .pilot-summary {
-      flex: 0 0 3rem;
-      width: 3rem;
-      height: 3rem;
+      flex: 0 0 4.5rem;
+      width: 4.5rem;
+      height: 4.5rem;
       margin: 0;
       min-height: 0;
-      padding: 0;
+      padding: 2px;
+      background-color: var(--background-color);
+      border: 2px solid var(--secondary-highlight);
+      border-radius: 4px;
+      box-shadow:
+        0 0 8px color-mix(in srgb, var(--secondary-color), transparent 45%),
+        inset 0 0 0 1px color-mix(in srgb, var(--light-text), transparent 88%);
 
       img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        border-radius: 2px;
+        filter: brightness(1.15) contrast(1.1);
       }
 
       .license-level {
-        font-size: 0.85rem;
+        font-size: 0.7rem;
+        background-color: color-mix(in srgb, var(--primary-color), transparent 20%);
       }
     }
 
@@ -433,6 +493,13 @@
       margin: 0;
       min-width: 4.75rem;
       flex: 0 1 auto;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--darken-1), #fff 5%),
+        var(--darken-1)
+      );
+      border-top: 2px solid var(--secondary-color);
+      box-shadow: inset 0 1px 0 color-mix(in srgb, #fff, transparent 90%);
     }
 
     .mech-pilot-roll-chip-label {
@@ -454,7 +521,22 @@
       align-items: center;
 
       .lancer-button {
-        padding: 0.1rem 0.2rem;
+        padding: 0.12rem 0.28rem;
+        background: linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--light-gray-color), #fff 12%),
+          var(--light-gray-color)
+        );
+        box-shadow:
+          var(--button-shadow),
+          inset 0 1px 0 color-mix(in srgb, #fff, transparent 86%);
+
+        &:hover {
+          box-shadow:
+            var(--button-shadow),
+            var(--hover-bright),
+            0 0 5px color-mix(in srgb, var(--secondary-highlight), transparent 50%);
+        }
       }
     }
 
@@ -465,6 +547,30 @@
       flex: 0 0 auto;
       margin: 0;
       padding: 0.2rem 0.5rem;
+    }
+
+    .mech-inventory-button.lancer-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.65rem;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--secondary-color), #fff 12%),
+        var(--secondary-color)
+      );
+      color: var(--secondary-text);
+      border: 1px solid color-mix(in srgb, var(--secondary-highlight), #000 25%);
+      box-shadow:
+        var(--button-shadow),
+        inset 0 1px 0 color-mix(in srgb, #fff, transparent 82%);
+
+      &:hover {
+        box-shadow:
+          var(--button-shadow),
+          var(--hover-bright),
+          0 0 8px color-mix(in srgb, var(--secondary-highlight), transparent 45%);
+      }
     }
   }
 
