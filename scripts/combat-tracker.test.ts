@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   COMBAT_TRACKER_DISPOSITION_CLASSES,
   enrichCombatTrackerTurns,
+  mergeCombatTrackerContext,
   type CombatTrackerTurnInput,
 } from "../src/module/combat/combat-tracker-turns.ts";
 
@@ -67,5 +68,16 @@ describe("combat tracker turns", () => {
   it("exposes disposition classes for all combatant types", () => {
     assert.equal(COMBAT_TRACKER_DISPOSITION_CLASSES[2], "player");
     assert.equal(COMBAT_TRACKER_DISPOSITION_CLASSES[-1], "enemy");
+  });
+
+  it("mergeCombatTrackerContext keeps turns when super returns tracker-only fields", () => {
+    const ctx = {
+      user: { isGM: true },
+      turns: [turn("c1")],
+    };
+    const merged = mergeCombatTrackerContext(ctx, { hasDecimals: false });
+    assert.equal(merged.turns?.length, 1);
+    assert.equal(merged.turns?.[0]?.id, "c1");
+    assert.equal((merged as { user?: { isGM: boolean } }).user?.isGM, true);
   });
 });

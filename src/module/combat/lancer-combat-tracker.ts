@@ -1,6 +1,6 @@
 import { LANCER } from "../config.js";
 import type { CombatTrackerAppearance } from "../settings.js";
-import { enrichCombatTrackerTurns } from "./combat-tracker-turns.js";
+import { enrichCombatTrackerTurns, mergeCombatTrackerContext } from "./combat-tracker-turns.js";
 import type { LancerCombat, LancerCombatant } from "./lancer-combat.js";
 
 import ContextMenu = foundry.applications.ux.ContextMenu;
@@ -10,13 +10,17 @@ import ContextMenu = foundry.applications.ux.ContextMenu;
  * buttons and either move or remove the initiative button
  */
 export class LancerCombatTracker extends foundry.applications.sidebar.tabs.CombatTracker {
-  static DEFAULT_OPTIONS = {
-    actions: {
-      activateCombatantTurn: LancerCombatTracker.#activateCombatantTurn,
-      deactivateCombatantTurn: LancerCombatTracker.#deactivateCombatantTurn,
-      toggleCombatantTarget: LancerCombatTracker.#toggleCombatantTarget,
+  static DEFAULT_OPTIONS = foundry.utils.mergeObject(
+    foundry.applications.sidebar.tabs.CombatTracker.DEFAULT_OPTIONS,
+    {
+      actions: {
+        activateCombatantTurn: LancerCombatTracker.#activateCombatantTurn,
+        deactivateCombatantTurn: LancerCombatTracker.#deactivateCombatantTurn,
+        toggleCombatantTarget: LancerCombatTracker.#toggleCombatantTarget,
+      },
     },
-  };
+    { inplace: false }
+  );
   static PARTS = foundry.utils.mergeObject(
     foundry.applications.sidebar.tabs.CombatTracker.PARTS,
     { tracker: { template: "systems/lancer/templates/combat/tracker.hbs" } },
@@ -25,14 +29,14 @@ export class LancerCombatTracker extends foundry.applications.sidebar.tabs.Comba
 
   async _prepareTrackerContext(ctx: any, opts: any) {
     const appearance = game.settings.get(game.system.id, LANCER.setting_combat_appearance);
-    const trackerCtx = (await super._prepareTrackerContext(ctx, opts)) ?? ctx;
+    mergeCombatTrackerContext(ctx, await super._prepareTrackerContext(ctx, opts));
     const targetNames = (game.user?.targets ?? [])
       .map(t => t.document?.name ?? t.name)
       .filter(Boolean)
       .join(", ");
 
-    trackerCtx.turns = enrichCombatTrackerTurns({
-      turns: trackerCtx.turns,
+    ctx.turns = enrichCombatTrackerTurns({
+      turns: ctx.turns,
       getCombatant: id => {
         const combatant = this.viewed?.combatants.get(id) as LancerCombatant | undefined;
         if (!combatant) return undefined;
@@ -56,7 +60,7 @@ export class LancerCombatTracker extends foundry.applications.sidebar.tabs.Comba
       };
     });
 
-    return trackerCtx;
+    return ctx;
   }
 
   static async #activateCombatantTurn(this: LancerCombatTracker, ev: MouseEvent, target: HTMLElement) {
