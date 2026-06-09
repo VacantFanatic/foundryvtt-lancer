@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "foundryvtt-lancer",
-  "version": "3.1.10",
+  "version": "3.1.11",
   "description": "",
   "sideEffects": [
     "src/lancer.scss",
@@ -19,7 +19,7 @@
     "prepare": "husky install",
     "verify:git-remote": "sh ./scripts/assert-safe-git-remote.sh",
     "verify:doc-links": "sh ./scripts/assert-no-eranziel-doc-links.sh",
-    "test": "node --import tsx --test scripts/import-routing.test.ts scripts/mech-combat-dock.test.ts scripts/mech-combat-gear.test.ts scripts/mech-gear-mode.test.ts scripts/mech-sheet-ux-polish.test.ts scripts/mech-sheet-visual-polish.test.ts scripts/html-editor.test.ts scripts/accdiff-hud-layout.test.ts scripts/mech-pilot-row.test.ts scripts/mech-header-layout.test.ts scripts/inventory-dialog.test.ts",
+    "test": "node --import tsx --test scripts/import-routing.test.ts scripts/mech-combat-dock.test.ts scripts/mech-combat-gear.test.ts scripts/mech-gear-mode.test.ts scripts/mech-sheet-ux-polish.test.ts scripts/mech-sheet-visual-polish.test.ts scripts/html-editor.test.ts scripts/accdiff-hud-layout.test.ts scripts/mech-pilot-row.test.ts scripts/mech-header-layout.test.ts scripts/inventory-dialog.test.ts scripts/combat-tracker.test.ts scripts/action-manager.test.ts",
     "test:e2e": "playwright test -c e2e/playwright.config.ts regression",
     "test:e2e:bootstrap": "playwright test -c e2e/playwright.config.ts setup",
     "test:e2e:install": "playwright install firefox",

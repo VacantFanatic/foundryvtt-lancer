@@ -1,3 +1,10 @@
+# 3.1.11 (2026-06-09)
+
+## Fixed
+
+- **Combat tracker** — return tracker render context from `_prepareTrackerContext` so combatants populate in the Application V2 combat sidebar on Foundry v14. Fixes [#121](https://github.com/VacantFanatic/foundryvtt-lancer/issues/121).
+- **Action tracker HUD** — fix invalid `height: autopx` inline styling, refresh the HUD when combat round/turn state changes, and resolve controlled tokens via `combatant` as well as `inCombat` so the floating action bar appears during combat.
+
 # 3.1.10 (2026-06-09)
 
 ## Changed

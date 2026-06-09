@@ -644,6 +644,9 @@ Hooks.on("updateCombat", (_combat, changes) => {
   if (foundry.utils.hasProperty(changes, "turn")) {
     ui.combatCarousel?.render();
   }
+  if ("round" in changes || "turn" in changes || "combatants" in changes) {
+    game.action_manager?.update();
+  }
 });
 
 // Handle dropping statuses on tokens

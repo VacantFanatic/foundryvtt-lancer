@@ -1,5 +1,6 @@
 import { LANCER } from "../config.js";
 import type { CombatTrackerAppearance } from "../settings.js";
+import { enrichCombatTrackerTurns } from "./combat-tracker-turns.js";
 import type { LancerCombat, LancerCombatant } from "./lancer-combat.js";
 
 import ContextMenu = foundry.applications.ux.ContextMenu;
@@ -24,44 +25,38 @@ export class LancerCombatTracker extends foundry.applications.sidebar.tabs.Comba
 
   async _prepareTrackerContext(ctx: any, opts: any) {
     const appearance = game.settings.get(game.system.id, LANCER.setting_combat_appearance);
-    const disp: Record<number, string> = { [-2]: "", [-1]: "enemy", [0]: "neutral", [1]: "friendly", [2]: "player" };
-    await super._prepareTrackerContext(ctx, opts);
-    ctx.turns = ctx.turns?.map((t: any) => {
-      const combatant: LancerCombatant = this.viewed?.getEmbeddedDocument("Combatant", t.id, {}) as any;
-      const buttons = Array.from(Array(combatant?.system.activations.value ?? 0), () => ({
-        icon: appearance.icon,
-        action: "activateCombatantTurn",
-      }));
-      if (combatant === this.viewed?.combatant)
-        buttons.push({ icon: appearance.deactivate, action: "deactivateCombatantTurn" });
-      const token = combatant?.token?.object;
-      const isTargeted = !!(token && game.user?.targets.has(token));
-      const targetNames = (game.user?.targets ?? [])
-        .map(t => t.document?.name ?? t.name)
-        .filter(Boolean)
-        .join(", ");
+    const trackerCtx = (await super._prepareTrackerContext(ctx, opts)) ?? ctx;
+    const targetNames = (game.user?.targets ?? [])
+      .map(t => t.document?.name ?? t.name)
+      .filter(Boolean)
+      .join(", ");
 
+    trackerCtx.turns = enrichCombatTrackerTurns({
+      turns: trackerCtx.turns,
+      getCombatant: id => {
+        const combatant = this.viewed?.combatants.get(id) as LancerCombatant | undefined;
+        if (!combatant) return undefined;
+        return {
+          id: combatant.id,
+          disposition: combatant.disposition,
+          activations: combatant.activations,
+        };
+      },
+      activeCombatantId: this.viewed?.combatant?.id,
+      appearance,
+      sort: game.settings.get(game.system.id, LANCER.setting_combat_sort),
+    })?.map(t => {
+      const combatant = this.viewed?.combatants.get(t.id) as LancerCombatant | undefined;
+      const token = combatant?.token?.object;
       return {
         ...t,
-        css: `${t.css} ${disp[combatant.disposition]}`.trim(),
-        buttons,
-        activations: combatant?.system.activations.max,
-        pending: combatant?.system.activations.value,
-        isTargeted,
+        isTargeted: !!(token && game.user?.targets.has(token)),
         targetSummary: targetNames,
         canTarget: !!(token ?? combatant?.tokenId),
       };
     });
-    if (game.settings.get(game.system.id, LANCER.setting_combat_sort) && ctx?.turns != null) {
-      ctx.turns.sort(function (a: any, b: any) {
-        const aa = a.css.indexOf("active") !== -1 ? 1 : 0;
-        const ba = b.css.indexOf("active") !== -1 ? 1 : 0;
-        if (ba - aa !== 0) return ba - aa;
-        const ad = a.pending === 0 ? 1 : 0;
-        const bd = b.pending === 0 ? 1 : 0;
-        return ad - bd;
-      });
-    }
+
+    return trackerCtx;
   }
 
   static async #activateCombatantTurn(this: LancerCombatTracker, ev: MouseEvent, target: HTMLElement) {
