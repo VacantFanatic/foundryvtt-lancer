@@ -43,6 +43,15 @@ export type EnrichedCombatTrackerTurn = CombatTrackerTurnInput & {
   pending?: number;
 };
 
+/** Merge tracker-only fields from super._prepareTrackerContext onto the shared render context. */
+export function mergeCombatTrackerContext<T extends { turns?: CombatTrackerTurnInput[] }>(
+  ctx: T,
+  trackerFields?: Partial<T> | void
+): T {
+  if (trackerFields) Object.assign(ctx, trackerFields);
+  return ctx;
+}
+
 export function enrichCombatTrackerTurns(
   options: EnrichCombatTrackerTurnsOptions
 ): EnrichedCombatTrackerTurn[] | undefined {

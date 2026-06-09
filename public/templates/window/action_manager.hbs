@@ -1,84 +1,91 @@
 <div
-  class="lancer-action-manager-surface clipped card {{#unless showSurface}}hidden{{/unless}} {{#unless clickable}}noclick{{/unless}}"
+  class="lancer-action-manager-surface clipped card {{#unless clickable}}noclick{{/unless}}"
   style="width: {{positionWidth}}px"
 >
   <div class="action-label">
-    <div>{{name}}</div>
+    <div>{{#if name}}{{name}}{{else}}{{localize "lancer.actionTracker.select-token"}}{{/if}}</div>
     {{#if clickable}}
-      <div class="action-manager-reset-wrap">
-        <a
-          id="action-manager-reset"
-          class="mdi mdi-restore"
-          role="button"
-          tabindex="0"
-          aria-label='{{localize "lancer.actionTracker.reset"}}'
-        ></a>
-      </div>
+      {{#if actions}}
+        <div class="action-manager-reset-wrap">
+          <a
+            id="action-manager-reset"
+            class="mdi mdi-restore"
+            role="button"
+            tabindex="0"
+            aria-label='{{localize "lancer.actionTracker.reset"}}'
+          ></a>
+        </div>
+      {{/if}}
     {{/if}}
   </div>
   <div class="action-manager-controls">
-    <i
+    <button
+      type="button"
       id="action-manager-drag"
-      class="mdi mdi-drag"
-      role="img"
+      class="action-manager-drag mdi mdi-drag"
       aria-label='{{localize "lancer.actionTracker.drag"}}'
-    ></i>
-    <div class="action-bar" role="toolbar" aria-label='{{localize "lancer.actionTracker.toolbar"}}'>
-      <a
-        class="action {{#if actions.protocol}}lancer-protocol{{/if}}"
-        data-action="protocol"
-        role="button"
-        tabindex="0"
-        aria-label='{{localize "lancer.actionTracker.actions.protocol"}}'
-      >
-        <i class="cci cci-protocol theme--dark white--text" aria-hidden="true"></i>
-        {{#if showTextLabels}}<span class="action-text">{{
-              localize "lancer.actionTracker.actions.protocol"
-            }}</span>{{/if}}
-      </a>
-      <hr class="v-divide" role="separator" aria-orientation="vertical" />
-      <a
-        class="action {{#if actions.move}}lancer-move{{/if}}"
-        data-action="move"
-        role="button"
-        tabindex="0"
-        aria-label='{{localize "lancer.actionTracker.actions.move"}}'
-      >
-        <i class="mdi mdi-arrow-right-bold-hexagon-outline theme--dark white--text" aria-hidden="true"></i>
-        {{#if showTextLabels}}<span class="action-text">{{localize "lancer.actionTracker.actions.move"}}</span>{{/if}}
-      </a>
-      <a
-        class="action {{#if actions.full}}lancer-full{{/if}}"
-        data-action="full"
-        role="button"
-        tabindex="0"
-        aria-label='{{localize "lancer.actionTracker.actions.full"}}'
-      >
-        <i class="mdi mdi-hexagon-slice-6 theme--dark white--text" aria-hidden="true"></i>
-        {{#if showTextLabels}}<span class="action-text">{{localize "lancer.actionTracker.actions.full"}}</span>{{/if}}
-      </a>
-      <a
-        class="action {{#if actions.quick}}lancer-quick{{/if}}"
-        data-action="quick"
-        role="button"
-        tabindex="0"
-        aria-label='{{localize "lancer.actionTracker.actions.quick"}}'
-      >
-        <i class="mdi mdi-hexagon-slice-3 theme--dark white--text" aria-hidden="true"></i>
-        {{#if showTextLabels}}<span class="action-text">{{localize "lancer.actionTracker.actions.quick"}}</span>{{/if}}
-      </a>
-      <a
-        class="action {{#if actions.reaction}}lancer-reaction{{/if}}"
-        data-action="reaction"
-        role="button"
-        tabindex="0"
-        aria-label='{{localize "lancer.actionTracker.actions.reaction"}}'
-      >
-        <i class="cci cci-reaction theme--dark white--text" aria-hidden="true"></i>
-        {{#if showTextLabels}}<span class="action-text">{{
-              localize "lancer.actionTracker.actions.reaction"
-            }}</span>{{/if}}
-      </a>
-    </div>
+    >
+    </button>
+    {{#if actions}}
+      <div class="action-bar" role="toolbar" aria-label='{{localize "lancer.actionTracker.toolbar"}}'>
+        <a
+          class="action {{#if actions.protocol}}lancer-protocol{{/if}}"
+          data-action="protocol"
+          role="button"
+          tabindex="0"
+          aria-label='{{localize "lancer.actionTracker.actions.protocol"}}'
+        >
+          <i class="cci cci-protocol theme--dark white--text" aria-hidden="true"></i>
+          {{#if showTextLabels}}<span class="action-text">{{
+                localize "lancer.actionTracker.actions.protocol"
+              }}</span>{{/if}}
+        </a>
+        <hr class="v-divide" role="separator" aria-orientation="vertical" />
+        <a
+          class="action {{#if actions.move}}lancer-move{{/if}}"
+          data-action="move"
+          role="button"
+          tabindex="0"
+          aria-label='{{localize "lancer.actionTracker.actions.move"}}'
+        >
+          <i class="mdi mdi-arrow-right-bold-hexagon-outline theme--dark white--text" aria-hidden="true"></i>
+          {{#if showTextLabels}}<span class="action-text">{{localize "lancer.actionTracker.actions.move"}}</span>{{/if}}
+        </a>
+        <a
+          class="action {{#if actions.full}}lancer-full{{/if}}"
+          data-action="full"
+          role="button"
+          tabindex="0"
+          aria-label='{{localize "lancer.actionTracker.actions.full"}}'
+        >
+          <i class="mdi mdi-hexagon-slice-6 theme--dark white--text" aria-hidden="true"></i>
+          {{#if showTextLabels}}<span class="action-text">{{localize "lancer.actionTracker.actions.full"}}</span>{{/if}}
+        </a>
+        <a
+          class="action {{#if actions.quick}}lancer-quick{{/if}}"
+          data-action="quick"
+          role="button"
+          tabindex="0"
+          aria-label='{{localize "lancer.actionTracker.actions.quick"}}'
+        >
+          <i class="mdi mdi-hexagon-slice-3 theme--dark white--text" aria-hidden="true"></i>
+          {{#if showTextLabels}}<span class="action-text">{{
+                localize "lancer.actionTracker.actions.quick"
+              }}</span>{{/if}}
+        </a>
+        <a
+          class="action {{#if actions.reaction}}lancer-reaction{{/if}}"
+          data-action="reaction"
+          role="button"
+          tabindex="0"
+          aria-label='{{localize "lancer.actionTracker.actions.reaction"}}'
+        >
+          <i class="cci cci-reaction theme--dark white--text" aria-hidden="true"></i>
+          {{#if showTextLabels}}<span class="action-text">{{
+                localize "lancer.actionTracker.actions.reaction"
+              }}</span>{{/if}}
+        </a>
+      </div>
+    {{/if}}
   </div>
 </div>

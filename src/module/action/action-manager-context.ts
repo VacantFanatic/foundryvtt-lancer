@@ -60,7 +60,3 @@ export function buildActionManagerRenderContext(options: {
     positionWidth: resolveActionManagerWidth(position),
   };
 }
-
-export function shouldShowActionManagerSurface(context: Pick<ActionManagerRenderContext, "actions">): boolean {
-  return context.actions != null;
-}

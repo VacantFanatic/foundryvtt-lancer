@@ -5,7 +5,6 @@ import {
   resolveActionManagerWidth,
   isTokenInCombatEncounter,
   resolveActionManagerActor,
-  shouldShowActionManagerSurface,
 } from "../src/module/action/action-manager-context.ts";
 
 function mechActor(name = "Test Mech") {
@@ -51,17 +50,17 @@ describe("action manager context", () => {
     assert.equal(context.name, "TEST MECH");
     assert.equal(context.actions?.move, 4);
     assert.equal(context.positionWidth, 300);
-    assert.equal(shouldShowActionManagerSurface(context), true);
   });
 
-  it("hides the surface when no actor is selected", () => {
+  it("returns null actions when no actor is selected", () => {
     const context = buildActionManagerRenderContext({
       actor: null,
       clickable: true,
       showTextLabels: false,
       position: { width: 300 },
     });
-    assert.equal(shouldShowActionManagerSurface(context), false);
+    assert.equal(context.actions, null);
+    assert.equal(context.name, undefined);
   });
 
   it("resolves numeric widths for the surface style", () => {

@@ -1,3 +1,10 @@
+# 3.1.12 (2026-06-09)
+
+## Fixed
+
+- **Combat tracker** — merge tracker fields onto the shared render context so `turns` are not dropped when Foundry returns tracker-only data from `_prepareTrackerContext`. Preserve core `CombatTracker` click actions by merging `DEFAULT_OPTIONS`.
+- **Action tracker HUD** — always show the drag handle (even without a selected combatant), restore flex layout on the control row, move the HUD via `setPosition`, and use `pointer-events` so the transparent host does not block canvas token selection.
+
 # 3.1.11 (2026-06-09)
 
 ## Fixed

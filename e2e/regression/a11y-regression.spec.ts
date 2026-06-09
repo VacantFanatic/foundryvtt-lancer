@@ -37,7 +37,6 @@ test.describe("Accessibility regression @regression", () => {
         {
           showTextLabels: false,
           clickable: true,
-          showSurface: true,
           positionWidth: 300,
           name: "E2E",
           actions: { protocol: true, move: true, full: false, quick: false },

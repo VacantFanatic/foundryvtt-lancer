@@ -69,10 +69,7 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
       showTextLabels: trackerSettings.showTextLabels,
       position: this.position,
     });
-    return foundry.utils.mergeObject(context, {
-      ...data,
-      showSurface: data.actions != null,
-    });
+    return foundry.utils.mergeObject(context, data);
   }
 
   // DATA BINDING
@@ -145,8 +142,7 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
     const root = this.element;
     if (!root) return;
 
-    // Enable dragging.
-    this.dragElement(root);
+    this.bindDragHandle();
 
     // Enable reset.
     root.querySelector("#action-manager-reset")?.addEventListener("click", async e => {
@@ -204,69 +200,38 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
 
   // HELPERS //
 
-  private dragElement(root: HTMLElement) {
-    const appPos = this.position;
-    const dragHandle = root.querySelector<HTMLElement>("#action-manager-drag");
-    if (!dragHandle) return;
-    dragHandle.onmousedown = ev => {
+  private bindDragHandle() {
+    const handle = this.element?.querySelector<HTMLElement>("#action-manager-drag");
+    if (!handle) return;
+
+    handle.onmousedown = (ev: MouseEvent) => {
       ev.preventDefault();
-      ev = ev || window.event;
+      const startX = ev.clientX;
+      const startY = ev.clientY;
+      const startLeft = this.position.left ?? LancerActionManager.DEF_LEFT;
+      const startTop = this.position.top ?? LancerActionManager.DEF_TOP;
 
-      const hud = this.element;
-      const marginLeft = parseInt(window.getComputedStyle(hud ?? root).marginLeft.replace("px", ""));
-      const marginTop = parseInt(window.getComputedStyle(hud ?? root).marginTop.replace("px", ""));
+      const onMove = (e: MouseEvent) => {
+        e.preventDefault();
+        void this.setPosition({
+          left: startLeft + (e.clientX - startX),
+          top: startTop + (e.clientY - startY),
+        });
+      };
 
-      dragElement(root);
-      let pos1 = 0,
-        pos2 = 0,
-        pos3 = 0,
-        pos4 = 0;
+      const onUp = (e: MouseEvent) => {
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+        const left = Math.max(0, startLeft + (e.clientX - startX));
+        const top = Math.max(0, startTop + (e.clientY - startY));
+        this.position.left = left;
+        this.position.top = top;
+        void this.setPosition({ left, top });
+        void game.user?.update({ flags: { lancer: { "action-manager": { pos: { top, left } } } } });
+      };
 
-      function dragElement(elmnt: HTMLElement) {
-        elmnt.onmousedown = dragMouseDown;
-
-        function dragMouseDown(e: MouseEvent) {
-          e = e || window.event;
-          e.preventDefault();
-          pos3 = e.clientX;
-          pos4 = e.clientY;
-
-          document.onmouseup = closeDragElement;
-          document.onmousemove = elementDrag;
-        }
-
-        function elementDrag(e: MouseEvent) {
-          e = e || window.event;
-          e.preventDefault();
-          // calculate the new cursor position:
-          pos1 = pos3 - e.clientX;
-          pos2 = pos4 - e.clientY;
-          pos3 = e.clientX;
-          pos4 = e.clientY;
-          // set the element's new position:
-          elmnt.style.top = elmnt.offsetTop - pos2 - marginTop + "px";
-          elmnt.style.left = elmnt.offsetLeft - pos1 - marginLeft + "px";
-        }
-
-        function closeDragElement() {
-          // stop moving when mouse button is released:
-          elmnt.onmousedown = null;
-          document.onmouseup = null;
-          document.onmousemove = null;
-          let xPos = elmnt.offsetLeft - pos1 > window.innerWidth ? window.innerWidth : elmnt.offsetLeft - pos1;
-          let yPos =
-            elmnt.offsetTop - pos2 > window.innerHeight - 20 ? window.innerHeight - 100 : elmnt.offsetTop - pos2;
-          xPos = xPos < 8 ? 0 : xPos - 10;
-          yPos = yPos < 8 ? 0 : yPos - 3;
-          if (xPos != elmnt.offsetLeft - pos1 || yPos != elmnt.offsetTop - pos2) {
-            elmnt.style.top = yPos + "px";
-            elmnt.style.left = xPos + "px";
-          }
-          game.user?.update({ flags: { lancer: { "action-manager": { pos: { top: yPos, left: xPos } } } } });
-          appPos.top = yPos;
-          appPos.left = xPos;
-        }
-      }
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
     };
   }
 

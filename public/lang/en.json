@@ -583,6 +583,7 @@
       "showTextLabels": "Show text labels",
       "showTextLabels-desc": "Show text labels beside action icons on the floating action tracker.",
       "toolbar": "Combat actions",
+      "select-token": "Select a mech or NPC in combat",
       "drag": "Drag action tracker",
       "reset": "Reset actions",
       "actions": {

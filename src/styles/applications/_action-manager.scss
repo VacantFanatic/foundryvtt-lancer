@@ -15,6 +15,12 @@
     height: fit-content;
     max-height: none;
     overflow: visible;
+    pointer-events: none;
+  }
+
+  #action-manager .lancer-action-manager-surface,
+  #action-manager .window-content {
+    pointer-events: auto;
   }
 
   #action-manager .window-content {
@@ -46,14 +52,16 @@
     -webkit-clip-path: none;
   }
 
-  #action-manager.hidden,
-  #action-manager .lancer-action-manager-surface.hidden {
-    display: none !important; // Because apparently you need to do this.
-  }
-  #action-manager-drag {
+  #action-manager-drag,
+  .action-manager-drag {
     cursor: move;
     font-size: 1.35em;
     padding: 8px 2px 0 6px;
+    border: none;
+    background: transparent;
+    color: inherit;
+    line-height: 1;
+    flex: 0 0 auto;
   }
   .action-manager-reset-wrap {
     position: absolute;
@@ -102,6 +110,8 @@
   }
 
   #action-manager .action-manager-controls {
+    display: flex;
+    flex-direction: row;
     flex: 0 0 auto;
     flex-shrink: 0;
     align-items: stretch;
