@@ -2,6 +2,7 @@ import tippy from "tippy.js";
 import type { ActionTrackingData, ActionType } from ".";
 import type { LancerActor } from "../actor/lancer-actor";
 import { LANCER } from "../config";
+import { buildActionManagerRenderContext, resolveActionManagerActor } from "./action-manager-context";
 import { getActions, modAction, toggleAction } from "./action-tracker";
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -62,14 +63,16 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
   async _prepareContext(options: Record<string, unknown>) {
     const context = await super._prepareContext(options);
     const trackerSettings = game.settings.get(game.system.id, LANCER.setting_actionTracker);
-    const data = {
-      position: this.position,
-      name: this.target && this.target.name.toLocaleUpperCase(),
-      actions: this.getActions(),
-      clickable: game.user?.isGM || trackerSettings.allowPlayers,
+    const data = buildActionManagerRenderContext({
+      actor: this.target,
+      clickable: !!(game.user?.isGM || trackerSettings.allowPlayers),
       showTextLabels: trackerSettings.showTextLabels,
-    };
-    return foundry.utils.mergeObject(context, data);
+      position: this.position,
+    });
+    return foundry.utils.mergeObject(context, {
+      ...data,
+      showSurface: data.actions != null,
+    });
   }
 
   // DATA BINDING
@@ -110,14 +113,7 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
   private async updateControlledToken() {
     if (!canvas.ready) return;
     const token = canvas.tokens?.controlled?.[0];
-    if (token && token.inCombat && token.actor) {
-      const actor = token.actor as LancerActor;
-      if (actor.is_mech() || actor.is_npc()) {
-        this.target = token.actor;
-        return;
-      }
-    }
-    this.target = null;
+    this.target = resolveActionManagerActor(token);
   }
 
   /**

@@ -1,4 +1,7 @@
-<div class="lancer-action-manager-surface clipped card {{#unless actions}}hidden{{/unless}} {{#unless clickable}}noclick{{/unless}}">
+<div
+  class="lancer-action-manager-surface clipped card {{#unless showSurface}}hidden{{/unless}} {{#unless clickable}}noclick{{/unless}}"
+  style="width: {{positionWidth}}px"
+>
   <div class="action-label">
     <div>{{name}}</div>
     {{#if clickable}}

@@ -443,9 +443,8 @@ export function npc_tier_selector(tier_path: string, options: HelperOptions) {
 
 export function is_combatant(actor: LancerActor) {
   const combat = game.combat;
-  if (combat) {
-    return combat.combatants.find(comb => comb.actor?.uuid == actor.uuid);
-  }
+  if (!combat) return false;
+  return !!combat.combatants.find(comb => comb.actor?.uuid == actor.uuid);
 }
 
 // Create a div with flags for dropping native pilots/mechs/npcs
