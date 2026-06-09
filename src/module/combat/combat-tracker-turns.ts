@@ -75,7 +75,7 @@ export function enrichCombatTrackerTurns(
 
     return {
       ...t,
-      css: `${t.css} ${COMBAT_TRACKER_DISPOSITION_CLASSES[combatant?.disposition ?? -2]}`.trim(),
+      css: `${String(t.css ?? "").trim()} ${COMBAT_TRACKER_DISPOSITION_CLASSES[combatant?.disposition ?? -2]}`.trim(),
       buttons,
       activations: combatant?.activations.max,
       pending: combatant?.activations.value,

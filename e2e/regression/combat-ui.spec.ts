@@ -11,6 +11,10 @@ test.describe("Combat UI @regression", () => {
     await joinLancerWorld(page);
     await seedRegressionWorld(page);
     await waitForCanvasReady(page);
+    await page.evaluate(() => {
+      ui.sidebar?.expand?.();
+      ui.sidebar?.changeTab?.("combat", "primary");
+    });
   });
 
   test("combat tracker lists combatants after adding a token", async ({ page }) => {
@@ -25,12 +29,14 @@ test.describe("Combat UI @regression", () => {
       if (!tokenDoc.combatant) await tokenDoc.toggleCombatant(true);
 
       ui.combat.viewed = combat;
-      await ui.combat.render();
+      if (!combat.turns?.length) combat.setupTurns();
+      await combat.startCombat();
+      await ui.combat.render({ parts: ["header", "tracker", "footer"] });
 
       const selectors = [
-        "#combat-tracker li.combatant",
         "ol.combat-tracker li.combatant",
-        ".combat-tracker li.combatant",
+        "#combat-tracker li.combatant",
+        "[data-application-part='tracker'] li.combatant",
         "#combat li.combatant",
       ];
       const counts = Object.fromEntries(selectors.map(sel => [sel, document.querySelectorAll(sel).length]));
@@ -52,29 +58,38 @@ test.describe("Combat UI @regression", () => {
 
   test("action manager shows drag handle and action icons for in-combat token", async ({ page }) => {
     const result = await page.evaluate(async () => {
+      const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+      for (let i = 0; i < 80 && !canvas?.ready; i++) await wait(250);
+
       const npc = game.actors.find(a => a.name === "E2E Test NPC");
       const scene = game.scenes.active;
       const tokenDoc = scene?.tokens.find(t => t.actorId === npc?.id);
       if (!npc || !tokenDoc) throw new Error("Seed NPC token missing");
 
       let combat = game.combats?.find(c => c.scene?.id === scene!.id);
-      if (!combat) combat = await Combat.create({ scene: scene!.id });
-      if (!tokenDoc.combatant) await tokenDoc.toggleCombatant(true);
+      if (!combat) combat = await Combat.create({ scene: scene!.id, active: true });
+      if (!tokenDoc.combatant) {
+        await combat.createEmbeddedDocuments("Combatant", [
+          { tokenId: tokenDoc.id, sceneId: scene!.id, actorId: tokenDoc.actorId, name: tokenDoc.name },
+        ]);
+      }
+      await combat.startCombat();
 
       const token = tokenDoc.object;
       if (!token) throw new Error("Token placeable missing");
-      if (!canvas.ready) throw new Error("Canvas not ready");
       token.control({ releaseOthers: true });
 
       if (!game.action_manager) throw new Error("action_manager not initialized");
-      if (!game.action_manager.enabled) throw new Error("action_manager not enabled");
+      await game.action_manager.updateConfig();
       await game.action_manager.update();
+      await wait(500);
 
       const root = document.querySelector("#action-manager");
       return {
         hasRoot: !!root,
         hasDrag: !!root?.querySelector("#action-manager-drag"),
         iconCount: root?.querySelectorAll("a.action[data-lancer-action]").length ?? 0,
+        actions: game.action_manager.target ? !!game.action_manager : false,
         label: root?.querySelector(".action-label div")?.textContent ?? "",
         html: root?.innerHTML?.slice(0, 400) ?? "",
         enabled: game.action_manager.enabled,
@@ -92,6 +107,9 @@ test.describe("Combat UI @regression", () => {
   test("action manager shows icons for in-combat mech token", async ({ page }) => {
     const seed = await seedRegressionWorld(page);
     const result = await page.evaluate(async ({ mechId }) => {
+      const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+      for (let i = 0; i < 80 && !canvas?.ready; i++) await wait(250);
+
       const mech = game.actors.get(mechId);
       const scene = game.scenes.active;
       if (!mech || !scene) throw new Error("Mech or scene missing");
@@ -112,17 +130,24 @@ test.describe("Combat UI @regression", () => {
       }
 
       let combat = game.combats?.find(c => c.scene?.id === scene.id);
-      if (!combat) combat = await Combat.create({ scene: scene.id });
-      if (!tokenDoc.combatant) await tokenDoc.toggleCombatant(true);
+      if (!combat) combat = await Combat.create({ scene: scene.id, active: true });
+      if (!tokenDoc.combatant) {
+        await combat.createEmbeddedDocuments("Combatant", [
+          { tokenId: tokenDoc.id, sceneId: scene.id, actorId: tokenDoc.actorId, name: tokenDoc.name },
+        ]);
+      }
+      await combat.startCombat();
 
       const token = tokenDoc.object;
       if (!token) throw new Error("Mech token placeable missing");
       token.control({ releaseOthers: true });
 
+      await game.action_manager?.updateConfig();
       await game.action_manager?.update();
 
       const root = document.querySelector("#action-manager");
       return {
+        enabled: !!game.action_manager?.enabled,
         hasTarget: !!game.action_manager?.target,
         iconCount: root?.querySelectorAll("a.action[data-lancer-action]").length ?? 0,
         label: root?.querySelector(".action-label div")?.textContent ?? "",

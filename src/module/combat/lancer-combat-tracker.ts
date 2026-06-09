@@ -1,6 +1,6 @@
 import { LANCER } from "../config.js";
 import type { CombatTrackerAppearance } from "../settings.js";
-import { enrichCombatTrackerTurns, mergeCombatTrackerContext } from "./combat-tracker-turns.js";
+import { enrichCombatTrackerTurns } from "./combat-tracker-turns.js";
 import type { LancerCombat, LancerCombatant } from "./lancer-combat.js";
 
 import ContextMenu = foundry.applications.ux.ContextMenu;
@@ -26,23 +26,26 @@ export class LancerCombatTracker extends foundry.applications.sidebar.tabs.Comba
     {
       tracker: {
         template: "systems/lancer/templates/combat/tracker.hbs",
-        scrollable: [".directory-list"],
       },
     },
     { inplace: false }
   );
 
-  protected override async _preparePartContext(partId: string, context: any, options: any) {
-    const partContext = await super._preparePartContext(partId, context, options);
-    if (partId !== "tracker") return partContext;
-    const merged = foundry.utils.mergeObject(context, partContext ?? {}, { inplace: false });
-    return this.#enrichTrackerPartContext(merged, options);
-  }
-
   async _prepareTrackerContext(ctx: any, opts: any) {
     const combat = this.viewed;
-    if (combat?.combatants.size && !combat.turns?.length) combat.setupTurns();
+    if (!combat) return ctx;
+
+    if (combat.combatants.size && !combat.turns?.length) combat.setupTurns();
     await super._prepareTrackerContext(ctx, opts);
+
+    // Core skips non-visible combatants; ensure GM still sees a row per combatant in the list.
+    if (!ctx.turns?.length && combat.combatants.size) {
+      ctx.turns = [];
+      for (const [i, combatant] of combat.turns.entries()) {
+        ctx.turns.push(await this._prepareTurnContext(combat, combatant, i));
+      }
+    }
+
     return this.#enrichTrackerPartContext(ctx, opts);
   }
 

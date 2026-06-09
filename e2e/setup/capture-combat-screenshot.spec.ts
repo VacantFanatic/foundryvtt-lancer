@@ -13,7 +13,10 @@ test("capture combat tracker and action manager screenshot", async ({ page }) =>
   await joinLancerWorld(page);
   const seed = await seedRegressionWorld(page);
 
-  await page.locator('#sidebar-tabs [data-tab="combat"], nav.tabs [data-tab="combat"]').first().click();
+  await page.evaluate(() => {
+    ui.sidebar?.expand?.();
+    ui.sidebar?.changeTab?.("combat", "primary");
+  });
   await page.waitForTimeout(500);
 
   const state = await page.evaluate(async ({ mechId, npcId }) => {
@@ -81,11 +84,15 @@ test("capture combat tracker and action manager screenshot", async ({ page }) =>
 
     const root = document.querySelector("#action-manager");
     await wait(600);
-    const trackerRoot = document.querySelector("#combat-tracker, #combat .directory-list, ol.combat-tracker");
+    const combatEl = ui.combat?.element;
+    const trackerPart = combatEl?.querySelector('[data-application-part="tracker"]');
+    const trackerRoot = trackerPart ?? document.querySelector("ol.combat-tracker, #combat-tracker");
     const trackerLi = document.querySelectorAll(
-      "#combat-tracker li.combatant, ol.combat-tracker li.combatant, #combat li.combatant"
+      "ol.combat-tracker li.combatant, #combat-tracker li.combatant, #combat li.combatant"
     ).length;
     return {
+      combatRendered: !!combatEl,
+      trackerPartHtml: trackerPart?.outerHTML?.slice(0, 300) ?? "",
       combatants: combat.combatants.size,
       turnsInContext: (ui.combat as any).viewed?.combatants?.size ?? 0,
       trackerHtmlLen: trackerRoot?.innerHTML?.length ?? 0,
