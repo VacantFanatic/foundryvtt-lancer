@@ -3,6 +3,7 @@
 ## Changed
 
 - **Mech sheet header layout** — pilot and frame labels are right-aligned, the pilot portrait is enlarged, and the mech portrait fills the header image panel.
+- **Mech inventory window** — the View Inventory dialog now uses a bounded height with a scrollable body so long inventories show a scrollbar.
 
 # 3.1.9 (2026-06-08)
 

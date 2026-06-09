@@ -30,8 +30,12 @@ export class InventoryDialog extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static DEFAULT_OPTIONS = {
     id: "lancer-inventory-editor",
-    position: { width: 600, height: "auto" },
+    position: { width: 600, height: 520 },
     classes: ["lancer", "inventory-editor"],
+    scrollY: [".inventory-editor-body"],
+    window: {
+      resizable: true,
+    },
   };
 
   get actor(): LancerActor {

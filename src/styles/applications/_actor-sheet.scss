@@ -1062,6 +1062,22 @@
     }
   }
 
+  .application.lancer.inventory-editor {
+    .window-content {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+  }
+
+  .inventory-editor-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    gap: 0.35rem;
+  }
+
   .import-result-section {
     margin-top: 0.75rem;
   }
