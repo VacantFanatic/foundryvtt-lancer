@@ -23,14 +23,32 @@ export class LancerCombatTracker extends foundry.applications.sidebar.tabs.Comba
   );
   static PARTS = foundry.utils.mergeObject(
     foundry.applications.sidebar.tabs.CombatTracker.PARTS,
-    { tracker: { template: "systems/lancer/templates/combat/tracker.hbs" } },
+    {
+      tracker: {
+        template: "systems/lancer/templates/combat/tracker.hbs",
+        scrollable: [".directory-list"],
+      },
+    },
     { inplace: false }
   );
 
+  protected override async _preparePartContext(partId: string, context: any, options: any) {
+    const partContext = await super._preparePartContext(partId, context, options);
+    if (partId !== "tracker") return partContext;
+    const merged = foundry.utils.mergeObject(context, partContext ?? {}, { inplace: false });
+    return this.#enrichTrackerPartContext(merged, options);
+  }
+
   async _prepareTrackerContext(ctx: any, opts: any) {
+    const combat = this.viewed;
+    if (combat?.combatants.size && !combat.turns?.length) combat.setupTurns();
+    await super._prepareTrackerContext(ctx, opts);
+    return this.#enrichTrackerPartContext(ctx, opts);
+  }
+
+  #enrichTrackerPartContext(ctx: any, _opts: any) {
     const appearance = game.settings.get(game.system.id, LANCER.setting_combat_appearance);
-    mergeCombatTrackerContext(ctx, await super._prepareTrackerContext(ctx, opts));
-    const targetNames = (game.user?.targets ?? [])
+    const targetNames = Array.from(game.user?.targets ?? [])
       .map(t => t.document?.name ?? t.name)
       .filter(Boolean)
       .join(", ");

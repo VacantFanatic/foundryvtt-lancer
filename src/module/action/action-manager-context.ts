@@ -10,7 +10,7 @@ export interface ActionManagerActorLike {
   name: string;
   is_mech(): boolean;
   is_npc(): boolean;
-  system: { action_tracker: ActionTrackingData };
+  system: { action_tracker?: ActionTrackingData; speed?: number };
 }
 
 export interface ActionManagerRenderContext {
@@ -29,14 +29,28 @@ export function resolveActionManagerActor(
   token: ActionManagerTokenLike | null | undefined
 ): ActionManagerActorLike | null {
   if (!token?.actor) return null;
-  if (!isTokenInCombatEncounter(token)) return null;
   if (!token.actor.is_mech() && !token.actor.is_npc()) return null;
+  if (!isTokenInCombatEncounter(token)) return null;
   return token.actor;
 }
 
-export function getActionTrackerData(actor: ActionManagerActorLike): ActionTrackingData | null {
-  if (!actor.is_mech() && !actor.is_npc()) return null;
-  return actor.system.action_tracker ?? null;
+export function defaultActionTrackerData(actor: ActionManagerActorLike): ActionTrackingData {
+  return {
+    protocol: true,
+    move: actor.system.speed ?? 0,
+    full: true,
+    quick: true,
+    reaction: true,
+  };
+}
+
+export function getActionTrackerData(actor: ActionManagerActorLike): ActionTrackingData {
+  if (!actor.is_mech() && !actor.is_npc()) {
+    return defaultActionTrackerData(actor);
+  }
+  const tracker = actor.system.action_tracker;
+  if (tracker && typeof tracker === "object") return tracker;
+  return defaultActionTrackerData(actor);
 }
 
 export function resolveActionManagerWidth(position: { width?: number | string }): number {

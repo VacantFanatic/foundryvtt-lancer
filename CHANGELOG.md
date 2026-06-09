@@ -1,3 +1,10 @@
+# 3.1.13 (2026-06-09)
+
+## Fixed
+
+- **Combat tracker** — enrich tracker data in `_preparePartContext`, restore `#combat-tracker` / `directory-list` markup expected by Foundry v14, and merge `turns` from super without dropping them. Fixes [#121](https://github.com/VacantFanatic/foundryvtt-lancer/issues/121).
+- **Action tracker HUD** — prepare body part context for Application V2, use `data-lancer-action` (avoids conflicting with AppV2 `data-action` handlers), default missing `action_tracker` data, and fix controlled-token actor binding. Fixes [#124](https://github.com/VacantFanatic/foundryvtt-lancer/issues/124).
+
 # 3.1.12 (2026-06-09)
 
 ## Fixed

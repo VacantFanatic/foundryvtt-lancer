@@ -80,4 +80,27 @@ describe("combat tracker turns", () => {
     assert.equal(merged.turns?.[0]?.id, "c1");
     assert.equal((merged as { user?: { isGM: boolean } }).user?.isGM, true);
   });
+
+  it("builds target summary from collection-like target sets", () => {
+    const targets = {
+      [Symbol.iterator]: function* () {
+        yield { document: { name: "Hostile A" } };
+        yield { name: "Hostile B" };
+      },
+      map<T>(fn: (t: { document?: { name: string }; name: string }) => T): T[] {
+        return Array.from(this as Iterable<{ document?: { name: string }; name: string }>, fn);
+      },
+    };
+    const summary = Array.from(targets as unknown as Iterable<{ document?: { name: string }; name: string }>)
+      .map(t => t.document?.name ?? t.name)
+      .filter(Boolean)
+      .join(", ");
+    assert.equal(summary, "Hostile A, Hostile B");
+  });
+
+  it("mergeCombatTrackerContext uses turns from tracker fields when provided", () => {
+    const ctx = { user: { isGM: true }, turns: [turn("old")] };
+    const merged = mergeCombatTrackerContext(ctx, { turns: [turn("new")] });
+    assert.equal(merged.turns?.[0]?.id, "new");
+  });
 });

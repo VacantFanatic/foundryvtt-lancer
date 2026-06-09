@@ -44,7 +44,7 @@ test.describe("Accessibility regression @regression", () => {
       );
       const div = document.createElement("div");
       div.innerHTML = html;
-      const controls = div.querySelectorAll("[data-action], #action-manager-reset, #action-manager-drag");
+      const controls = div.querySelectorAll("[data-lancer-action], #action-manager-reset, #action-manager-drag");
       return controls.length >= 3 && Array.from(controls).every(b => b.hasAttribute("aria-label"));
     });
     expect(allLabeled).toBe(true);

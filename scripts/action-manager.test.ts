@@ -63,6 +63,23 @@ describe("action manager context", () => {
     assert.equal(context.name, undefined);
   });
 
+  it("returns default action data when action_tracker is missing on actor", () => {
+    const actor = {
+      name: "Fallback Mech",
+      is_mech: () => true,
+      is_npc: () => false,
+      system: { speed: 4 },
+    };
+    const context = buildActionManagerRenderContext({
+      actor,
+      clickable: true,
+      showTextLabels: false,
+      position: { width: 300 },
+    });
+    assert.equal(context.actions?.move, 4);
+    assert.equal(context.actions?.full, true);
+  });
+
   it("resolves numeric widths for the surface style", () => {
     assert.equal(resolveActionManagerWidth({ width: 280 }), 280);
     assert.equal(resolveActionManagerWidth({ width: "320" }), 320);

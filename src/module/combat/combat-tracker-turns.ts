@@ -16,6 +16,8 @@ export interface CombatTrackerTurnInput {
   canPing: boolean;
   resource: string | null;
   pending?: number;
+  effects?: { tooltip?: string; icons?: { img: string; name?: string }[] };
+  buttons?: CombatTrackerTurnButton[];
 }
 
 export interface CombatTrackerTurnButton {
@@ -48,8 +50,9 @@ export function mergeCombatTrackerContext<T extends { turns?: CombatTrackerTurnI
   ctx: T,
   trackerFields?: Partial<T> | void
 ): T {
-  if (trackerFields) Object.assign(ctx, trackerFields);
-  return ctx;
+  if (!trackerFields) return ctx;
+  if (trackerFields.turns) ctx.turns = trackerFields.turns;
+  return Object.assign(ctx, trackerFields);
 }
 
 export function enrichCombatTrackerTurns(
@@ -68,12 +71,18 @@ export function enrichCombatTrackerTurns(
       buttons.push({ icon: appearance.deactivate, action: "deactivateCombatantTurn" });
     }
 
+    const effects = t.effects ?? { tooltip: "", icons: [] };
+
     return {
       ...t,
       css: `${t.css} ${COMBAT_TRACKER_DISPOSITION_CLASSES[combatant?.disposition ?? -2]}`.trim(),
       buttons,
       activations: combatant?.activations.max,
       pending: combatant?.activations.value,
+      effects: {
+        tooltip: effects.tooltip ?? "",
+        icons: effects.icons ?? [],
+      },
     };
   });
 

@@ -60,16 +60,25 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
     }
   }
 
-  async _prepareContext(options: Record<string, unknown>) {
-    const context = await super._prepareContext(options);
+  #actionManagerContext(): ReturnType<typeof buildActionManagerRenderContext> {
     const trackerSettings = game.settings.get(game.system.id, LANCER.setting_actionTracker);
-    const data = buildActionManagerRenderContext({
+    return buildActionManagerRenderContext({
       actor: this.target,
       clickable: !!(game.user?.isGM || trackerSettings.allowPlayers),
       showTextLabels: trackerSettings.showTextLabels,
       position: this.position,
     });
-    return foundry.utils.mergeObject(context, data);
+  }
+
+  async _prepareContext(options: Record<string, unknown>) {
+    const context = await super._prepareContext(options);
+    return foundry.utils.mergeObject(context, this.#actionManagerContext());
+  }
+
+  protected override async _preparePartContext(partId: string, context: any, options: any) {
+    const partContext = await super._preparePartContext(partId, context, options);
+    if (partId !== "body") return partContext;
+    return foundry.utils.mergeObject(partContext ?? context, this.#actionManagerContext());
   }
 
   // DATA BINDING
@@ -110,7 +119,8 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
   private async updateControlledToken() {
     if (!canvas.ready) return;
     const token = canvas.tokens?.controlled?.[0];
-    this.target = resolveActionManagerActor(token);
+    const actor = resolveActionManagerActor(token);
+    this.target = actor ? (token!.actor as LancerActor) : null;
   }
 
   /**
@@ -155,11 +165,12 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
     });
 
     // Enable action toggles.
-    root.querySelectorAll<HTMLAnchorElement>("a.action[data-action]").forEach(anchor =>
+    root.querySelectorAll<HTMLAnchorElement>("a.action[data-lancer-action]").forEach(anchor =>
       anchor.addEventListener("click", async e => {
         e.preventDefault();
+        e.stopPropagation();
         if (this.canMod()) {
-          const action = (e.currentTarget as HTMLElement).dataset.action;
+          const action = (e.currentTarget as HTMLElement).dataset.lancerAction;
           if (action && this.target) {
             await toggleAction(this.target, action as ActionType);
             await this.update();
@@ -190,12 +201,12 @@ export class LancerActionManager extends HandlebarsApplicationMixin(ApplicationV
 
   private loadTooltips() {
     const localizeTip = (key: string) => game.i18n.localize(key);
-    tippy('.action[data-action="protocol"]', { content: localizeTip("lancer.actionTracker.actions.protocol") });
-    tippy('.action[data-action="full"]', { content: localizeTip("lancer.actionTracker.actions.full") });
-    tippy('.action[data-action="quick"]', { content: localizeTip("lancer.actionTracker.actions.quick") });
-    tippy('.action[data-action="move"]', { content: localizeTip("lancer.actionTracker.actions.move") });
-    tippy('.action[data-action="reaction"]', { content: localizeTip("lancer.actionTracker.actions.reaction") });
-    tippy('.action[data-action="free"]', { content: localizeTip("lancer.actionTracker.actions.free") });
+    tippy('.action[data-lancer-action="protocol"]', { content: localizeTip("lancer.actionTracker.actions.protocol") });
+    tippy('.action[data-lancer-action="full"]', { content: localizeTip("lancer.actionTracker.actions.full") });
+    tippy('.action[data-lancer-action="quick"]', { content: localizeTip("lancer.actionTracker.actions.quick") });
+    tippy('.action[data-lancer-action="move"]', { content: localizeTip("lancer.actionTracker.actions.move") });
+    tippy('.action[data-lancer-action="reaction"]', { content: localizeTip("lancer.actionTracker.actions.reaction") });
+    tippy('.action[data-lancer-action="free"]', { content: localizeTip("lancer.actionTracker.actions.free") });
   }
 
   // HELPERS //

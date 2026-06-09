@@ -14,6 +14,7 @@ export const preloadTemplates = async function () {
     // Combat tracker & settings UI
     `systems/${game.system.id}/templates/combat/combat-tracker-config.hbs`,
     `systems/${game.system.id}/templates/combat/combat-tracker.hbs`,
+    `systems/${game.system.id}/templates/combat/tracker.hbs`,
     // Item sheets
     `systems/${game.system.id}/templates/item/bond.hbs`,
     `systems/${game.system.id}/templates/item/core_bonus.hbs`,
