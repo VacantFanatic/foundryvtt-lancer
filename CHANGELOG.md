@@ -1,3 +1,9 @@
+# 3.1.10 (2026-06-09)
+
+## Changed
+
+- **Mech sheet header layout** — pilot and frame labels are right-aligned, the pilot portrait is enlarged, and the mech portrait fills the header image panel.
+
 # 3.1.9 (2026-06-08)
 
 ## Fixed
