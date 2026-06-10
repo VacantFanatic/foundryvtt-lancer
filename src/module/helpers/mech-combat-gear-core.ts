@@ -57,8 +57,7 @@ export function buildCompactWeaponCardHtml(weaponName: string, weaponPath: strin
       <img class="mech-combat-gear-thumb" src="${imgSrc}" alt="" width="32" height="32" />
       <span class="mech-combat-gear-name minor">${weaponName}</span>
       <button type="button" class="roll-attack lancer-button lancer-secondary mech-combat-action-button" data-tooltip="Roll attack">
-        <i class="fas fa-dice-d20 i--4 i--dark" aria-hidden="true"></i>
-        <span>FIRE</span>
+        <i class="fas fa-dice-d20 i--dark" aria-hidden="true"></i>
       </button>
     </div>`;
 }
@@ -70,8 +69,7 @@ export function buildCompactSystemCardHtml(systemName: string, systemPath: strin
       <img class="mech-combat-gear-thumb" src="${imgSrc}" alt="" width="32" height="32" />
       <span class="mech-combat-gear-name minor">${systemName}</span>
       <a class="chat-flow-button lancer-button lancer-secondary mech-combat-action-button" data-tooltip="Use system">
-        <i class="mdi mdi-message i--4" aria-hidden="true"></i>
-        <span>USE</span>
+        <i class="mdi mdi-message" aria-hidden="true"></i>
       </a>
     </div>`;
 }

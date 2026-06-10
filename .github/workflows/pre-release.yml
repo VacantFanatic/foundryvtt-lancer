@@ -5,6 +5,12 @@ on:
     tags:
       - "pre-v*"
       - "v*-rc*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release, without the 'v' prefix (e.g. 3.1.13-rc1)"
+        required: true
+        type: string
 
 jobs:
   build:
@@ -17,19 +23,26 @@ jobs:
       - uses: actions/checkout@v4
 
       # Set up variables for future use.
-      # Supports both legacy "pre-v1.0.0" and "v1.0.0-rc1" tag formats.
+      # Supports manual dispatch (version input), legacy "pre-v1.0.0", and "v1.0.0-rc1" tag formats.
       # BASE_VERSION strips any -rc* suffix so it can be compared to system.json.
       - name: Set up variables
         id: vars
+        env:
+          EVENT: ${{ github.event_name }}
+          INPUT_VERSION: ${{ github.event.inputs.version }}
         run: |
-          TAG_NAME=${GITHUB_REF_NAME}
-          if [[ "$TAG_NAME" == pre-v* ]]; then
-            VERSION=${TAG_NAME#pre-v}
-            BASE_VERSION=$VERSION
+          if [[ "$EVENT" == "workflow_dispatch" ]]; then
+            VERSION="$INPUT_VERSION"
+            TAG_NAME="v${VERSION}"
           else
-            VERSION=${TAG_NAME#v}
-            BASE_VERSION=${VERSION%-rc*}
+            TAG_NAME=${GITHUB_REF_NAME}
+            if [[ "$TAG_NAME" == pre-v* ]]; then
+              VERSION=${TAG_NAME#pre-v}
+            else
+              VERSION=${TAG_NAME#v}
+            fi
           fi
+          BASE_VERSION=${VERSION%-rc*}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "base_version=$BASE_VERSION" >> $GITHUB_OUTPUT
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT

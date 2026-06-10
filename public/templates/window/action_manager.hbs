@@ -34,11 +34,9 @@
           role="button"
           tabindex="0"
           aria-label='{{localize "lancer.actionTracker.actions.protocol"}}'
+          data-tooltip='{{localize "lancer.actionTracker.actions.protocol"}}'
         >
           <i class="cci cci-protocol theme--dark white--text" aria-hidden="true"></i>
-          {{#if showTextLabels}}<span class="action-text">{{
-                localize "lancer.actionTracker.actions.protocol"
-              }}</span>{{/if}}
         </a>
         <hr class="v-divide" role="separator" aria-orientation="vertical" />
         <a
@@ -47,9 +45,9 @@
           role="button"
           tabindex="0"
           aria-label='{{localize "lancer.actionTracker.actions.move"}}'
+          data-tooltip='{{localize "lancer.actionTracker.actions.move"}}'
         >
           <i class="mdi mdi-arrow-right-bold-hexagon-outline theme--dark white--text" aria-hidden="true"></i>
-          {{#if showTextLabels}}<span class="action-text">{{localize "lancer.actionTracker.actions.move"}}</span>{{/if}}
         </a>
         <a
           class="action {{#if actions.full}}lancer-full{{/if}}"
@@ -57,9 +55,9 @@
           role="button"
           tabindex="0"
           aria-label='{{localize "lancer.actionTracker.actions.full"}}'
+          data-tooltip='{{localize "lancer.actionTracker.actions.full"}}'
         >
           <i class="mdi mdi-hexagon-slice-6 theme--dark white--text" aria-hidden="true"></i>
-          {{#if showTextLabels}}<span class="action-text">{{localize "lancer.actionTracker.actions.full"}}</span>{{/if}}
         </a>
         <a
           class="action {{#if actions.quick}}lancer-quick{{/if}}"
@@ -67,11 +65,9 @@
           role="button"
           tabindex="0"
           aria-label='{{localize "lancer.actionTracker.actions.quick"}}'
+          data-tooltip='{{localize "lancer.actionTracker.actions.quick"}}'
         >
           <i class="mdi mdi-hexagon-slice-3 theme--dark white--text" aria-hidden="true"></i>
-          {{#if showTextLabels}}<span class="action-text">{{
-                localize "lancer.actionTracker.actions.quick"
-              }}</span>{{/if}}
         </a>
         <a
           class="action {{#if actions.reaction}}lancer-reaction{{/if}}"
@@ -79,11 +75,9 @@
           role="button"
           tabindex="0"
           aria-label='{{localize "lancer.actionTracker.actions.reaction"}}'
+          data-tooltip='{{localize "lancer.actionTracker.actions.reaction"}}'
         >
           <i class="cci cci-reaction theme--dark white--text" aria-hidden="true"></i>
-          {{#if showTextLabels}}<span class="action-text">{{
-                localize "lancer.actionTracker.actions.reaction"
-              }}</span>{{/if}}
         </a>
       </div>
     {{/if}}
