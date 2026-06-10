@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "pre-v*"
+      - "v*-rc*"
 
 jobs:
   build:
@@ -15,23 +16,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Set up variables for future use
+      # Set up variables for future use.
+      # Supports both legacy "pre-v1.0.0" and "v1.0.0-rc1" tag formats.
+      # BASE_VERSION strips any -rc* suffix so it can be compared to system.json.
       - name: Set up variables
         id: vars
         run: |
           TAG_NAME=${GITHUB_REF_NAME}
-          VERSION=${TAG_NAME#pre-v}
+          if [[ "$TAG_NAME" == pre-v* ]]; then
+            VERSION=${TAG_NAME#pre-v}
+            BASE_VERSION=$VERSION
+          else
+            VERSION=${TAG_NAME#v}
+            BASE_VERSION=${VERSION%-rc*}
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "base_version=$BASE_VERSION" >> $GITHUB_OUTPUT
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "zip_name=lancer-${TAG_NAME}.zip" >> $GITHUB_OUTPUT
 
-      # Confirm the version in system.json matches the tag being released
+      # Confirm the base version in system.json matches the tag being released.
+      # For v1.0.0-rc1 the expected system.json version is 1.0.0.
       - name: Verify version matches system.json
         run: |
           MANIFEST_VERSION="$(python3 -c "import json; print(json.load(open('src/system.json', encoding='utf-8'))['version'])")"
-          if [[ "$MANIFEST_VERSION" != "${{ steps.vars.outputs.version }}" ]]; then
-            echo "system.json version ($MANIFEST_VERSION) does not match pre-release tag version (${{ steps.vars.outputs.version }})"
-            echo "Please update src/system.json to version ${{ steps.vars.outputs.version }} before tagging."
+          if [[ "$MANIFEST_VERSION" != "${{ steps.vars.outputs.base_version }}" ]]; then
+            echo "system.json version ($MANIFEST_VERSION) does not match pre-release tag base version (${{ steps.vars.outputs.base_version }})"
+            echo "Please update src/system.json to version ${{ steps.vars.outputs.base_version }} before tagging."
             exit 1
           fi
 
@@ -49,16 +60,21 @@ jobs:
       - name: Build For Distribution
         run: npm run build
 
-      # Patch the built manifest so its URLs point to this specific pre-release
-      # tag rather than /releases/latest. This keeps the pre-release off the
-      # public update channel — only someone with the direct URL can install it.
+      # Patch the built manifest so:
+      #   manifest → static pre-release-latest URL (never changes between RCs)
+      #   download → this specific versioned zip
+      # Using the static manifest URL means testers only need to install once;
+      # subsequent RCs show up as an update automatically.
       - name: Patch pre-release manifest URLs
         env:
           TAG: ${{ steps.vars.outputs.tag_name }}
+          VERSION: ${{ steps.vars.outputs.version }}
         run: |
           REPO_BASE="https://github.com/VacantFanatic/foundryvtt-lancer"
-          jq --arg tag "$TAG" --arg repo "$REPO_BASE" \
-            '.manifest = ($repo + "/releases/download/" + $tag + "/system.json") |
+          STATIC_MANIFEST="${REPO_BASE}/releases/download/pre-release-latest/system.json"
+          jq --arg tag "$TAG" --arg version "$VERSION" --arg repo "$REPO_BASE" --arg static_manifest "$STATIC_MANIFEST" \
+            '.version = $version |
+             .manifest = $static_manifest |
              .download = ($repo + "/releases/download/" + $tag + "/lancer-" + $tag + ".zip")' \
             dist/system.json > dist/system.json.tmp
           mv dist/system.json.tmp dist/system.json
@@ -69,8 +85,7 @@ jobs:
           cd dist
           zip -r "${{ steps.vars.outputs.zip_name }}" *
 
-      # Create a pre-release — marked prerelease:true so it does not appear as
-      # the "latest" release and will not show up in other users' update checks.
+      # Create a versioned pre-release for this specific RC/pre-release tag.
       - name: Create Pre-Release
         uses: ncipollo/release-action@v1
         with:
@@ -91,4 +106,35 @@ jobs:
             https://github.com/VacantFanatic/foundryvtt-lancer/releases/download/${{ steps.vars.outputs.tag_name }}/system.json
             ```
 
-            Once verified, promote to a full release by pushing a `v${{ steps.vars.outputs.version }}` tag.
+            Or use the **static pre-release link** (updates automatically to the latest RC):
+            ```
+            https://github.com/VacantFanatic/foundryvtt-lancer/releases/download/pre-release-latest/system.json
+            ```
+
+            Once verified, promote to a full release by pushing a `v${{ steps.vars.outputs.base_version }}` tag.
+
+      # Update the static pre-release-latest release so the permanent manifest URL
+      # always delivers system.json pointing to the most recent RC zip.
+      - name: Update static pre-release-latest
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          replacesArtifacts: true
+          name: "Pre-Release Latest"
+          draft: false
+          prerelease: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "./dist/system.json"
+          tag: "pre-release-latest"
+          body: |
+            ⚠️ **Static pre-release manifest** — always points to the latest pre-release build.
+
+            Install or update by pasting this URL into the Foundry VTT manifest field:
+            ```
+            https://github.com/VacantFanatic/foundryvtt-lancer/releases/download/pre-release-latest/system.json
+            ```
+
+            **Current pre-release:** `${{ steps.vars.outputs.tag_name }}`
+
+            This entry is updated automatically whenever a new pre-release or release candidate is published.
+            The `download` URL inside the manifest points to the specific versioned zip for that RC.

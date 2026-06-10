@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # RC tags (v1.0.0-rc1) are handled by pre-release.yml; skip them here.
+    if: ${{ !contains(github.ref_name, '-rc') }}
     permissions:
       # Required for ncipollo/release-action to create/update GitHub Releases
       contents: write
