@@ -111,6 +111,14 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     if ("system.core_energy" in updateData) {
       updateData["system.core_energy"] = normalizeCoreEnergyFormValue(updateData["system.core_energy"]);
     }
+    // FormDataExtended in ApplicationV2 does not coerce type="number" inputs to numbers;
+    // convert any string values that are valid numbers before hitting schema validation.
+    for (const key of Object.keys(updateData)) {
+      const val = updateData[key];
+      if (typeof val === "string" && val.trim() !== "" && !isNaN(Number(val))) {
+        updateData[key] = Number(val);
+      }
+    }
     this._propagateData(updateData);
     await this.actor.update(updateData);
   }

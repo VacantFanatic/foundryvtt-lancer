@@ -8,6 +8,7 @@ import type { SourceData } from "../source-template";
 import { LANCER } from "../config";
 import { countActiveEffects } from "../helpers/mech-sheet-ux-core";
 import { unmount } from "svelte";
+import { mountLoadoutEditor } from "../apps/loadout/mount";
 
 import ContextMenu = foundry.applications.ux.ContextMenu;
 
