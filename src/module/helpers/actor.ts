@@ -266,11 +266,13 @@ export function action_button(
 ): string {
   let action_val = resolveHelperDotpath(options, data_path);
   let active: boolean;
+  let tooltip: string;
   if (action == "move") {
     active = (action_val as number) > 0;
-    title = `${title} (${action_val})`;
+    tooltip = `${title} (${action_val} remaining)`;
   } else {
     active = action_val as boolean;
+    tooltip = title;
   }
 
   let enabled = false;
@@ -285,10 +287,9 @@ export function action_button(
       class="lancer-action-button lancer-button${enabled ? " enabled" : ""}${active ? ` active lancer-${action}` : ""}"
       data-action="${action}"
       data-val="${action_val}"
-  >
-    ${icon}
-    ${title}
-  </button>`;
+      data-tooltip="${tooltip}"
+      aria-label="${tooltip}"
+    >${icon}</button>`;
 }
 
 // Suitable for any macros that take a single argument: the actor uuid
