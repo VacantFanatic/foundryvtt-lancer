@@ -1,0 +1,94 @@
+name: Pre-Release Creation
+
+on:
+  push:
+    tags:
+      - "pre-v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      # Required for ncipollo/release-action to create/update GitHub Releases
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Set up variables for future use
+      - name: Set up variables
+        id: vars
+        run: |
+          TAG_NAME=${GITHUB_REF_NAME}
+          VERSION=${TAG_NAME#pre-v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "zip_name=lancer-${TAG_NAME}.zip" >> $GITHUB_OUTPUT
+
+      # Confirm the version in system.json matches the tag being released
+      - name: Verify version matches system.json
+        run: |
+          MANIFEST_VERSION="$(python3 -c "import json; print(json.load(open('src/system.json', encoding='utf-8'))['version'])")"
+          if [[ "$MANIFEST_VERSION" != "${{ steps.vars.outputs.version }}" ]]; then
+            echo "system.json version ($MANIFEST_VERSION) does not match pre-release tag version (${{ steps.vars.outputs.version }})"
+            echo "Please update src/system.json to version ${{ steps.vars.outputs.version }} before tagging."
+            exit 1
+          fi
+
+      # Set up Node
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      # Install Dependencies
+      - name: Install Dependencies
+        run: npm ci
+
+      # Build the code and packs for distribution
+      - name: Build For Distribution
+        run: npm run build
+
+      # Patch the built manifest so its URLs point to this specific pre-release
+      # tag rather than /releases/latest. This keeps the pre-release off the
+      # public update channel — only someone with the direct URL can install it.
+      - name: Patch pre-release manifest URLs
+        env:
+          TAG: ${{ steps.vars.outputs.tag_name }}
+        run: |
+          REPO_BASE="https://github.com/VacantFanatic/foundryvtt-lancer"
+          jq --arg tag "$TAG" --arg repo "$REPO_BASE" \
+            '.manifest = ($repo + "/releases/download/" + $tag + "/system.json") |
+             .download = ($repo + "/releases/download/" + $tag + "/lancer-" + $tag + ".zip")' \
+            dist/system.json > dist/system.json.tmp
+          mv dist/system.json.tmp dist/system.json
+
+      # Package the built files
+      - name: Package Files
+        run: |
+          cd dist
+          zip -r "${{ steps.vars.outputs.zip_name }}" *
+
+      # Create a pre-release — marked prerelease:true so it does not appear as
+      # the "latest" release and will not show up in other users' update checks.
+      - name: Create Pre-Release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          name: "${{ steps.vars.outputs.tag_name }} (Pre-Release)"
+          draft: false
+          prerelease: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "./dist/system.json, ./dist/${{ steps.vars.outputs.zip_name }}"
+          tag: ${{ steps.vars.outputs.tag_name }}
+          body: |
+            ⚠️ **Pre-release build** — for private testing only.
+
+            This release is not visible to other users as an update and will not appear on the public update channel.
+
+            **To install in Foundry VTT**, paste this URL into the manifest field:
+            ```
+            https://github.com/VacantFanatic/foundryvtt-lancer/releases/download/${{ steps.vars.outputs.tag_name }}/system.json
+            ```
+
+            Once verified, promote to a full release by pushing a `v${{ steps.vars.outputs.version }}` tag.
