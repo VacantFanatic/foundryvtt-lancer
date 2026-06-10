@@ -107,15 +107,17 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     formData: foundry.applications.ux.FormDataExtended
   ): Promise<void> {
     event.preventDefault();
-    const updateData = { ...formData.object };
+    // formData.object returns a nested object in ApplicationV2; flatten to dotted
+    // paths so the coercion pass below can reach every leaf value.
+    const updateData = foundry.utils.flattenObject(formData.object) as Record<string, unknown>;
     if ("system.core_energy" in updateData) {
       updateData["system.core_energy"] = normalizeCoreEnergyFormValue(updateData["system.core_energy"]);
     }
-    // FormDataExtended in ApplicationV2 does not coerce type="number" inputs to numbers;
-    // convert any string values that are valid numbers before hitting schema validation.
+    // ApplicationV2's FormDataExtended does not coerce type="number" inputs to
+    // numbers. Convert any string leaf that parses as a finite number.
     for (const key of Object.keys(updateData)) {
       const val = updateData[key];
-      if (typeof val === "string" && val.trim() !== "" && !isNaN(Number(val))) {
+      if (typeof val === "string" && val.trim() !== "" && isFinite(Number(val))) {
         updateData[key] = Number(val);
       }
     }
