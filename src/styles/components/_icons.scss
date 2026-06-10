@@ -42,6 +42,13 @@
     display: inline-flex;
   }
 
+  .i--lg,
+  .i--5b {
+    @include mixins.icon-size($icon-size-5b);
+    @include mixins.vert-mid();
+    display: inline-flex;
+  }
+
   .i--xl,
   .i--6 {
     @include mixins.icon-size($icon-size-6);
@@ -68,7 +75,7 @@
   }
 
   .damage--kinetic {
-    color: #616161;
+    color: #9e9e9e;
   }
 
   .damage--energy {

@@ -50,7 +50,7 @@
   }
 
   .big-editor {
-    background-color: #dbdbdb;
+    background-color: var(--darken-2, #dbdbdb);
     min-height: 15em;
     text-align: left;
   }
@@ -78,6 +78,12 @@
     &:hover {
       background: var(--hover-bright);
       filter: drop-shadow(0 0 5px var(--primary-highlight));
+    }
+
+    &:focus {
+      outline: none;
+      border-left-color: var(--primary-color, #666666);
+      background: var(--darken-2);
     }
   }
 

@@ -26,25 +26,33 @@
     min-height: 6em;
   }
 
-  /* Glow effect courtesy of https://codepen.io/jackrugile/pen/ABeIi */
+  /* Glow effect, themed to the active faction primary color */
   @mixin glow {
     animation: glow-anim 800ms ease-out infinite alternate;
-    background: #222922;
-    background: linear-gradient(#333933, #222922);
-    border-color: #393;
-    box-shadow: 0 0 5px rgba(0, 255, 0, 0.2), inset 0 0 5px rgba(0, 255, 0, 0.1), 0 2px 0 #000;
-    color: #efe;
+    background: color-mix(in srgb, var(--primary-color, #333) 30%, #000);
+    border-color: var(--primary-color, #666666);
+    box-shadow:
+      0 0 5px color-mix(in srgb, var(--primary-color, #666) 40%, transparent),
+      inset 0 0 5px color-mix(in srgb, var(--primary-color, #666) 20%, transparent),
+      0 2px 0 #000;
+    color: var(--light-text, #efefef);
     outline: none;
   }
 
   @keyframes glow-anim {
     0% {
-      border-color: #393;
-      box-shadow: 0 0 5px rgba(0, 255, 0, 0.2), inset 0 0 5px rgba(0, 255, 0, 0.1), 0 2px 0 #000;
+      border-color: var(--primary-color, #666666);
+      box-shadow:
+        0 0 5px color-mix(in srgb, var(--primary-color, #666) 40%, transparent),
+        inset 0 0 5px color-mix(in srgb, var(--primary-color, #666) 20%, transparent),
+        0 2px 0 #000;
     }
     100% {
-      border-color: #6f6;
-      box-shadow: 0 0 20px rgba(0, 255, 0, 0.6), inset 0 0 10px rgba(0, 255, 0, 0.4), 0 2px 0 #000;
+      border-color: var(--primary-highlight, #999999);
+      box-shadow:
+        0 0 20px color-mix(in srgb, var(--primary-color, #666) 80%, transparent),
+        inset 0 0 10px color-mix(in srgb, var(--primary-color, #666) 50%, transparent),
+        0 2px 0 #000;
     }
   }
 

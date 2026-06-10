@@ -3,16 +3,16 @@
   #chat-log,
   .chat-popout {
     & .message {
-      background: rgba(237, 237, 237);
-      border-radius: 20px 5px;
+      background: var(--background-color, #ededed);
+      clip-path: var(--double-dogear-path);
+      -webkit-clip-path: var(--double-dogear-path);
       padding: 0;
       // overflow: hidden;
     }
 
     & .message-header {
       overflow: hidden;
-      border-radius: 17px 1px 0 0;
-      background-color: var(--primary-color, fuchsia);
+      background-color: var(--primary-color, #666666);
       padding: 5px 10px;
     }
 
