@@ -32,8 +32,7 @@ function renderWeaponCards(mech: LancerMECH, options: HelperOptions): string {
           <img class="mech-combat-gear-thumb" src="${weapon.img || "systems/lancer/assets/icons/mech_weapon.svg"}" alt="" width="32" height="32" />
           <span class="mech-combat-gear-name minor">${weapon.name}</span>
           <button type="button" class="roll-attack lancer-button lancer-secondary mech-combat-action-button" data-tooltip="Roll attack">
-            <i class="fas fa-dice-d20 i--4 i--dark" aria-hidden="true"></i>
-            <span>FIRE</span>
+            <i class="cci cci-weapon" aria-hidden="true"></i>
           </button>
         </div>`);
     });
@@ -52,8 +51,7 @@ function renderSystemCards(mech: LancerMECH): string {
         <img class="mech-combat-gear-thumb" src="${system.img || "systems/lancer/assets/icons/mech_system.svg"}" alt="" width="32" height="32" />
         <span class="mech-combat-gear-name minor">${system.name}</span>
         <a class="chat-flow-button lancer-button lancer-secondary mech-combat-action-button" data-tooltip="Use system">
-          <i class="mdi mdi-message i--4" aria-hidden="true"></i>
-          <span>USE</span>
+          <i class="cci cci-activate" aria-hidden="true"></i>
         </a>
       </div>`);
   });
