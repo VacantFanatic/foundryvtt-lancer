@@ -68,11 +68,13 @@ jobs:
       - name: Patch pre-release manifest URLs
         env:
           TAG: ${{ steps.vars.outputs.tag_name }}
+          VERSION: ${{ steps.vars.outputs.version }}
         run: |
           REPO_BASE="https://github.com/VacantFanatic/foundryvtt-lancer"
           STATIC_MANIFEST="${REPO_BASE}/releases/download/pre-release-latest/system.json"
-          jq --arg tag "$TAG" --arg repo "$REPO_BASE" --arg static_manifest "$STATIC_MANIFEST" \
-            '.manifest = $static_manifest |
+          jq --arg tag "$TAG" --arg version "$VERSION" --arg repo "$REPO_BASE" --arg static_manifest "$STATIC_MANIFEST" \
+            '.version = $version |
+             .manifest = $static_manifest |
              .download = ($repo + "/releases/download/" + $tag + "/lancer-" + $tag + ".zip")' \
             dist/system.json > dist/system.json.tmp
           mv dist/system.json.tmp dist/system.json
