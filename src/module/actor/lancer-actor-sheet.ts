@@ -111,6 +111,11 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     if ("system.core_energy" in updateData) {
       updateData["system.core_energy"] = normalizeCoreEnergyFormValue(updateData["system.core_energy"]);
     }
+    // FormDataExtended in ApplicationV2 does not honour data-dtype="Number", so
+    // coerce the combat-dock stat fields that come through as strings.
+    for (const path of ["system.hp.value", "system.heat.value", "system.structure.value", "system.stress.value"]) {
+      if (path in updateData) updateData[path] = Number(updateData[path]);
+    }
     this._propagateData(updateData);
     await this.actor.update(updateData);
   }
