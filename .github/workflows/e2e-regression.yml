@@ -13,6 +13,10 @@ concurrency:
   group: e2e-regression-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   e2e:
     runs-on: ubuntu-latest
