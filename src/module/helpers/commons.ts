@@ -862,14 +862,21 @@ export function handlePopoutTextEditor(html: JQuery, root_doc: LancerActor | Lan
 
 // A handlebars helper that makes the provided html safe by closing tags and eliminating all on<eventname> attributes
 export function safe_html_helper(orig: string) {
-  // Do simple html correction
+  // Parse and normalize HTML first
   let doc = document.createElement("div");
   doc.innerHTML = orig;
-  orig = doc.innerHTML; // Will have had all tags etc closed
 
-  // then kill all on<event>. Technically this will hit attrs, we don't really care
-  let bad = /on[a-zA-Z\-]+=".*?"/g;
-  orig = orig.replace(bad, "");
+  // Remove all inline event handler attributes (on*)
+  const elements = doc.querySelectorAll("*");
+  elements.forEach(el => {
+    for (const attr of Array.from(el.attributes)) {
+      if (attr.name.toLowerCase().startsWith("on")) {
+        el.removeAttribute(attr.name);
+      }
+    }
+  });
+
+  orig = doc.innerHTML;
   return orig || defaultPlaceholder;
 }
 
