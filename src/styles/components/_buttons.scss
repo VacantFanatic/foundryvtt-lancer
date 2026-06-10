@@ -48,50 +48,48 @@
   }
 
   .add-button {
-    width: 20px;
-    height: 20px;
-    background: #d7b6b9;
+    min-width: 32px;
+    min-height: 32px;
+    background: var(--ref-color, #e8d0d2);
     text-align: center;
-    border: solid var(--primary-color, fuchsia);
-    border-width: 1px;
+    border: 1px solid var(--primary-color, #666666);
     border-radius: 4px;
     font-weight: bold;
-    color: var(--primary-color, fuchsia);
+    color: var(--primary-color, #666666);
   }
 
   .remove-button {
-    width: 20px;
-    height: 20px;
-    background: #bebebe;
-    border: solid #3e3e3e;
-    border-width: 1px;
+    min-width: 32px;
+    min-height: 32px;
+    background: var(--dark-gray-color, #bebebe);
+    border: 1px solid var(--darken-3);
     border-radius: 4px;
     text-align: center;
-    color: #8e8e8e;
+    color: var(--light-gray-color, #8e8e8e);
     padding-top: 2px;
   }
 
   .simple-button {
     color: var(--light-text);
-    background-color: var(--primary-color, fuchsia);
+    background-color: var(--primary-color, #666666);
     max-width: max-content;
     min-width: max-content;
     align-items: center;
     border-radius: 5px;
     padding: 0px 5px;
     margin: 3px 5px;
-    border: 2px;
+    border: 2px solid var(--primary-highlight, transparent);
     font-size: 12px;
   }
 
   .tier-control {
     min-width: 100%;
-    background-color: #991e2a;
+    background-color: var(--primary-color, #666666);
     color: var(--light-text);
   }
 
   .tier-control option {
-    background-color: #991e2a;
+    background-color: var(--primary-color, #666666);
     color: var(--light-text);
   }
 
