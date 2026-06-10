@@ -25,7 +25,7 @@
     "test:e2e:install": "playwright install firefox",
     "test:e2e:report": "playwright show-report e2e/report",
     "serve": "vite",
-    "version": "./scripts/version.mjs && git add src/system.json",
+    "version": "./scripts/version.mjs && git add src/system.json CHANGELOG.md",
     "watch": "vite build --watch"
   },
   "author": "",
