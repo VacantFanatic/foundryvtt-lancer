@@ -27,7 +27,8 @@ describe("mech sheet visual polish", () => {
   it("buildCompactSystemCardHtml renders a visible item thumbnail", () => {
     const html = buildCompactSystemCardHtml("ECM Suite", "path.system", null);
     assert.match(html, /mech-combat-gear-thumb/);
-    assert.match(html, new RegExp(`src="${COMBAT_GEAR_SYSTEM_IMG_FALLBACK.replace(/\//g, "\\/")}"`));
+    const escapedFallback = COMBAT_GEAR_SYSTEM_IMG_FALLBACK.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    assert.match(html, new RegExp(`src="${escapedFallback}"`));
     assert.match(html, /mech-combat-action-button/);
   });
 
