@@ -383,28 +383,40 @@
       align-items: center;
       justify-content: center;
       flex: 0 0 auto;
-      width: 2.25rem;
-      height: 2.25rem;
+      width: 2rem;
+      height: 2rem;
       min-width: unset;
       margin: 0;
       padding: 0;
-      font-size: 1.1rem;
-      background: color-mix(in srgb, var(--darken-2), transparent 20%);
-      border: 1px solid color-mix(in srgb, var(--light-text), transparent 78%);
+      font-size: 1.15rem;
+      /* Nearly transparent — blends into the card, accent border carries the color */
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid transparent;
       box-shadow: none;
 
       &:hover {
-        background: color-mix(in srgb, var(--darken-2), #fff 12%);
-        box-shadow: var(--hover-bright);
+        background: rgba(255, 255, 255, 0.1);
       }
     }
 
     .roll-attack.mech-combat-action-button {
-      border-left: 3px solid var(--primary-color);
+      border-color: color-mix(in srgb, var(--primary-color), transparent 30%);
+      color: color-mix(in srgb, var(--primary-color), #fff 40%);
+
+      &:hover {
+        border-color: var(--primary-color);
+        background: color-mix(in srgb, var(--primary-color), transparent 82%);
+      }
     }
 
     .chat-flow-button.mech-combat-action-button {
-      border-left: 3px solid var(--system-color);
+      border-color: color-mix(in srgb, var(--system-color), transparent 30%);
+      color: color-mix(in srgb, var(--system-color), #fff 40%);
+
+      &:hover {
+        border-color: var(--system-color);
+        background: color-mix(in srgb, var(--system-color), transparent 82%);
+      }
     }
   }
 

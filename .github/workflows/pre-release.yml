@@ -48,6 +48,24 @@ jobs:
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "zip_name=lancer-${TAG_NAME}.zip" >> $GITHUB_OUTPUT
 
+      # Fail fast if this tag has already been published as a release.
+      - name: Check tag not already released
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.vars.outputs.tag_name }}
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/VacantFanatic/foundryvtt-lancer/releases/tags/${TAG}")
+          if [[ "$STATUS" == "200" ]]; then
+            RC_NUM="${TAG##*rc}"
+            NEXT_RC="$((RC_NUM + 1))"
+            BASE="${TAG%-rc*}"
+            echo "::error::Release tag '${TAG}' already exists. Use '${BASE}-rc${NEXT_RC}' instead."
+            exit 1
+          fi
+
       # Confirm the base version in system.json matches the tag being released.
       # For v1.0.0-rc1 the expected system.json version is 1.0.0.
       - name: Verify version matches system.json
