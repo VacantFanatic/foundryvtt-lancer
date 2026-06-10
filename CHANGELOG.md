@@ -1,139 +1,148 @@
-# 3.1.13 (2026-06-09)
+# Changelog
 
-## Fixed
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [3.1.13] - 2026-06-09
+
+### Fixed
 
 - **Combat tracker** — enrich turns in `_prepareTrackerContext` only (matching Foundry v14’s part pipeline), call `setupTurns()` when needed, fall back to `_prepareTurnContext` when core skips combatants, and fix a render crash from treating `game.user.targets` as an array. Fixes [#121](https://github.com/VacantFanatic/foundryvtt-lancer/issues/121).
 - **Action tracker HUD** — prepare body part context for Application V2, use `data-lancer-action` (avoids conflicting with AppV2 `data-action` handlers), default missing `action_tracker` data, and fix controlled-token actor binding. Fixes [#124](https://github.com/VacantFanatic/foundryvtt-lancer/issues/124).
 
-# 3.1.12 (2026-06-09)
+## [3.1.12] - 2026-06-09
 
-## Fixed
+### Fixed
 
 - **Combat tracker** — merge tracker fields onto the shared render context so `turns` are not dropped when Foundry returns tracker-only data from `_prepareTrackerContext`. Preserve core `CombatTracker` click actions by merging `DEFAULT_OPTIONS`.
 - **Action tracker HUD** — always show the drag handle (even without a selected combatant), restore flex layout on the control row, move the HUD via `setPosition`, and use `pointer-events` so the transparent host does not block canvas token selection.
 
-# 3.1.11 (2026-06-09)
+## [3.1.11] - 2026-06-09
 
-## Fixed
+### Fixed
 
 - **Combat tracker** — return tracker render context from `_prepareTrackerContext` so combatants populate in the Application V2 combat sidebar on Foundry v14. Fixes [#121](https://github.com/VacantFanatic/foundryvtt-lancer/issues/121).
 - **Action tracker HUD** — fix invalid `height: autopx` inline styling, refresh the HUD when combat round/turn state changes, and resolve controlled tokens via `combatant` as well as `inCombat` so the floating action bar appears during combat.
 
-# 3.1.10 (2026-06-09)
+## [3.1.10] - 2026-06-09
 
-## Changed
+### Changed
 
 - **Mech sheet header layout** — pilot and frame labels are right-aligned, the pilot portrait is enlarged, and the mech portrait fills the header image panel.
 - **Mech inventory window** — the View Inventory dialog now uses a bounded height with a scrollable body so long inventories show a scrollbar.
 
-# 3.1.9 (2026-06-08)
+## [3.1.9] - 2026-06-08
 
-## Fixed
+### Fixed
 
 - **Combat dock core toggle** — the CORE checkbox now submits `0`/`1` for `system.core_energy` (NumberField) instead of boolean values, which caused a validation error when toggling core power on the mech sheet. Fixes [#117](https://github.com/VacantFanatic/foundryvtt-lancer/issues/117).
 
-# 3.1.8 (2026-06-08)
+## [3.1.8] - 2026-06-08
 
-## Changed
+### Changed
 
 - **Mech sheet header portrait** — pilot thumbnail enlarged with a visible frame, brightness boost, and a lighter license badge overlay so portraits read clearly on dark headers.
 - **Mech header controls** — GRIT/HASE roll chips and the View Inventory button use gradient fills, accent borders, and hover glow for clearer affordance.
 - **Combat gear cards** — compact weapon and system rows show item thumbnails plus polished FIRE (weapon accent) and USE (system accent) action buttons.
 
-# 3.1.7 (2026-06-07)
+## [3.1.7] - 2026-06-07
 
-## Changed
+### Changed
 
 - **Mech sheet header** — pilot portrait, GRIT/HASE roll chips, and inventory moved from the combat tab into the sheet header so they stay visible on every tab.
 
-# 3.1.6 (2026-06-07)
+## [3.1.6] - 2026-06-07
 
-## Changed
+### Changed
 
 - **Mech combat pilot row** — GRIT and HASE stats now use inline roll chips (matching the combat dock style) instead of tall stat cards. Portrait, rolls, and inventory fit on one compact horizontal row.
 
-# 3.1.4 (2026-06-07)
+## [3.1.4] - 2026-06-07
 
-## Fixed
+### Fixed
 
 - **Attack Acc/Diff HUD layout** — advanced toggle and Manual Adjust no longer overlap on blast/AoE weapons (e.g. Missile Rack). Each block now has its own section spacing, the advanced button wraps cleanly, and manual adjust controls render in a single row.
 
-# 3.1.3 (2026-06-07)
+## [3.1.3] - 2026-06-07
 
-## Fixed
+### Fixed
 
 - **History and popout text editor** — the Edit Text dialog now mounts Foundry's `prose-mirror` editor instead of the legacy `{{editor}}` helper, which does not render in Application V2 on Foundry v14.
 
-# 3.1.2 (2026-06-07)
+## [3.1.2] - 2026-06-07
 
-## Changed
+### Changed
 
 - **Combat tab layout** — Weapons, mounted systems, and macros moved to the top; full stat grid directly below. Removed the redundant Systems utilities panel (overcharge, core, and size already live in the combat dock). Pilot link, GRIT/HASE rolls, and inventory kept in a compact row at the bottom of the tab.
 - **Combat dock core toggle** — Core checkbox matches the full-size sheet control (30px) instead of rendering as a tiny native checkbox.
 
-# 3.1.1 (2026-06-07)
+## [3.1.1] - 2026-06-07
 
-## Added
+### Added
 
 - **Abilities tab** merges frame details with pilot talents (replaces the Talents tab).
 - **Effects tab badge** shows active effect count when non-zero.
 - **Empty state** on the Abilities tab when no pilot is assigned.
 
-# 3.1.0 (2026-06-07)
+## [3.1.0] - 2026-06-07
 
-## Added
+### Added
 
 - **Gear tab play/edit toggle** — Play View shows compact gear cards; Edit Loadout exposes the full drag-and-drop editor.
 
-## Changed
+### Changed
 
 - Mech sheet tabs renamed for play intent: **COMBAT** (default), **GEAR**, **PILOT//TALENTS**, **EFFECTS//ACTIVE** (tab ids: `combat`, `gear`, `talents`, `effects`).
 
-# 3.0.2 (2026-06-07)
+## [3.0.2] - 2026-06-07
 
-## Added
+### Added
 
 - **Compact weapon and system cards** on the mech Stats tab with FIRE and USE controls for in-combat gear access.
 
-## Changed
+### Changed
 
 - **Macros section** on the mech Stats tab is **collapsed by default** to reduce scroll during play.
 
-# 3.0.1 (2026-06-07)
+## [3.0.1] - 2026-06-07
 
-## Added
+### Added
 
 - **Persistent combat dock** on the mech sheet — HP, Heat, Structure, Stress, Overcharge, Core, action tracker, and attack utilities stay visible across all tabs.
 
-## Changed
+### Changed
 
 - **Attack utilities** (Melee/Ranged, Damage, Tech) moved from the Loadout tab into the combat dock.
 
-# 3.0.0 (2026-06-07)
+## [3.0.0] - 2026-06-07
 
-## Added
+### Added
 
 - Mech Loadout tab **hybrid layout**: Svelte loadout overview above the full legacy drag-and-drop editor.
 
-## Changed
+### Changed
 
 - **Loadout editor promoted to GA** — always shown on the mech Loadout tab (no client setting).
 
-## Removed
+### Removed
 
 - Client setting **`experimentalLoadoutEditor`** (users who enabled overview-only mode now get overview plus legacy editor).
 
-## Fixed
+### Fixed
 
 - Pilot sheet **header and narrative tab** Handlebars syntax for compact stat helpers (sheet render in Foundry).
 
-## Migration
+### Migration
 
 - No world data migration required. The removed client setting is ignored if still present in browser storage.
 
-# 2.20.0 (2026-06-06)
+## [2.20.0] - 2026-06-06
 
-## Added
+### Added
 
 - **Svelte Cloud import island** on the pilot Cloud tab (thin HBS mount point).
 - **Experimental loadout editor** (client setting) — Svelte overview on the mech Loadout tab.
@@ -141,130 +150,130 @@
 - Shared **async loading** pattern for ref slots and license refresh.
 - E2E regression tests for help/tours, a11y, and Sprint G features.
 
-## Changed
+### Changed
 
 - Chat cards and sheet banners use **SCSS utility classes** instead of inline `style` attributes.
 - Mech **mount reset** controls with confirm dialogs (per-mount, all mounts, systems).
 - Removed legacy **LCP Handlebars manager** template from preload.
 
-## Fixed
+### Fixed
 
 - Pilot sheet header **Handlebars** syntax for compact stat helpers (sheet render in Foundry).
 - Pilot Cloud wizard and experimental loadout editor use **Svelte 5 `mount()`** (was broken with legacy constructor API).
 - E2E harness handles license checkbox, setup tours, world migration, and reuses an active `/game` session.
 
-# 2.19.0 (2026-06-06)
+## [2.19.0] - 2026-06-06
 
-## Added
+### Added
 
 - `async-ui.ts` helpers; license sheet refresh button with loading state.
 - Mount reset buttons on mech loadout (per-mount, all mounts, clear systems).
 - Combat tracker target selection controls.
 
-# 2.18.0 (2026-06-06)
+## [2.18.0] - 2026-06-06
 
-## Changed
+### Changed
 
 - Inline styles migrated to SCSS in chat templates, pilot sync banner, and mech SP counter.
 - Legacy `lcp-manager.hbs` removed; only Svelte LCP manager remains.
 
-# 2.17.0 (2026-06-06)
+## [2.17.0] - 2026-06-06
 
-## Added
+### Added
 
 - **Contextual help** on the pilot Cloud tab, Automation settings, and first Acc/Diff HUD open (dismissible).
 - Help dialog **What's new** section with the three most recent changelog releases.
 - **Attack dialog** guided tour registered; pilot-import tour adds **click-to-equip** step; NPC tour covers **Features** tab.
 
-## Changed
+### Changed
 
 - Help dialog topic sections for cloud import, automation, and Acc/Diff; links to wiki and tours from contextual banners.
 
-# 2.16.0 (2026-06-06)
+## [2.16.0] - 2026-06-06
 
-## Added
+### Added
 
 - Collapse controls use `aria-expanded` and support **Enter/Space** keyboard activation.
 - Action tracker **text labels** optional via client setting; all action icons have `aria-label`s.
 - Combat HUDs (`aria-modal`) with **focus trap** while open; Escape still cancels.
 - `lancer.hud` i18n keys for Acc/Diff, Damage, and Structure/Stress HUD strings.
 
-## Changed
+### Changed
 
 - **Stabilize** and **Full Repair** flows use DialogV2 instead of legacy `Dialog`.
 - Sheet icon-only controls (context menu, chat flow, roll buttons) include localized `aria-label`s.
 
-# 2.15.0 (2026-06-06)
+## [2.15.0] - 2026-06-06
 
-## Added
+### Added
 
 - **Dismissible sync banner** on the pilot Tactical tab for never-synced pilots, with a shortcut to the Cloud tab.
 - Mech Stats tab **Combat** and **Systems** collapsible sections with sticky headers.
 - NPC sheet **Stats | Features | Effects** tabs; feature drag-sort behavior preserved.
 
-## Changed
+### Changed
 
 - NPC guided tour selectors updated for the tabbed sheet layout.
 
-# 2.14.0 (2026-06-06)
+## [2.14.0] - 2026-06-06
 
-## Added
+### Added
 
 - Pilot Cloud tab **import wizard** with numbered steps (Login → Select → Download/JSON), COMP/CON login status, and a link to start the pilot-import tour.
 - **Empty loadout slots** show drag/click hints; clicking opens a filtered **compendium picker** for the accepted item types.
 - Unified **import result dialog** (DialogV2) for COMP/CON v2/v3 and JSON imports — success, partial, and failure — replacing fragmented toasts.
 
-## Changed
+### Changed
 
 - Pilots that have **never synced** (`last_cloud_update === "never"`) open on the Cloud tab by default.
 - Invalid item drops on ref slots show a notification listing accepted item types.
 - Pilot-import tour selectors updated for the new Cloud tab layout.
 
-# 2.13.0 (2026-06-06)
+## [2.13.0] - 2026-06-06
 
-## Added
+### Added
 
 - World automation setting **Prompt Damage After Attack** (default off): when enabled and an attack hits, the damage HUD opens automatically after the attack card.
 - Acc/Diff attack HUD **Advanced** section for weapon/target plugins, measured templates, and per-target fine modifiers; client setting remembers expanded state per weapon.
 - **Reroll** button on attack and tech-attack chat cards (visible to attacker owner and GM).
 - Combat tracker tour steps documenting the attack → damage → apply loop and the auto-damage setting.
 
-## Changed
+### Changed
 
 - Acc/Diff HUD default view emphasizes targets, totals, and cover; plugins and template tools move under Advanced.
 
-# 2.12.11 (2026-06-06)
+## [2.12.11] - 2026-06-06
 
-## Added
+### Added
 
 - Pilot Cloud **download** shows a spinner and “Syncing…” status while COMP/CON import is in progress.
 - Attack chat cards show a **hit summary** (hits / crits / misses) and pin **Roll Damage** above collapsible sections.
 
-## Changed
+### Changed
 
 - COMP/CON and import errors surface the **actual failure message** in notifications instead of “see console for details”.
 - Missing core data prompts GMs with an **Open LCP Manager** confirmation dialog.
 - Partial import summary notification points users to the dialog and Compendium Manager.
 
-## Fixed
+### Fixed
 
 - Sliding HUD panels are **non-interactive** while faded during token drag (prevents mis-clicks).
 - Removed pilot Cloud **upload WIP** card and per-mount weapon reset control until implemented (no more TODO toasts).
 
-# 2.12.10 (2026-06-06)
+## [2.12.10] - 2026-06-06
 
-## Fixed
+### Fixed
 
 - COMP/CON **v3 mech weapon import** no longer throws when weapon slot data is missing (early return referenced undeclared `mod`/`modId`).
 - COMP/CON **v3 import** now reports partial failures (missing actors/items) with the same summary dialog as v2.
 
-## Changed
+### Changed
 
 - COMP/CON import cleanup: shared `unpackClock` and incomplete-import summary helpers; v2 reuses `clearPilotEmbeddedDocuments`, `hasCreatePermissions`, and `getActorItemByLid`; unified v3 bond import path.
 
-# 2.12.9 (2026-06-05)
+## [2.12.9] - 2026-06-05
 
-## Fixed
+### Fixed
 
 - COMP/CON **v3 import** hardening: validate payload before clearing pilot data, require LCP/core data (matching v2), optional portrait/`img` fields, flat `bondId` bond powers, license stub guards, and safer mech loadout/frame/weapon/mod handling.
 - **Share import:** Download always binds at render time (reads `cloud_id` on click), normalizes share codes to uppercase, and falls back to `fetchPilotViaShareCode` for unknown IDs; JSON import reports failures correctly.
@@ -273,68 +282,68 @@
 - CI **Verify git remote** no longer fails on `AGENTS.md` fork-policy text (`scripts/assert-no-eranziel-doc-links.sh`).
 - Release workflow publishes GitHub releases directly (no draft prerelease step).
 
-## Added
+### Added
 
 - `resolveImportCCPayload` routing helper with `npm run test` coverage.
 
-# 2.12.8 (2026-06-05)
+## [2.12.8] - 2026-06-05
 
-## Added
+### Added
 
 - Ported upstream COMP/CON **v3 pilot import** (Eranziel [#934](https://github.com/Eranziel/foundryvtt-lancer/pull/934)): `importCCv3` / `importCCv2` routing, updated packed types, v3/v2 share-code detection on the pilot sheet, and official `api.compcon.app` v3 share fetch (with share-proxy and legacy API fallback).
 
-## Fixed
+### Fixed
 
 - V3 share codes and cloud pilot fetches expose `originId` on the top-level pilot object without a `data` wrapper; `importCC` now wraps that payload before calling `importCCv3` (fixes imports such as pilot **saziment Allara** from share code `I2RAI4F5MLPG`).
 
-# 2.12.7 (2026-06-05)
+## [2.12.7] - 2026-06-05
 
-## Fixed
+### Fixed
 
 - Removed temporary agent debug instrumentation that spammed the browser console (`console.warn`, failed `127.0.0.1:7777` ingest requests) on every actor sheet render.
 - Removed stray debug `console.log` calls from the accuracy/diff HUD, action tracker, and actor sheet data prep.
 
-# 2.12.6 (2026-05-09)
+## [2.12.6] - 2026-05-09
 
-## Changed
+### Changed
 
 - Pilot sheet header: `h1.pilot-callsign` (license level and callsign) uses an explicit **36px** font size instead of Foundry’s default heading size.
 
-# 2.12.5 (2026-05-07)
+## [2.12.5] - 2026-05-07
 
-## Changed
+### Changed
 
 - Pilot sheet tab navigation now places `RM-4://SYNC` after Effects, matching the intended Comp/Con-style tab order.
 
-# 2.12.4 (2026-05-06)
+## [2.12.4] - 2026-05-06
 
-## Fixed
+### Fixed
 
 - Actor sheet window overflow menu no longer lists duplicate entries for core actions (prototype token, artwork, token controls) when header controls are merged repeatedly from the Application V2 inheritance chain.
 - Production build no longer warns about Sass `join()` deprecation (`list.join` in variables).
 - Resolved Vite/Rollup warnings from mixing static and dynamic imports for `@massif/lancer-data` and `slidinghud` (core LCP data and stress/structure HUD entry now use consistent static imports).
 
-## Changed
+### Changed
 
 - Vite Svelte plugin filters known cosmetic compiler warnings (internal HUD/LCP markup and unused selectors/props) so `npm run build` stays quiet; behaviour is unchanged.
 
-# 2.12.3 (2026-05-05)
+## [2.12.3] - 2026-05-05
 
-## Fixed
+### Fixed
 
 - Restored damage card Handlebars helper syntax for `lancer-dice-roll` so damage rolls no longer fail with parse errors during card rendering.
 - Updated chat visibility application to use the available Foundry API (`applyMode` / `applyMessageMode` / `applyRollMode`) to avoid runtime failures and v14 deprecation issues.
 - Restored accuracy/difficulty total icon coloring in the Acc/Diff HUD.
 
-# 2.12.1 (2026-05-04)
+## [2.12.1] - 2026-05-04
 
-## Fixed
+### Fixed
 
 - Pilot sheet COMP/CON cloud sync (download), cloud ID dropdown, JSON import, and mech activate/deactivate controls bind during `_onRender` like other actor sheet listeners, so they work reliably under Application V2 when `activateListeners` does not run on every path.
 
-# 2.12.0 (2026-05-03)
+## [2.12.0] - 2026-05-03
 
-## Changed
+### Changed
 
 - Migrated remaining App Framework V1 utility applications to ApplicationV2 patterns, including COMP/CON login, HTML editor, targeted edit forms, inventory dialog, action manager HUD, and shared Svelte host plumbing.
 - Updated legacy form/dialog templates to AppV2 form hosting expectations (outer form supplied by app, submit wiring through AppV2 handlers).
@@ -344,7 +353,7 @@
 - Sheet registration now unregisters core V2 default sheets (with optional cleanup of legacy V1 registrations when still present).
 - Actor and item sheet Handlebars templates no longer nest a root `<form>` (outer form is supplied by the V2 app); tab navigation uses `data-action="tab"` and `tabs.<group>.<id>.cssClass` for active state.
 
-## Fixed
+### Fixed
 
 - Improved rerender resilience for migrated app interactions by moving away from V1 `getData`/`_updateObject` lifecycles and onto AppV2 context and handler flows.
 - Actor and item sheet overflow sizing no longer depends on `:has(...)`; host + `section.lancer-sheet` flex rules now apply consistently in Foundry/Electron so vertical scrollbars appear when content exceeds window height.
@@ -363,54 +372,54 @@
 - Actor sheet flex and scroll rules also apply when the sheet `**form` / `application` host is a direct child of `.window-content`** (typical Foundry 14 layout), so tab bodies scroll instead of clipping.
 - After each render, actor and item sheets call `**changeTab`** with the group’s configured **initial** tab when no `.tab.active` panel exists for that group, avoiding a blank tab body when tab state desyncs.
 
-## Action Needed
+### Action Needed
 
 - If you maintain modules/macros that instantiate these helper apps directly, update constructor assumptions to AppV2 option-style patterns where applicable.
 
-# 2.11.13 (2026-04-27)
+## [2.11.13] - 2026-04-27
 
-## Changed
+### Changed
 
 - Bumped manifest version to `2.11.13` and updated release download metadata in `src/system.json`.
 - Actor sheet header controls now use a direct `Detach Window` button instead of the overflow (`...`) menu to better match native pop-out behavior.
 
-## Fixed
+### Fixed
 
 - Action Manager now reliably applies action/reset updates by awaiting tracker mutations before re-rendering the HUD.
 - Fixed Action Manager visual state feedback by adding explicit active styles for toggled action buttons (`protocol`, `move`, `full`, `quick`, `reaction`).
 - Fixed Action Tracker updates under current Foundry data-model behavior by cloning action state before mutation and actor update.
 - Actor sheet detach now routes through native Foundry pop-out handling paths to support real detached browser windows.
 
-# 2.11.9 (2026-04-25)
+## [2.11.9] - 2026-04-25
 
-## Added
+### Added
 
 - Built-in Automated Animations integration for Lancer attack and damage chat cards, with system settings to enable integration, control damage-phase triggers, and choose bundled autorec auto-apply mode (`off`/`merge`/`overwrite`).
 - Bundled Lancer AutoAnimations recognition menu (`lancer-autorec-menu.json`) including starter attack, damage, and Active Effect mappings.
 - Startup autorec auto-apply flow for GMs when AutoAnimations is installed, with persistent apply-tag tracking to avoid unnecessary reimports.
 
-## Changed
+### Changed
 
 - AutoAnimations integration now reads item names from Lancer chat card headers (including stripping `DAMAGE` suffixes) to improve autorec matching against displayed weapon/system names.
 - Build output now places the bundled Lancer autorec menu next to `system.json` in distribution output for simpler runtime loading.
 - Damage HUD target reconciliation now prioritizes inherited attack hit targets and preserves them when user target sets change during HUD updates.
 
-## Fixed
+### Fixed
 
 - Fixed compatibility issues with Foundry v14 token/document resolution that could drop hit targets, remove damage target rows, hide Apply Damage controls, and prevent damage-triggered animations.
 - Fixed damage flow target propagation from attack cards so hit/miss/crit context is retained through damage roll and application paths.
 - Fixed Active Effect animation crashes caused by malformed or partial AutoAnimations autorec menu entries by sanitizing menu structures and enforcing missing option defaults.
 - Added runtime workarounds for known AutoAnimations 7.0.2 hook failures in Lancer/Active Effect paths, preventing integration-breaking exceptions.
 
-# 2.11.7 (2026-04-24)
+## [2.11.7] - 2026-04-24
 
-## Added
+### Added
 
 - Pilot sheet: mouseover tooltips (`data-tooltip`) for header combat stats, license level, grit, and Hull/Agility/Systems/Engineering trigger stats (localized in English).
 
-# 2.11.5 (2026-04-21)
+## [2.11.5] - 2026-04-21
 
-## Added
+### Added
 
 - Support for Foundry VTT v13 and v14 (`compatibility.minimum` 13, `verified`/`maximum` 14).
 - Svelte 5 migration for UI components.
@@ -419,7 +428,7 @@
 - Turn marker support for combat, with a configurable fallback marker.
 - `fvttrc.yml` added to `.gitignore` so local Foundry CLI config can live in-repo without committing it.
 
-## Changed
+### Changed
 
 - Build pipeline migrated from Gulp to Vite; packs and distribution builds go through `npm run build`.
 - Styles reorganized (layers, themes, mixins); sheet headers, HUDs, chat/roll cards, journals, and settings forms updated for v13+ appearance and fewer conflicts with core UI.
@@ -427,65 +436,65 @@
 - Manifest and package links in `system.json` now point at this fork’s GitHub repository and release assets.
 - Release workflow reads `src/system.json`, verifies tags against the manifest version, and uses `contents: write` for publishing releases.
 
-## Fixed
+### Fixed
 
 - Broad pass on Foundry deprecation warnings (including attack/damage flow, partial preloading, AccDiff HUD, LCP manager, template targeting, and related UI).
 - Migration feedback and hangs addressed; imports and hooks cleaned up for current Foundry patterns.
 - NPC feature import error; tag add/remove no longer breaking tag display; various HUD preload and positioning issues.
 - Chat message background overrides; text editor and journal light-mode styling; LCP import button height; LCP import no longer uses a long-running progress notification for the blocking flow.
 
-## Removed
+### Removed
 
 - Gulp and the `marked` dependency from the toolchain where superseded.
 - Legacy Combat Carousel integration styles.
 - Deprecated automation helpers where replaced by current APIs.
 
-# 2.11.2 (2026-04-03)
+## [2.11.2] - 2026-04-03
 
-## Fixed
+### Fixed
 
 - #892 - Fix bug which cleared pilots' prototype token name when editing pilot sheets.
 - #913 - Add d3 to dice configuration settings.
 - #915 - Skip tokens that aren't visible when targeting using AOE templates.
 
-# 2.11.1 (2025-07-17)
+## [2.11.1] - 2025-07-17
 
-## Fixed
+### Fixed
 
 - #884 - Fix a couple bugs with Monstrosity structure results. Fixed missing localizations, added dismemberment damage roll. (This is entirely my fault and not @tw-blob's, as I did not merge the latest version of their work for 2.11.0.)
 
-# 2.11.0 (2025-07-05)
+## [2.11.0] - 2025-07-05
 
-## Added
+### Added
 
 - #476 - Add built-in support for the Monstrosity structure table. Thanks, @tw-blob!
 
-## Fixed
+### Fixed
 
 - #863 - Fix a bug causing way too many deployables to be created during pilot import.
 - #882 - Ensure that players get their own burn check prompts, instead of the GM always receiving them.
 
-# 2.10.3 (2025-06-10)
+## [2.10.3] - 2025-06-10
 
-## Fixed
+### Fixed
 
 - Fix another bug causing the stat change for Stunned to not be applied.
 
-# 2.10.2 (2025-06-10)
+## [2.10.2] - 2025-06-10
 
-## Fixed
+### Fixed
 
 - Fix a bug causing status description text to not be copied from world/compendium items.
 
-# 2.10.1 (2025-06-09)
+## [2.10.1] - 2025-06-09
 
-## Fixed
+### Fixed
 
 - Fix a bug causing world/compendium status items to not be included in the token status menu.
 
-# 2.10.0 (2025-06-08)
+## [2.10.0] - 2025-06-08
 
-## Added
+### Added
 
 - Attack HUD improvements! The attack HUD now:
   - Displays the attacker's name in the title.
@@ -496,15 +505,15 @@
 - Add an Active Effect to the Stunned status so that it sets the recipient's evasion to 5.
 - #857 - Bond items have a new default image, and fixed a bug with NPC feature default images.
 
-## Fixed
+### Fixed
 
 - #871 - Fix a display issue for text inside `<p>` tags for NPC features, mech systems, etc...
 - #872 - Remove the "Unlink" context menu option for weapons & systems, as it serves no real purpose and can cause errors for modules.
 - #873 - Fix reserve action buttons. They will now correctly check whether consumable reserves have already been used, print the action to chat, and then mark consumable reserves as used.
 
-# 2.9.0 (2025-05-31)
+## [2.9.0] - 2025-05-31
 
-## Added
+### Added
 
 - #829 - Basic and Invade tech attacks now include a "Roll Damage" button for 2 heat.
 - #831 - Pilot sheets now display reserve actions.
@@ -512,7 +521,7 @@
 - #843 - Pilot sheets now display the "Effect" data for armor and gear.
 - If a token has the "Cover - Hard" or "Cover - Soft" status when targeted with an attack, the attack HUD will automatically select the corresponding cover state to use in the roll.
 
-## Fixed
+### Fixed
 
 - #832, #833 - Display pilot armor, weapon, and gear actions on pilot sheet.
 - #858 - New scenes once again have fog exploration disabled by default.
@@ -520,37 +529,37 @@
 - #861, #862 - Improved token status handling. Fixed an issue which could prevent the Resistance statuses from populating (important because they have automation attached), and changed the priority so that world items are most important, then Status Icon Configuration setting, and finally compendium items (to backfill any missing core/LCP conditions/statuses).
 - #864 - When a structure roll results in a "Crushing Hit", set the mech/NPC's structure to 0. This will allow automation modules/macros to work more seamlessly with the system's structure automation.
 
-## Changed
+### Changed
 
 - #865 - Add new Flows to `docs/flow_api.md`.
 
-# 2.8.1 (2025-04-22)
+## [2.8.1] - 2025-04-22
 
-## Fixed
+### Fixed
 
 - Scan (Journal) macro - Fix a bug with ownership of journals, so the generated journals can once again be viewed by all players. Make sure you drag a fresh copy of the macro from the compendium.
 
-## Changed
+### Changed
 
 - Automatically disable the Lancer Initiative module, alongside an informative popup. The module is for adding Lancer-style initiative to other game systems; it is fully integrated with the Lancer system so enabling the module on top can cause issues.
 
-# 2.8.0 (2025-03-30)
+## [2.8.0] - 2025-03-30
 
-## Added
+### Added
 
 - #763 - Dragging a Status/Condition item onto an actor sheet or token will add the corresponding status to the token. You can also drag them from chat messages, like the structure/stress results!
 - #793 - Attack HUD Spotter integration now detects and uses the range increase from House Guard 1.
 - Existing Premade NPCs (in the compendium) are now updated when the corresponding LCP is re-imported.
 
-## Fixed
+### Fixed
 
 - #846 - Fix issues around manually creating & populating NPC classes, templates, and features. (Hopefully.)
 - #848 - Change default NPC heatcap to 0 so that NPCs without a heatcap (squads, monstrosity, etc...) get created with heatcap 0 instead of 5.
 - #849 - Change the "tech_attack" bonus type to directly add to the tech attack stat, instead of adding to a semi-hidden bonus field that only shows up in the attack HUD.
 
-# 2.7.2 (2025-03-11)
+## [2.7.2] - 2025-03-11
 
-## Fixed
+### Fixed
 
 - #818 - Fix pilot import from Comp/Con JSON when using Cyrillic (and other non-ASCII) characters.
 - #837 - Show pilot armor descriptions, and pilot armor and weapon tags.
@@ -559,32 +568,32 @@
 - Fix showing an LCP file's description, image, etc... when only one is selected in the Compendium Manager.
 - Improve license display on item sheets.
 
-# 2.7.1 (2025-03-05)
+## [2.7.1] - 2025-03-05
 
-## Fixed
+### Fixed
 
 - Fix a bug causing reserves from manually selected LCP files to not be imported.
 - Fix a bug causing the system update chat message to be duplicated every time the game page loads.
 
-## Changed
+### Changed
 
 - Give the "Clear Compendiums" button distinct styling and a confirmation prompt.
 - Update the "Lancer Help" and first launch dialogs to DialogV2.
 
-# 2.7.0 (2025-03-04)
+## [2.7.0] - 2025-03-04
 
-## Added
+### Added
 
 - #654 - Compendium Manager Revamp. The LANCER Compendium Manager has been completely overhauled, including built-in importing of official data, multi-file select, and a little eye candy. Check out the tour!
 - Cut down on the amount of pop-up spam during/after world migration. Move acknowledgements and legal info into the system info journal.
 
-## Fixed
+### Fixed
 
 - #431 - Reserves are now imported from LCPs.
 
-# 2.6.2 (2025-03-01)
+## [2.6.2] - 2025-03-01
 
-## Fixed
+### Fixed
 
 - #806 - Automatically add flat bonus to attack HUD for "ranged_attack" and "tech_attack" bonus from items.
 - #809 - Add Deployable/Drone/Mine tags to items which have the matching kind of deployable, to match Comp/Con's similar functionality.
@@ -592,37 +601,37 @@
 - #821 - Add "bolster" and "flying" to all core icon sets for future integration with Lancer Ruler Integration.
 - Fix data model errors logged when importing the Shadow of the Wolf LCP.
 
-# 2.6.1 (2025-02-26)
+## [2.6.1] - 2025-02-26
 
-## Fixed
+### Fixed
 
 - #823 - Fix a bug causing Emperors to have "NaN" max hp.
 
-# 2.6.0 (2025-02-16)
+## [2.6.0] - 2025-02-16
 
-## Added
+### Added
 
 - #650 - v12 Support! This release brings support for Foundry v12 and drops support for Foundry v11. Huge thanks to @BoltsJ for doing the heavy lifting!
 
-## Fixed
+### Fixed
 
 - Fix a bug during import causing pilots to be set as the deployer of their mech's deployables.
 
-# 2.5.0 (2025-02-08)
+## [2.5.0] - 2025-02-08
 
 This will be the final release for Foundry v11, barring any critical bug fixes.
 
-## Added
+### Added
 
 - #799 - Add a space for configurable flat attack bonuses in the attack HUD. This also adds a display for non-configurable flat bonuses, such as Grit or Tech Attack. Thanks, @eamondo2!
 
-## Changed
+### Changed
 
 - #753 - Add an Intangible icon to Hayley's Condition & Status icon set. Thanks for providing the icon, @DirkMcThermot!
 - Change the Comp/Con login dialog to say "Comp/Con Email" instead of "Comp/Con Username" to reduce confusion.
 - Use the "Down and Out" status icon for the defeated state, instead of the default skull icon. If you wish to keep the old skull icon instead, make a "Down and Out" status item in your world and assign it the image path `icons/svg/skull.svg`.
 
-## Fixed
+### Fixed
 
 - #781 - Fix some styling so "undo damage" buttons do not bleed out of the chat card area.
 - #801 - Fix automation for consuming lock on with attacks. The lock on status will once again be removed after the attack, as long as a GM user is logged in.
@@ -630,18 +639,18 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 - #814 - Fix a bug causing the `cheap_struct` and `cheap_stress` bonus types to add to structure/stress repair cost, instead of overriding it.
 - Use actor image instead of token image for attack/damage targets in chat. This prevents broken images in chat when targeting an animated token.
 
-# 2.4.3 (2024-11-30)
+## [2.4.3] - 2024-11-30
 
-## Fixed
+### Fixed
 
 - #798 - Fix a bug which could allow floating text to appear over tokens with no change. e.g. "-0 HP".
 - Fix a bug preventing migrations from completing.
 - Fix a bug causing errors due to the "base" type actors/items which some modules apparently to create.
 - Fix a bug preventing mech sheets from opening in the case where they have a pilot assigned and then that pilot is deleted.
 
-# 2.4.2 (2024-11-22)
+## [2.4.2] - 2024-11-22
 
-## Fixed
+### Fixed
 
 - #782 - Drastically improve the legibility of the system settings windows (status icon config, automation config, action tracker config).
 - #791 - Fix a bug preventing targetless damage rolls from being displayed in chat.
@@ -651,24 +660,24 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
   - Display progress bar during migration.
 - Fix a bug causing compendium actor sheets to take up the full screen.
 
-## Improvements
+### Improvements
 
 - Improve legibility of kinetic damage icons on any buttons.
 - Add tooltips to attack/damage target names in chat so that the full name can be read if it is too long for the available space.
 - Add on-hover highlighting of attack and damage targets, making the associated token behave as though it were being hovered (show token border, show name and/or bars if configured). This applies to both the attack/damage HUDs and chat cards.
 
-# 2.4.1 (2024-11-14)
+## [2.4.1] - 2024-11-14
 
-## Bug Fixes
+### Bug Fixes
 
 - #587 - New scenes will have token vision and fog of exploration disabled by default. Congrats @sealtrowitz on your first (code) contribution!
 - #779 - Undoing end-of-turn burn ticks no longer lowers the actor's burn counter.
 - All flow classes are now available in `game.lancer.flows`, for easier access for macro/mod devs.
 - Properly register damage flow and refactor general damage button to follow the convention of other general flow buttons.
 
-# 2.4.0 (2024-11-10)
+## [2.4.0] - 2024-11-10
 
-## Features
+### Features
 
 - #776 - Add an undo button in damage chat messages.
 - #777 - Add buttons to open the damage HUD without an attack first.
@@ -676,9 +685,9 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
   - Weapon damage type displays have been converted to a button, clicking this will open the damage HUD with that weapon's damage.
 - Add more tooltips to weapon cards - attack buttons, range type, NPC attack bonus/accuracy/difficulty, damage buttons.
 
-# 2.3.0 (2024-11-09)
+## [2.3.0] - 2024-11-09
 
-## Features
+### Features
 
 - #189 - Damage application is here! For the time being this only applies to weapon attacks. Tech attacks will be able to use the damage roller/application in the future, but still need some rework to support it.
   - #379 - Attack and damage rolling steps are now separate. Attack results have a "roll damage" button which shows a damage configuration HUD, which will then roll for damage and print a separate card to chat.
@@ -689,9 +698,9 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
   - #497 - Automatic burn handling at end of turn. Actors with burn will be prompted to make their Engineering save at the end of their turn, and if they fail a damage card will be printed.
   - Stats changes to tokens can show floating numbers above the token, e.g. "-5 HP". There is a new system setting to enable these numbers. The setting is separate for each client and is off by default.
 
-# 2.2.6 (2024-10-26)
+## [2.2.6] - 2024-10-26
 
-## Bug Fixes
+### Bug Fixes
 
 - #727 - Show active effects table on all actor sheets. (Partial fix for #727, but some of the requested functionality is not implemented yet.)
 - #767 - Terrain Height Tools integration - Do not draw LOS lines between attacker and target after Roll or Cancel is clicked on the attack HUD.
@@ -699,28 +708,28 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 - #771 - limited uses/loading/charged status on items are filled up when they are added to an actor.
 - #772 - Fix bugs in status population. The priority for status names, descriptions, and images are now: selected icon set in settings > world items > compendium items.
 
-## Misc
+### Misc
 
 - Improved the styling of sheet tabs, adding a highlight on hover and a small animation when switching.
 
-# 2.2.5 (2024-10-19)
+## [2.2.5] - 2024-10-19
 
-## Bug Fixes
+### Bug Fixes
 
 - #751 - Fix/restore the action tracker so it's usable again.
 - Hide deleted pilots in Comp/Con import drop-down list.
 - Fix monospace font for non-Windows machines.
 
-## Misc
+### Misc
 
 - #749 - Status-type items in the Items tab are automatically added to the token status menu options.
 - #765 - Descriptions for token statuses are now populated from Status-type items in the Items tab and the Statuses/Conditions compendium.
 - Add missing sheet applications to `game.lancer.applications` for intrepid module developers.
 - Remove redundant error logger (Foundry core logs these now).
 
-# 2.2.4 (2024-08-13)
+## [2.2.4] - 2024-08-13
 
-## Bug Fixes
+### Bug Fixes
 
 - #640 - Fix dragging NPC Features out of NPC Class sheets on Chrome.
 - #745 - Prevent errors when reading loadout items to build pilot/mech sheets.
@@ -730,44 +739,44 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 - On import, if a pilot has no active mechs, set the first mech as active.
 - Add grappled, destroyed, and intangible icons to Tommy's icon set. (Thanks, Tommy!)
 
-# 2.2.3 (2024-08-04)
+## [2.2.3] - 2024-08-04
 
-## Bug Fixes
+### Bug Fixes
 
 - Fix overflowing text with a single target in the attack HUD.
 
-# 2.2.2 (2024-08-04)
+## [2.2.2] - 2024-08-04
 
-## Bug Fixes
+### Bug Fixes
 
 - Fix custom styling for Carousel Combat Tracker. The styles were not being properly applied.
 - Add a required version check for Terrain Height Tools in a place that was missed.
 - Improve attack HUD styling. Target names are coloured, and selected cover options have a glow to make them more obvious.
 - Combat tracker improvements. Activation icons are only shown for turns which haven't yet been taken; the icon to deactivate the current turn is now different than the one to start a turn; and an icon is added to each combatant to show their maximum activations.
 
-# 2.2.1 (2024-07-29)
+## [2.2.1] - 2024-07-29
 
-## Bug Fixes
+### Bug Fixes
 
 - #740 - Fix "X"'s floating outside of the checkboxes in attack/check HUDs.
 - Fix required Terrain Height Tools version for LOS checks to 0.3.3.
 
-# 2.2.0 (2024-07-28)
+## [2.2.0] - 2024-07-28
 
-## Features
+### Features
 
 - Attack LOS preview with Terrain Height Tools integration. If Terrain Height Tools > 3.0 is installed and activated in your world, hovering over attack targets or cover UI in the attack HUD will have THT draw LOS from the attacking token to the target.
 - Move the targetting template buttons to make them more discoverable. They are now between the acc/diff section and the targets section.
 - #485 - Add a small summary of the weapon/tech attack's stats to the attack HUD and attack chat cards.
 
-## Bug Fixes
+### Bug Fixes
 
 - Fix the double "Edit" options in NPC feature 3-dot menus.
 - Remove non-functional 3-dot menus from Bond stress and XP counters.
 
-# 2.1.8 (2024-07-21)
+## [2.1.8] - 2024-07-21
 
-## Bug Fixes
+### Bug Fixes
 
 - #646 - Allow removing Bond burdens and clocks, and remove an extra "Edit" entry in their context menus.
 - #729 - Remove unnecessary notification when all of an NPC's features are charged at the start of their turn.
@@ -778,21 +787,21 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 - Fix "Ruin" macro to include Valk's updates from 1.6.X.
 - Fix default art for Kobold and Lich.
 
-## Misc
+### Misc
 
 - Improve accessibility of checkboxes in sliding HUD UIs.
 - Allow Scan chat messages to be popped out into floating windows.
 - Add default art for Genghis Mk I and Ranger Swallowtail. Update default art for Iskander.
 
-# 2.1.7 (2024-07-10)
+## [2.1.7] - 2024-07-10
 
-## Bug Fixes
+### Bug Fixes
 
 - #712 - Show an empty Aux slot on Flex mounts with only one Aux mounted, and allow populating it with drag-drop.
 
-# 2.1.6 (2024-07-10)
+## [2.1.6] - 2024-07-10
 
-## Bug Fixes
+### Bug Fixes
 
 - #117 - Automatically add +1 attack bonus for Death's Head ranged attacks.
 - #546 - Add an automation setting to control whether NPCs automatically roll for recharge at start of turn.
@@ -800,7 +809,7 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 - #721 - Fix LCP imports missing Statuses.
 - #723 - Fix missing import of superheavy mount from Comp/Con pilots, for those who have the Superheavy Mounting core bonus.
 
-## Misc
+### Misc
 
 - Add configuration options in the "Scan" and "Scan (Journal)" macros to modify scan target permissions (for example, so you can give all players Observer permission after scanning).
 - Add custom styling for Carousel Combat Tracker tooltips.
@@ -809,9 +818,9 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 - Add text files to system assets folders which hopefully will warn some people to not upload custom assets to those folders.
 - Add documentation about the development workflow for contributing to the system macros compendium
 
-# 2.1.5 (2024-06-28)
+## [2.1.5] - 2024-06-28
 
-## Bug Fixes
+### Bug Fixes
 
 - #634 - Allow editing and deleting actions on items.
 - #653 - Fix 2nd non-functional "Edit" option in 3-dot menu for active effects on mech sheets.
@@ -821,9 +830,9 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 - #712 - Properly import 2nd+ weapons on mounts (aux/aux and flex) during Comp/Con import.
 - #713 - Remove non-functional "EFFECT" field from Status/Condition sheets.
 
-# 2.1.4 (2024-06-19)
+## [2.1.4] - 2024-06-19
 
-## Bug Fixes
+### Bug Fixes
 
 - #696 - Use actor image instead of token image in attack HUD and attack chat cards to avoid broken images with animated tokens.
 - #697 - Fix NPC tech attack features being modified to non-attacks after attacking.
@@ -832,29 +841,29 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 - #692 - Hide superheavy bracing warning for integrated superheavy weapons.
 - #673 - Fix invade actions from Hacker talent.
 
-# 2.1.3 (2024-06-16)
+## [2.1.3] - 2024-06-16
 
-## Bug Fixes
+### Bug Fixes
 
 - Fix some visual issues with NPC feature limited, loading, and charged cards.
 
-# 2.1.2 (2024-06-16)
+## [2.1.2] - 2024-06-16
 
-## Bug Fixes
+### Bug Fixes
 
 - #688 - Fix issues interacting with items after drag-and-drop sorting. Item context menus, limited uses, loading, and charged toggles affected the wrong items; this is now fixed.
 - #690 - Fix parsing of quick tech / full tech actions during LCP import. You will need to rebuild/re-import your LCPs to repair the affected items.
 
-# 2.1.1 (2024-06-15)
+## [2.1.1] - 2024-06-15
 
-## Misc
+### Misc
 
 - Add a migration troubleshooting section to welcome journal.
 - Add a banner image for the system card on the setup screen.
 - Add default sprites for Calendula, Empakaai, Stortebeker, Orchis, Viceroy, Tempest, and Leech. Thanks, Retrograde!
 - Update default sprites for Goblin, Pegasus, Nelson, Vlad, Metalmark, and Swallowtail. Thanks, Retrograde!
 
-## Bug Fixes
+### Bug Fixes
 
 - #676 - Fix import of NPC "on hit" effects. Requires re-importing LCPs to update compendium data.
 - #679 - Ensure weapon damage can be edited on new NPC features.
@@ -865,21 +874,21 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 - #677 - Fix drag-and-drop sorting of mech systems and NPC features on actor sheets.
 - Ensure bonuses are propagated to mechs and deployables when pilot or deployer are set.
 
-# 2.1.0 (2024-06-08)
+## [2.1.0] - 2024-06-08
 
-## Features
+### Features
 
 - #360 - Add tooltips to tags in chat and Actor sheets.
 - Add localization for status names.
 
-## Bug Fixes
+### Bug Fixes
 
 - #638 - Fix an issue which caused automation settings to be disabled when migrating worlds from v10.
 - #666 - Fix the tag editor not having the current tag selected by default.
 
-# 2.0.4 (2024-06-06)
+## [2.0.4] - 2024-06-06
 
-## Bug Fixes
+### Bug Fixes
 
 - #644 - Enable limited system bonus from pilot gear (Integrated Ammo Feeds core bonus).
 - #647 - Fix actor image mangling when importing actors from compendiums or moving them between compendiums.
@@ -893,23 +902,23 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 - #670 - Disable core Foundry vision mechanics attached to special status names ("Invisible" and "Blind").
 - #672 - Fix bug causing all new actors to have name display as "Hovered by Anyone" regardless of core token defaults settings.
 
-# 2.0.3 (2024-06-05)
+## [2.0.3] - 2024-06-05
 
-## Bug Fixes
+### Bug Fixes
 
 - #657 - Fix an issue causing nearly all actions to be imported as Quick.
 
-# 2.0.2 (2024-06-04)
+## [2.0.2] - 2024-06-04
 
-## Bug Fixes
+### Bug Fixes
 
 - Make some improvements to the public `Flow` API for module developers to use.
 - Fix pilot import tour. It was not updated after the Comp/Con login button was moved.
 - Fix editing the "Notes" field on NPC actors.
 
-# 2.0.1 (2024-06-03)
+## [2.0.1] - 2024-06-03
 
-## Bug Fixes
+### Bug Fixes
 
 - #641 - Fix error thrown on combat creation.
 - #643 - Fix display of NPC Class flavour and tactics fields on the item sheet.
@@ -918,7 +927,7 @@ This will be the final release for Foundry v11, barring any critical bug fixes.
 - Gracefully handle verbose action names during LCP import. (e.g. "Full Action" instead of "Full".)
 - Fix an issue causing LCP import progress bar to finish too early if the LCP includes NPCs.
 
-# 2.0.0 (2024-06-02)
+## [2.0.0] - 2024-06-02
 
 _IT'S FINALLY HERE!_
 
@@ -926,7 +935,7 @@ This update to the system has been a long labour of love for myself and the rest
 
 Here is a summary of the changes, though in any refactor this large some items will get missed.
 
-## Features
+### Features
 
 - #577 - Support for Foundry v11! We recommend using the latest stable version, 11.315+.
 - #429 - The system's data model has been migrated away from the bespoke `machine-mind` library, now using Foundry's standardized `DataModel` framework. This will make future development, maintenance, module development, and macro writing much easier and Foundry-standard.
@@ -947,7 +956,7 @@ Here is a summary of the changes, though in any refactor this large some items w
 - Removed the Sitrep, Environment, Manufacturer, and Quirk item types. These all either had poor support in the system, or were better served as simple text fields. Sitreps and Environments may see a return as Journals one day.
 - Tags have been moved from a compendium of items to a system-level setting. This allows more consistent and tightly-bound behaviour.
 
-## Bug Fixes
+### Bug Fixes
 
 - #311 - Tech actions which are not tech attacks no longer trigger an attack roll.
 - #324 - The Engineering mech skill no longer gives bonus uses to pilot gear.
@@ -970,68 +979,68 @@ Here is a summary of the changes, though in any refactor this large some items w
 - #616 - Weapons with the Limited tag now show a uses tracker on mech sheets.
 - Actions inside mech weapons are now rendered on mech sheets.
 
-# 1.6.1 (2023-07-16)
+## [1.6.1] - 2023-07-16
 
-## Bug Fixes
+### Bug Fixes
 
 - #570 - If no icon sets are selected, enable the default set.
 
-# 1.6.0 (2023-07-15)
+## [1.6.0] - 2023-07-15
 
-## Features
+### Features
 
 - Added status icons for dispersal shield to the "Hayley NPC" set.
 - Last release should have been 1.6.0, so I'm fixing the version number now. 😉
 
-## Bug Fixes
+### Bug Fixes
 
 - The "Scan (Journal)" macro now correctly updates existing journals. You will need to drag a new copy of the macro out of the compendium.
 
-# 1.5.5 (2023-07-13)
+## [1.5.5] - 2023-07-13
 
-## Features
+### Features
 
 - Lancer Condition Icons is now integrated into the system. LCI settings are automatically migrated to the corresponding system settings.
 - Status icon setting changes are applied live.
 - Verified compatibility bump to 10.303.
 
-# 1.5.4 (2023-04-26)
+## [1.5.4] - 2023-04-26
 
-## Bug Fixes
+### Bug Fixes
 
 - Fix a compatibility issue between CUB and the "consume lock on" feature.
 
-# 1.5.3 (2023-03-31)
+## [1.5.3] - 2023-03-31
 
-## Bug Fixes
+### Bug Fixes
 
 - #529 - Fix issues with syncing pilot/mech images.
 - Make the new Ruin macro actually show up in the compendium.
 
-# 1.5.2 (2023-03-30)
+## [1.5.2] - 2023-03-30
 
-## Features
+### Features
 
 - Add a reload macro to the compendium, courtesy of Valk.
 - Update the ruin macro in the compendium, courtesy of Valk. Now searches for wreck images, and ignores biologicals.
 - Add an `attackData` flag to attack roll `ChatMessage`s. Not user-visible, but contains data which may be useful to module devs.
 
-## Bug Fixes
+### Bug Fixes
 
 - #528 - Make Comp/Con login email case-insensitive. (Thanks Archiver#1883!)
 - #397 - Partial fix for consume lock on bug. Lock on is removed when consumed if a GM user is logged in when the attack is rolled.
 
-# 1.5.1 (2023-02-12)
+## [1.5.1] - 2023-02-12
 
-## Bug Fixes
+### Bug Fixes
 
 - #521 - Fix chat button macro for reserves.
 - #522 - "Resources" was listed twice in reserve type selector.
 - Fix bug in Scan (Journal) compendium macro which caused it to fail if the token actor name had been modified.
 
-# 1.5.0 (2023-02-11)
+## [1.5.0] - 2023-02-11
 
-## Features
+### Features
 
 - #268 - Add Reserves to Pilot sheets! Thanks to dodgepong for a lot of the heavy lifting on this one!
 - #509 - Add role to NPC Class sheet.
@@ -1042,7 +1051,7 @@ Here is a summary of the changes, though in any refactor this large some items w
   - `@LancerID[mw_shotgun]{Boomstick}` - reference to the GMS Shotgun mech weapon, with the embed button saying "Boomstick".
 - Use Foundry's built-in scene progress bar for displaying LCP import progress.
 
-## Bug Fixes
+### Bug Fixes
 
 - #469 - Fix max value on NPC Class sheet stats.
 - #486 - Fix misleading message when overheating single-stress NPCs.
@@ -1051,45 +1060,45 @@ Here is a summary of the changes, though in any refactor this large some items w
 - Migrate v9-format compendiums to v10 format.
 - Fix some errors during Comp/Con import.
 
-# 1.4.2 (2023-01-21)
+## [1.4.2] - 2023-01-21
 
-## Features
+### Features
 
 - #507 - Update README and welcome message to use the Lancer 3rd Party License.
 
-## Bug Fixes
+### Bug Fixes
 
 - #510 & #512 - Fix issues preventing Comp/Con import.
 - #511 - Fix issue causing token images to be overwritten with actor image on every edit to the actor.
 - #516 - Fix bug preventing actor Size changes from automatically configuring prototype token dimensions.
 
-# 1.4.1 (2023-01-17)
+## [1.4.1] - 2023-01-17
 
-## Bug Fixes
+### Bug Fixes
 
 - #500 - Fix activation icon size in popout combat tracker.
 - #503 - Fix bug causing new item creation to fail.
 - #506 - Fix bug causing some tokens to be automatically resized on load.
 
-# 1.4.0-beta.1 (2023-01-03)
+## [1.4.0-beta.1] - 2023-01-03
 
-## Features
+### Features
 
 - Beta release for Foundry v10 compatibility!
 - Several QOL updates to Scan macro including better organization and hiding Exotic features.
 - Added `game.lancer.fromLid` and `game.lancer.fromLidSync` functions to allow module and macro devs easier lookups in Lancer compendiums.
 
-# 1.3.1 (2022-09-04)
+## [1.3.1] - 2022-09-04
 
-## Bug Fixes
+### Bug Fixes
 
 - #463 - Add missing delete button for range types in NPC features.
 - Add a section with basic attack macro buttons to all actor sheets (including pilots and deployables).
 - Update core data to lancer-data version 3.0.46.
 
-# 1.3.0 (2022-09-03)
+## [1.3.0] - 2022-09-03
 
-## Features
+### Features
 
 - #23 - Added JSON import for pilots
 - #396 - Added settings for alternate measurement modes on square grids. Options include 1-1-1 (default, diagonals cost 1), 1-2-1 (diagonals alternate between costing 1 and 2), 2-2-2 (Manhattan distance), and rounded Euclidean distance.
@@ -1099,7 +1108,7 @@ Here is a summary of the changes, though in any refactor this large some items w
 - #451 - Add integration and support for the Combat Carousel module.
 - Added buttons on mech sheets for common macros: Stabilize, full repair, structure, and overheat.
 
-## Bug Fixes
+### Bug Fixes
 
 - #408 - Counters with max values greater than 10 no longer show hexes so that they don't overflow the sheet.
 - #417 - Fix 404's caused during Comp/Con import in some situations involving duplicated pilots.
@@ -1111,9 +1120,9 @@ Here is a summary of the changes, though in any refactor this large some items w
 - Fix Dice So Nice integration to correctly show damage dice on non-critical hits. Attack and damage dice are now staggered as well.
 - Counters from talents can have their values edited correctly from either the pilot or talent sheet.
 
-# 1.2.0 (2022-04-19)
+## [1.2.0] - 2022-04-19
 
-## Features
+### Features
 
 - Update the pilot import system to use Comp/Con's new share code system. "Vault" and "cloud" style codes are no longer supported.
 - Update Lancer Initiative to take advantage of Foundry v9 features, eliminating the "Dummy Combatant".
@@ -1121,7 +1130,7 @@ Here is a summary of the changes, though in any refactor this large some items w
 - Added Scan macro from Jazzy (and speck and Valkyrion) to the Macros compendium.
 - Added Mimic Gun macro from Infalle to the Macros compendium.
 
-## Bug Fixes
+### Bug Fixes
 
 - #249 - Imported Mechs with multiple copies of weapons/systems now create unique instances of each.
 - #391 - Selecting "clear burn" in the Stabilize macro now automatically clears burn on the actor.
@@ -1129,9 +1138,9 @@ Here is a summary of the changes, though in any refactor this large some items w
 - Full Repair macro now clears conditions, burn, and overshield.
 - Condition renamed from "SLOW" to "SLOWED" to match the core rulebook. CUB-users will need to update their conditions to match.
 
-# 1.1.0 (2022-01-25)
+## [1.1.0] - 2022-01-25
 
-## Features
+### Features
 
 - #378 - Full compatibility with Foundry v9.
 - #5 - Lancer Initiative has been rolled into the system, so it no longer needs to be installed separately!
@@ -1144,7 +1153,7 @@ Here is a summary of the changes, though in any refactor this large some items w
 - Improved tracking and editing for counters in several areas.
 - Added chat macro for frame traits.
 
-## Bug Fixes
+### Bug Fixes
 
 - #313 - Fix issue causing duplicate weapon tags on LCP import.
 - #335 - Fix issue causing custom-selected token art to be overwritten during sync.
@@ -1161,16 +1170,16 @@ Here is a summary of the changes, though in any refactor this large some items w
 - Several error messages now provide more useful information.
 - Overheat automation now correctly states that single-stress actors are exposed, instead of stating they melt down.
 
-# 1.0.3 (2021-09-22)
+## [1.0.3] - 2021-09-22
 
-## Features
+### Features
 
 - Reorganized system automation settings into their own sub-menu.
 - Structure/stress macros now use a HUD similar to attacks, improved logic, and automatically trigger (unless disabled via automation settings) when hp <= 0 and heat > max.
 - #229 - Weapons with the self heat tag now apply heat to the owner when used.
 - Add context menus to item preview cards with options to edit, remove, and mark as destroyed/repaired. Replaces the static delete buttons and "click _almost_ anywhere to open the item" functionality.
 
-## Bug Fixes
+### Bug Fixes
 
 - #309 - Adding Fomorian Frame to size 1/2 mechs correctly sets size to 1 instead of 1.5.
 - #334 - Fix a local caching issue when retrieving pilot data from Comp/Con vaults.
@@ -1178,9 +1187,9 @@ Here is a summary of the changes, though in any refactor this large some items w
 - Fix token bars not rendering in Foundry v9.
 - Fix NPC recharge macro sometimes not firing at start of turn.
 
-# 1.0.2 (2021-09-08)
+## [1.0.2] - 2021-09-08
 
-## Features
+### Features
 
 - #120 - Mechs and NPCs which do not have custom artwork set will now use a set of defaults from [Retrograde Minis](https://www.retrogrademinis.com). Thanks a ton to Retrograde for letting us use their fantastic artwork!
 - #122 - Changing the size of Mech and NPC Actors will set the appropriate square token size and Hex Size Support configuration, if that module is installed and enabled.
@@ -1188,7 +1197,7 @@ Here is a summary of the changes, though in any refactor this large some items w
 - #292 - Add active mech management to pilot sheet, including list of inactive mechs.
 - The Pilot sheet has been reorganized to be more similar to Comp/Con. The NARRATIVE tab now contains pilot-centric data (LL, grit, skill triggers, and pilot gear), and the TACTICAL tab contains things which affect mechs (Counters, HASE, Talents, Licenses, Core Bonuses).
 
-## Bug Fixes
+### Bug Fixes
 
 - #298 - Fixed remaining cases where macros rolled from an unlinked token's sheet did not use that token's state for the roll.
 - #300 - Fix CORS issues with default token images by packaging defaults (Retrograde artwork) within the system.
@@ -1199,30 +1208,30 @@ Here is a summary of the changes, though in any refactor this large some items w
 - Fix issue preventing display of size 1/2 icon on various sheets.
 - Crit damage rolls now comply with Lancer RAW procedure, re-using the normal damage roll results.
 
-# 1.0.1 (2021-09-02)
+## [1.0.1] - 2021-09-02
 
-## Features
+### Features
 
 - Bolts has added a button to the attack HUD for placing templates according to the weapon's profile! Tokens under the template will be automatically targeted, updating the attack HUD.
 - The AoE Macros compendium has been updated so that the templates automatically target tokens they are placed upon.
 
-## Bug Fixes
+### Bug Fixes
 
 - #297 - Impaired is now applied to tech attacks as well.
 - #298 - Macros rolled from an unlinked token's sheet will use that token's name in chat.
 - #299 - Invisibility applies before any other attack modifiers, and spotter now correctly rerolls the entire attack roll.
 - #307 - Fixed talent action macros on mech sheets.
 
-# 1.0.0 (2021-08-31)
+## [1.0.0] - 2021-08-31
 
 If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nearly everything is new; the changes listed below accounts for changes from the latest version of the beta release.
 
-## Features
+### Features
 
 - The accuracy/difficulty prompt has been completely revamped as an attack prompt and a check prompt, thanks to sohum! The new version is more informative and responsive, allows setting acc/diff individually on multi-target attacks, and automatically adjusts based on the Impaired status on the attacker and Lock On status on the target.
 - The template macros in the AoE Macros compendium have been repaired and updated, thanks to Bolts! For now, there are no user-visible changes, but the groundwork is laid for integrating them with the new attack prompt, including automatic targeting of tokens under the laid template.
 
-## Bug Fixes
+### Bug Fixes
 
 - #233 - We no longer override the token data on new Actors, allowing the Foundry configuration for default settings to work as expected.
 - #260 - Dice So Nice (and other modules that trigger on dice rolls) will once again trigger on skill check rolls.
@@ -1234,13 +1243,13 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - #288 - Remove an unnecessary warning displayed during structure/stress macros.
 - #293 - Fix the action editor.
 
-# 0.9.6 (2021-08-10)
+## [0.9.6] - 2021-08-10
 
-## Features
+### Features
 
 - #128 - Better COMP/CON Sync UI
 
-## Bug Fixes
+### Bug Fixes
 
 - #222 - Better readiness trackers
 - #252 - Calculate overkill correctly
@@ -1251,7 +1260,7 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - Import pilot and mech images
 - Re-add the core passive macro
 
-## Bug Fixes
+### Bug Fixes
 
 - #222 - Better readiness trackers
 - #252 - Calculate overkill correctly
@@ -1262,9 +1271,9 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - Import pilot and mech images
 - Re-add the core passive macro
 
-# 0.9.5 (2021-07-11)
+## [0.9.5] - 2021-07-11
 
-## Features
+### Features
 
 - #235 - Importing Status & Conditions compendium now
 - #70 - Partially resolved, will show the _first_ integrated weapon on the sheet
@@ -1273,7 +1282,7 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - Can now track your inventory to see what you don't have equipped!
 - Initial localization work--while we still only have English, any volunteer translators can begin translating to other languages!
 
-## Bug Fixes
+### Bug Fixes
 
 - #174 - Should now remove NPC Features on Class removal in all cases
 - #234 - NPC Notes are now saved
@@ -1283,9 +1292,9 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - #236 - Can now use Talent sheets
 - #243 - Temporary fix for wobbling text
 
-# 0.9.4 (2021-06-16)
+## [0.9.4] - 2021-06-16
 
-## Features
+### Features
 
 - #174 - NPCs now tie into their classes more closely, removing Features as Classes are removed
 - #132 - Structure and Stress rolls now prompt in chat for sub-rolls
@@ -1294,7 +1303,7 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - Compatible with 0.8.7
 - Derive Speed for use with Drag Ruler or other modules
 
-## Bug Fixes
+### Bug Fixes
 
 - #110 - NPC Classes now fully support feature adding/removal
 - #207 - License Preview now opens license sheet on click
@@ -1308,14 +1317,14 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - #219 - Can safely import items and actors from compendiums again
 - #221 - NPC Templates add Structure/Stress again
 
-# 0.9.3 (2021-06-02)
+## [0.9.3] - 2021-06-02
 
-## Features
+### Features
 
 - Now supporting FoundryVTT version v0.8!
 - Improved action manager
 
-## Bug Fixes
+### Bug Fixes
 
 - #199 - Better NPC Feature Sizing
 - #197 - Allow rolling of weapons without damage
@@ -1330,9 +1339,9 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - #166, #62 - Fix NPC Tech actions
 - #163 - Active mech loadout
 
-# 0.9.2 (2021-05-08)
+## [0.9.2] - 2021-05-08
 
-## Features
+### Features
 
 - **Player Charges**: Add support for LIMITED, LOADING, and USES tags for systems and some weapons. This allows for proper tracking of resources on actor sheets, and if combat automation is enabled in the settings, then this will also tie into the combat roll workflow (Unloaded weapons can't be fired, etc.).
 - **NPC Charges**: Add NPC sheet support uses and RECHARGE abilities. If combat automation is enabled, at the start of an NPC turn a Recharge roll will be made and report which systems made the roll, and automatically charge them.
@@ -1344,7 +1353,7 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - **Action Editing**: First draft of action editing on all manner of items, first step towards homebrew and ease-of-use UX.
 - (0.9.1 but not documented) Right clicking weapon icons will toggle destroyed state. This will eventually be folded into a proper context menu.
 
-## Bug Fixes
+### Bug Fixes
 
 - Fixes for NPC tech and attack macros.
 - Fixes for attack card.
@@ -1353,14 +1362,14 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - Lots of refinement and styling fixes.
 - Fixes for drag drop and previews.
 
-# 0.9.1 (2021-04-30)
+## [0.9.1] - 2021-04-30
 
-## Features
+### Features
 
 - **Attacks**: Now auto-calculates if a targeted attack hits.
 - **Macros**: #145 Added Stabilize and Full Repair Macros
 
-## Bug Fixes
+### Bug Fixes
 
 - #147 - Correctly calculates Max Uses of a system
 - #154 - Fixed weapon data being pulled in incorrectly
@@ -1370,96 +1379,96 @@ If you are coming here from Lancer v0.1.x / Foundry 0.7.x, welcome! For you, nea
 - NPC Classes now show more data
 - #161 - Macros now support the proper chat privacy selection
 
-# 0.9.0 (2021-04-22)
+## [0.9.0] - 2021-04-22
 
-## Features
+### Features
 
 System completely rebuilt from the ground up to support the new COMP/CON data structure!
 
-# 0.1.21 (2021-08-18)
+## [0.1.21] - 2021-08-18
 
 - **Version Warning**: Add a warning when run on Foundry 0.8.x stating incompatibility and what options are available.
 - **Mech Sheet**: Fix for missing core power icon.
 
-# 0.1.20 (2021-01-20)
+## [0.1.20] - 2021-01-20
 
-## Features
+### Features
 
 - **Macros**: Add automatic crit damage handling. Thanks, descention!
 - **Macros**: Add item and actor IDs to attack cards to increase module support. Thanks, kreisl!
 
-## Bug Fixes
+### Bug Fixes
 
 - **NPC Sheet**: Updating an NPC's embedded class also updates the NPC's stats. Closes #127.
 
-# 0.1.19 (2020-12-17)
+## [0.1.19] - 2020-12-17
 
-## Features
+### Features
 
 - **Macros**: Add options object for attack macros to specify static attack bonus and bonus damage. Partial for #117.
 
-## Bug Fixes
+### Bug Fixes
 
 - **Macros**: Fix a bug with structure/overheat macros that displayed the wrong result when multiple 1's are rolled.
 - **NPC Sheet**: Fix a bug preventing NPC features from being deleted. Closes #123.
 
-# 0.1.18 (2020-12-15)
+## [0.1.18] - 2020-12-15
 
-## Bug Fixes
+### Bug Fixes
 
 - **Macros**: Fix a bug with the structure/overheat macros that decide to declare your mech destroyed if structure/stress are full.
 
-# 0.1.17 (2020-12-15)
+## [0.1.17] - 2020-12-15
 
-## Features
+### Features
 
 - **Macros**: Structure and Overheat macros have been added. They can be found in the "LANCER Macros" Compendium, and their functionality can be customized using the system settings. Closes #91.
 - **Macros**: Macros for placing common AOE templates have been added. They can be found in the "AoE Templates" Compendium.
 - **NPC Classes**: Add functionality to NPC Class sheet allowing features from Compendium to be added. Partial for #110.
 
-## Bug Fixes
+### Bug Fixes
 
 - **NPCs**: Don't override NPC stat values when duplicating NPCs. Closes #94.
 - **Pilot/NPC Sheet**: Fix a bug which overwrites prototype token name even if the Actor's name was not edited. Closes #116.
 - **Item Sheets**: Fix some inconsistencies in how range and damage selectors were handled, which caused charge-type systems in particular to lose data when saved. Closes #116.
 - **Macros**: Fix and improve Overkill handling for attack macros.
 
-# 0.1.16 (2020-11-25)
+## [0.1.16] - 2020-11-25
 
-## Bug Fixes
+### Bug Fixes
 
 - **Pilot Sheet**: Syncing Comp/Con cloud saves no longer fails with a 401 error. Closes #113. Again.
 - **Pilot Sheet**: Fix an issue where some synced pilots caused the pilot sheet to not render after syncing. Closes #115.
 - **Macros**: Pilot skill trigger and overcharge macros rolled from the sheet no longer fail if no token is selected.
 
-# 0.1.15 (2020-11-22)
+## [0.1.15] - 2020-11-22
 
-## Features
+### Features
 
 - **Pilot Sheet**: Syncing Comp/Con cloud saves now sets up mounts and adds weapons to them. Closes #75.
 
-## Bug Fixes
+### Bug Fixes
 
 - **Pilot Sheet**: Syncing Comp/Con cloud saves no longer fails with a 401 error. Closes #113.
 - **Macros**: Using a macro from the hotbar no longer fails if no token is selected.
 
-# 0.1.14 (2020-11-19)
+## [0.1.14] - 2020-11-19
 
-## Features
+### Features
 
 - **Pilot Sheet**: Added Overcharge macro. Closes #101.
 - **Status Icons**: Added NPC tier icons. Partial work for #92.
 
-## Bug Fixes
+### Bug Fixes
 
 - **Compendium Manager**: Fix bug where item name was used instead of item ID when finding items to update from an LCP. Closes #108.
 - **Pilot Sheet**: Don't add mech weapons when syncing a Comp/Con pilot.
 - **Pilot Sheet**: Fix reversed current and max repairs when syncing a Comp/Con pilot. Closes #109.
 - **Item Sheets**: Save new item name into system data so that item previews show the updated name. Closes #111.
 
-# 0.1.13 (2020-11-08)
+## [0.1.13] - 2020-11-08
 
-## Features
+### Features
 
 - **Pilot Sheet**: Added macros for pilot gear, core bonuses, core actives, and core passives. Closes #10.
 - **Pilot Sheet**: Added basic Overcharge tracking. Partial solution for #101.
@@ -1469,37 +1478,37 @@ System completely rebuilt from the ground up to support the new COMP/CON data st
 - **NPC Template Sheet**: Likewise populates the Base and Optional Feature sections with draggable feature previews. Closes #106.
 - **Migration**: Migration logic is now more intelligent, avoiding unnecessary migrations each version update.
 
-## Bug Fixes
+### Bug Fixes
 
 - **Macros**: NPC Weapon "On Hit" effects now show in chat. Closes #95.
 - **NPC Sheet**: Fix a issue causing NPC Templates to be un-deletable. Closes #97.
 - **Status Icons**: Improved status icons to include tooltips in the token HUD. Closes #93.
 - **General**: Fix an issue causing the system to fail to load on Foundry 0.7.6. Closes #107.
 
-# 0.1.12 (2020-10-21)
+## [0.1.12] - 2020-10-21
 
-## Bug Fixes
+### Bug Fixes
 
 - **General**: Fix a bug where some parts of the system tried to load too soon and failed fatally.
 
-# 0.1.11 (2020-10-21)
+## [0.1.11] - 2020-10-21
 
 - **Foundry Core Support**: This update moves the supported Foundry core version to the 0.7 series.
 
-# 0.1.10 (2020-10-11)
+## [0.1.10] - 2020-10-11
 
-## Bug Fixes
+### Bug Fixes
 
 - **Pilot Sheet**: Fix bug preventing superheavy weapons from being added to mounts. Closes #88.
 
-# 0.1.9 (2020-10-11)
+## [0.1.9] - 2020-10-11
 
-## Features
+### Features
 
 - **Pilot Sheet**: Added macros for sending Talents and Mech Systems to chat. Starts #10.
 - **Hotbar**: Add drag-to-hotbar macro creation for several items on Pilot and NPC sheets. Closes #53.
 
-## Bug Fixes
+### Bug Fixes
 
 - **Pilot Sheet**: Fix bug preventing weapons from being added to Aux/Aux and Main/Aux mounts. Closes #83.
 - **Pilot Sheet**: Fix bug causing weapons to become un-rollable after editing. Closes #86.
@@ -1507,16 +1516,16 @@ System completely rebuilt from the ground up to support the new COMP/CON data st
 - **Status Icons**: Added white versions of status/condition icons for use on tokens.
 - **Status Icons**: Fix an issue preventing status icons from being shown on Firefox.
 
-# 0.1.8 (2020-10-04)
+## [0.1.8] - 2020-10-04
 
-## Features
+### Features
 
 - **Everywhere**: Hide default increment/decrement arrows on number inputs, which were causing issues. Some number inputs now use new, larger increment/decrement buttons. Partial fix for #48.
 - **Pilot Sheet**: Add a core power toggle. Closes #52.
 - **Attack Macros**: Add single-depth Overkill rerolling, and a button to roll another d6 if needed.
 - **Status Icons**: Add status and condition icons from Comp/Con icon set. Closes #24.
 
-## Bug Fixes
+### Bug Fixes
 
 - **Pilot Sheet**: Fixed an issue preventing Aux/Aux and Main/Aux mounts from being created. Closes #73.
 - **Pilot Sheet**: Cloud import now properly sets the Actor name. Closes #79.
@@ -1525,72 +1534,72 @@ System completely rebuilt from the ground up to support the new COMP/CON data st
 - **Compendiums**: Fixed a bug causing modified items in the Lancer compendiums to prevent the system from loading properly. Closes #78.
 - **Compendium Manager**: Removed the setting to create system-wide compendiums, which caused issues with pilot imports. Closes #80.
 
-# 0.1.7 (2020-09-27)
+## [0.1.7] - 2020-09-27
 
 Hotfix to correct new issue with pilot sheet not loading.
 
-# 0.1.6 (2020-09-27)
+## [0.1.6] - 2020-09-27
 
-## General
+### General
 
 - **Pilot Sheet**: Move the cloud sync tab to leftmost, rename to "RM-4://SYNC" to mirror Comp/Con UI.
 - **Pilot Sheet**: Record and display the last time the pilot was downloaded from cloud save.
 
-## Bug Fixes
+### Bug Fixes
 
 - **Pilot Sheet**: Fix bug where charge effects' HTML wasn't closed properly, resulting in the cloud import UI elements not showing on affected pilot sheets. Closes #72.
 - **Comp/Con Cloud Save Import**: Fix bug where pilots with custom skills would not import. Closes #71.
 
-# 0.1.5 (2020-09-27)
+## [0.1.5] - 2020-09-27
 
-## Features
+### Features
 
 - **LCP Import**: It's finally here! The Lancer Compendium Manager is your new friend for building/updating Compendiums with Lancer core data and LCPs. Closes #15.
 - **Comp/Con Cloud Save Import**: Pilots can now pull data from a Comp/Con cloud share code, automatically building the pilot and their mech (except for weapons) and calculating stats. Partial work for #23.
 
-## Bug Fixes
+### Bug Fixes
 
 - **NPC Sheet**: Fix bug where ranges weren't shown on NPC weapon previews. Closes #68.
 
-# 0.1.4 (2020-09-12)
+## [0.1.4] - 2020-09-12
 
-## Bug Fixes
+### Bug Fixes
 
 - **NPC Feature Sheet:** Fix bug where new NPC weapons only show 1 damage field. Closes #64.
 - **Item Import/Duplication:** Fix issue where duplicated/imported items had properties overwritten. Closes #65.
 
-# 0.1.3 (2020-09-07)
+## [0.1.3] - 2020-09-07
 
-## General
+### General
 
 - Updated Foundry Core compatibility version to 0.6.6.
 - Standardized a lot of sheet components to make appearance and future development better.
 - Changed default grid distance and unit to 1 unitless, instead of 10 feet.
 - Greatly reduced the file size of the faction logos.
 
-## Features
+### Features
 
 - **Mech Systems/Weapons:** Added effects rendering for all effect types currently supported in Comp/Con. They are rendered on pilot sheet and in chat when a weapon macro is used. Closes #22.
 - **Mech Systems:** Added editability for Basic, AI, Bonus, and Charge-type effects.
 - **Frame Sheet:** Improve appearance and editability of Frame sheet. Core system description, passive effect, and active effect can now all be edited even if not currently present on the Frame.
 
-## Bug Fixes
+### Bug Fixes
 
 - **Pilot Sheet:** Fixed custom frames (user-created Item) not showing their name on pilot sheets. Closes #57.
 - **Usability:** Removed functionality which deleted weapons or systems from a Pilot on right-click. Closes #56.
 - **Tokens:** Fixed a bug which caused NPC and Deployable prototype token images to be overwritten when the parent sheet image was changed. Closes #61.
 - **Macros:** Character sheet macro rollers now always use the sheet's Actor as the speaker.
 
-# 0.1.2 (2020-07-29)
+## [0.1.2] - 2020-07-29
 
-## Bug Fixes
+### Bug Fixes
 
 - **General:** Fix a bug which could cause Item data to be lost during version migration or duplication.
 - **NPC Sheet:** Editing the name field now renames the Actor and prototype token, closes #55.
 
-# 0.1.1 (2020-07-26)
+## [0.1.1] - 2020-07-26
 
-## Bug Fixes
+### Bug Fixes
 
 - **Macros:** Add "Cancel" button to accuracy prompt. Clicking cancel or closing the prompt will abort the roll. Closes #45.
 - **Macros:** Fix NPC weapon macros, closes #47.
@@ -1598,7 +1607,7 @@ Hotfix to correct new issue with pilot sheet not loading.
 - **NPCs:** New NPCs start at 0 heat, closes #49.
 - **NPCs:** Increase NPC class sheet default width, part of #48.
 
-## Features
+### Features
 
 - **Macros:** Add HASE macro buttons to mech tab of pilot sheet, closes #54.
 - **Macros:** Add NPC tech attack macros.
@@ -1606,9 +1615,9 @@ Hotfix to correct new issue with pilot sheet not loading.
 - **Frame sheet:** Improve core system editability.
 - **NPC Features:** Add support for all feature types to feature sheet and NPC sheet, closes #36.
 
-# 0.1.0 (2020-07-19)
+## [0.1.0] - 2020-07-19
 
-## Alpha release!
+### Alpha release!
 
 A huge thank you and shout-out to Animu36, Grygon, and Staubz, without whose help this initial release would have taken many more weeks!
 
@@ -1629,13 +1638,13 @@ The system is bare-bones, but should be stable for play. Features existing as of
   - NPC Templates
   - NPC Features
 
-## Recommended Companion Modules
+### Recommended Companion Modules
 
 - Lancer Condition Icons - status/condition icon sets tailored towards Lancer.
 - Hex Size Support - Improves Hex grid snapping, movement, and ruler measurement for hex tokens larger than size 1.
 - Popcorn Initiative - Add-on popcorn initiative management system.
 
-## Known Issues
+### Known Issues
 
 - Weapons, systems, and NPC features do not render all of their effects yet. Since the Compendiums are generated using `lancer-data` (the same data library that Comp/Con uses), the effects are broken down into the special types that Comp/Con supports. Implementing proper rendering and then editability for special effects types will be added soon. This may be delayed until the recently announced changes to the data are complete on the Comp/Con side.
 - No NPCs included! As the Core Book NPCs are part of the paid content for Lancer, they cannot be included in the system upon install. An LCP import tool is coming, which will allow you to use the Comp/Con NPC pack (download from the [Core Book itch.io page](https://massif-press.itch.io/corebook-pdf)) to automatically build/update NPC Compendiums. For now, NPC stats will need to be entered manually.
