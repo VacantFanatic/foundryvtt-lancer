@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release, without the 'v' prefix (e.g. 3.1.13)"
+        required: true
+        type: string
 
 jobs:
   build:
@@ -27,24 +33,33 @@ jobs:
       # Set up variables for future use
       - name: Set up variables
         id: vars
-        # Remove the 'v' from the tag for versioning
+        env:
+          EVENT: ${{ github.event_name }}
+          INPUT_VERSION: ${{ github.event.inputs.version }}
         run: |
-          VERSION=${GITHUB_REF_NAME#v}
-          TAG_NAME=${GITHUB_REF_NAME}
+          if [[ "$EVENT" == "workflow_dispatch" ]]; then
+            VERSION="$INPUT_VERSION"
+            TAG_NAME="v${VERSION}"
+          else
+            VERSION=${GITHUB_REF_NAME#v}
+            TAG_NAME=${GITHUB_REF_NAME}
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "zip_name=lancer-$TAG_NAME.zip" >> $GITHUB_OUTPUT
 
-      # Verify correct naming
-      - name: Verify correct naming
+      # Fail fast if this tag has already been published as a release.
+      - name: Check tag not already released
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.vars.outputs.tag_name }}
         run: |
-          expected_tag="v${{ steps.vars.outputs.version }}"
-          actual_tag="${{ steps.vars.outputs.tag_name }}"
-          if [[ "$expected_tag" != "$actual_tag" ]]; then
-            echo "The system.json version does not match tag name."
-            echo "expected tag: $expected_tag"
-            echo "actual tag: $actual_tag"
-            echo "Please fix this and push the tag again."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/VacantFanatic/foundryvtt-lancer/releases/tags/${TAG}")
+          if [[ "$STATUS" == "200" ]]; then
+            echo "::error::Release tag '${TAG}' already exists."
             exit 1
           fi
 
