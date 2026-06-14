@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.16-rc.1] - 2026-06-14
+
+### Fixed
+
+- **Actor sheet form validation** (#141) — `_propagateData` now guards with `!= null` before writing `img`/`name` to the prototype token, preventing a schema-validation error on every keystroke because actor sheet templates include no `img` input.
+- **Damage HUD / sliding HUD** (#146) — Svelte 5 stable removed the `events` option from `mount()`, causing the Promise returned by `openSlidingHud` to never resolve. Fixed by exporting `setCallback()` from `SlidingHUDZone.svelte` and calling it directly instead of relying on the removed events option.
+- **Combat tab weapon cards** (#147) — Mech weapon cards on the combat tab now display range and damage stats (icons + values) below the weapon name, giving players the critical info they need without opening the item sheet.
+- **Stabilize flow** (#148) — The submit button callback in `renderStabilizePrompt` was returning `true`, causing `DialogV2.wait()` to resolve with `true` instead of the `"submit"` action string. Removed the return value so the button action string is used as intended.
+
 ## [3.1.13] - 2026-06-09
 
 ### Fixed
