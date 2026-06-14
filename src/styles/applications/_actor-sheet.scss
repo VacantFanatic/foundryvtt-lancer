@@ -247,6 +247,7 @@
     padding: 0.2rem 0.45rem;
     min-width: 5.5rem;
     flex: 1 1 auto;
+    color: var(--dark-text);
   }
 
   .mech-combat-dock-stat-label {
@@ -260,12 +261,15 @@
     align-items: center;
     gap: 0.1rem;
     font-size: 0.8rem;
+    color: var(--dark-text);
 
     input.lancer-stat {
       width: 2.25rem;
       min-width: 2rem;
       padding: 0 0.15rem;
       text-align: center;
+      color: var(--dark-text);
+      background-color: transparent;
     }
   }
 
