@@ -1,5 +1,6 @@
 import type { HelperOptions } from "handlebars";
 import type { LancerMECH } from "../actor/lancer-actor";
+import type { LancerMECH_WEAPON } from "../item/lancer-item";
 import { resolveHelperDotpath } from "./commons";
 import {
   buildCompactSystemCardHtml,
@@ -19,6 +20,25 @@ export {
 } from "./mech-combat-gear-core";
 export type { CombatGearCounts } from "./mech-combat-gear-core";
 
+function weaponProfileStats(weapon: LancerMECH_WEAPON): string {
+  const profile = weapon.currentProfile();
+  const ranges = profile.range
+    .map(
+      r =>
+        `<span data-tooltip="${r.type}"><i class="cci cci-${r.type.toLowerCase()}" aria-hidden="true"></i>${r.val}</span>`
+    )
+    .join("");
+  const damages = (profile.damage ?? [])
+    .map(
+      d =>
+        `<span data-tooltip="${d.type}"><i class="cci cci-${d.type.toLowerCase()} damage--${d.type.toLowerCase()}" aria-hidden="true"></i>${d.val}</span>`
+    )
+    .join("");
+  if (!ranges && !damages) return "";
+  const sep = ranges && damages ? `<span class="mech-combat-gear-sep">//</span>` : "";
+  return `<div class="mech-combat-gear-stats">${ranges}${sep}${damages}</div>`;
+}
+
 function renderWeaponCards(mech: LancerMECH, options: HelperOptions): string {
   const cards: string[] = [];
   const loadout = mech.system.loadout;
@@ -27,10 +47,14 @@ function renderWeaponCards(mech: LancerMECH, options: HelperOptions): string {
       const weapon = slot.weapon?.value;
       if (!weapon) return;
       const weaponPath = `system.loadout.weapon_mounts.${mountIndex}.slots.${slotIndex}.weapon.value`;
+      const stats = weaponProfileStats(weapon);
       cards.push(`
         <div class="mech-combat-gear-card card clipped ref set" ${ref_params(weapon, weaponPath)}>
           <img class="mech-combat-gear-thumb" src="${weapon.img || "systems/lancer/assets/icons/mech_weapon.svg"}" alt="" width="32" height="32" />
-          <span class="mech-combat-gear-name minor">${weapon.name}</span>
+          <div class="mech-combat-gear-label">
+            <span class="mech-combat-gear-name minor">${weapon.name}</span>
+            ${stats}
+          </div>
           <button type="button" class="roll-attack lancer-button lancer-secondary mech-combat-action-button" data-tooltip="Roll attack">
             <i class="cci cci-weapon" aria-hidden="true"></i>
           </button>
