@@ -115,10 +115,16 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     }
     // ApplicationV2's FormDataExtended does not coerce type="number" inputs to
     // numbers. Convert any string leaf that parses as a finite number.
+    // Empty strings are dropped entirely — passing "" for a numeric schema field
+    // causes a DataModelValidationError ("must be a number").
     for (const key of Object.keys(updateData)) {
       const val = updateData[key];
-      if (typeof val === "string" && val.trim() !== "" && isFinite(Number(val))) {
-        updateData[key] = Number(val);
+      if (typeof val === "string") {
+        if (val.trim() !== "" && isFinite(Number(val))) {
+          updateData[key] = Number(val);
+        } else if (val.trim() === "") {
+          delete updateData[key];
+        }
       }
     }
     this._propagateData(updateData);
