@@ -65,26 +65,26 @@
   {{/if}}
   {{#if on_attack}}
     <div class="card clipped">
-      <div class="lancer-mini-header collapse-trigger" data-collapse-id="{{_uuid}}-effect">
+      <div class="lancer-mini-header collapse-trigger" data-collapse-id="{{_uuid}}-on-attack">
         {{localize "lancer.chat-card.title.on-attack"}}
       </div>
-      <span class="effect-text collapse" data-collapse-id="{{_uuid}}-effect">{{{on_attack}}}</span>
+      <span class="effect-text collapse" data-collapse-id="{{_uuid}}-on-attack">{{{on_attack}}}</span>
     </div>
   {{/if}}
   {{#if on_hit}}
     <div class="card clipped">
-      <div class="lancer-mini-header collapse-trigger" data-collapse-id="{{_uuid}}-effect">
+      <div class="lancer-mini-header collapse-trigger" data-collapse-id="{{_uuid}}-on-hit">
         {{localize "lancer.chat-card.title.on-hit"}}
       </div>
-      <span class="effect-text collapse" data-collapse-id="{{_uuid}}-effect">{{{on_hit}}}</span>
+      <span class="effect-text collapse" data-collapse-id="{{_uuid}}-on-hit">{{{on_hit}}}</span>
     </div>
   {{/if}}
   {{#if on_crit}}
     <div class="card clipped">
-      <div class="lancer-mini-header collapse-trigger" data-collapse-id="{{_uuid}}-effect">
+      <div class="lancer-mini-header collapse-trigger" data-collapse-id="{{_uuid}}-on-crit">
         {{localize "lancer.chat-card.title.on-crit"}}
       </div>
-      <span class="effect-text collapse" data-collapse-id="{{_uuid}}-effect">{{{on_crit}}}</span>
+      <span class="effect-text collapse" data-collapse-id="{{_uuid}}-on-crit">{{{on_crit}}}</span>
     </div>
   {{/if}}
   {{{tag-list "tags"}}}

@@ -5,7 +5,6 @@
 
   import { flip } from "svelte/animate";
   import { slide } from "svelte/transition";
-  import { createEventDispatcher } from "svelte";
 
   import { sidebarWidth } from "./sidebar-width";
   import { isDragging } from "./is-dragging";
@@ -14,7 +13,19 @@
   import DamageHud from "../damage/DamageHUD.svelte";
   import StructStressHud from "../struct_stress/StructStressHUD.svelte";
 
-  let dispatch = createEventDispatcher();
+  // Callbacks registered by index.ts to receive submit/cancel results for each HUD key.
+  // Stored as a plain object (no Svelte reactivity needed).
+  const callbacks: Record<string, [(value: any) => any, () => any] | null> = {
+    hase: null,
+    attack: null,
+    damage: null,
+    struct: null,
+    stress: null,
+  };
+
+  export function setCallback(key: string, resolve: (value: any) => any, reject: () => any) {
+    callbacks[key] = [resolve, reject];
+  }
 
   let dialogs: { [key: string]: typeof SvelteComponent } = {
     hase: AccDiffHud,
@@ -60,13 +71,16 @@
   }
 
   export function open(key: string, data: any) {
-    dispatch(`${key}.cancel`); // Re-opening closes the previous instance of this hud
+    // Cancel any pending promise for this key before re-opening
+    callbacks[key]?.[1]();
+    callbacks[key] = null;
     huds[key].open = new Date().getTime();
     huds[key].data = data;
   }
 
   export function close(key: string) {
-    dispatch(`${key}.cancel`);
+    callbacks[key]?.[1]();
+    callbacks[key] = null;
     huds[key].open = null;
     huds[key].data = null;
   }
@@ -93,7 +107,13 @@
   export let components: { [key: string]: SvelteComponent } = {};
 
   function forward(key: string, event: string, data?: any | undefined) {
-    dispatch(`${key}.${event}`, data ? data : undefined);
+    // Call the registered callback directly (replaces the removed `events` option of mount()).
+    if (event === "submit") {
+      callbacks[key]?.[0](data ?? undefined);
+    } else {
+      callbacks[key]?.[1]();
+    }
+    callbacks[key] = null;
     // no matter why we get an event from a child, we should close it, it's _done_
     huds[key].open = null;
     huds[key].data = null;

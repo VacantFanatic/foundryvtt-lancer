@@ -6,33 +6,12 @@ import { mount } from "svelte";
 
 // TODO: Find a better type for this
 let hud: ReturnType<typeof mount>;
-// Look - I don't really know enough typescript to get it right,
-// but these will hold the success/reject of any
-let activeCallbacks: Record<keyof HUDData, null | [(value: any) => any, () => any]> = {
-  hase: null,
-  attack: null,
-  damage: null,
-  struct: null,
-  stress: null,
-};
 
 export async function attach() {
   if (!hud) {
     let HUDZone = (await import("./SlidingHUDZone.svelte")).default;
-    const events: Record<string, (e: any) => any> = {};
-    for (const key of ["attack", "damage", "hase", "struct", "stress"] as Array<keyof HUDData>) {
-      events[`${key}.submit`] = (ev: any) => {
-        activeCallbacks[key]?.[0](ev.detail);
-        activeCallbacks[key] = null;
-      };
-      events[`${key}.cancel`] = () => {
-        activeCallbacks[key]?.[1]();
-        activeCallbacks[key] = null;
-      };
-    }
     hud = mount(HUDZone, {
       target: document.body,
-      events,
     });
   }
   return hud;
@@ -41,11 +20,13 @@ export async function attach() {
 export async function openSlidingHud<T extends keyof HUDData>(key: T, data: HUDData[T]): Promise<HUDData[T]> {
   let hud = await attach();
 
-  // open the hud, cancelling existing listeners
+  // open the hud; SlidingHUDZone.open() cancels any existing pending callback for this key
   hud.open(key, data);
 
   return new Promise((resolve, reject) => {
-    activeCallbacks[key] = [resolve, reject];
+    // Register callbacks directly on the component — avoids the removed `events`
+    // option of Svelte 5's mount(), which silently dropped in Svelte 5 stable.
+    (hud as any).setCallback(key, resolve, reject);
   });
 }
 

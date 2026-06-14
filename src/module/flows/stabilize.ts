@@ -56,11 +56,10 @@ async function renderStabilizePrompt(state: FlowState<LancerFlowState.StabilizeD
         label: game.i18n.localize("lancer.flow.common.submit"),
         default: true,
         callback: (_event, _button, dialog) => {
-          if (!state.data) return false;
+          if (!state.data) return;
           const root = dialog.element as HTMLElement;
           state.data.option1 = <StabOptions1>$(root).find(".stabilize-options-1:checked").first().val();
           state.data.option2 = <StabOptions2>$(root).find(".stabilize-options-2:checked").first().val();
-          return true;
         },
       },
       {

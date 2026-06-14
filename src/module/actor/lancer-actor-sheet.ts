@@ -724,20 +724,23 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
 
   _propagateData(formData: any): any {
     // Pushes relevant field data from the form to other appropriate locations,
-    // e.x. to synchronize name between token and actor
+    // e.x. to synchronize name between token and actor.
+    // Guard: only propagate a field if it is actually present in the submitted form data
+    // (i.e. not undefined). Actor sheet templates omit the img input, so formData["img"]
+    // would be undefined and passing it to actor.update() causes a schema validation error.
     let token = this.actor.prototypeToken;
 
     if (!token) {
-      // Set the prototype token image if the prototype token isn't initialized
-      formData["prototypeToken.texture.src"] = formData["img"];
-      formData["prototypeToken.name"] = formData["name"];
+      // Set the prototype token image/name if the prototype token isn't initialized
+      if (formData["img"] != null) formData["prototypeToken.texture.src"] = formData["img"];
+      if (formData["name"] != null) formData["prototypeToken.name"] = formData["name"];
     } else {
       // Update token image if it matches the old actor image - keep in sync
-      if (this.actor.img === token.texture.src && this.actor.img !== formData["img"]) {
+      if (formData["img"] != null && this.actor.img === token.texture.src && this.actor.img !== formData["img"]) {
         formData["prototypeToken.texture.src"] = formData["img"];
       }
       // Ditto for name
-      if (this.actor.name === token["name"] && this.actor.name !== formData["name"]) {
+      if (formData["name"] != null && this.actor.name === token["name"] && this.actor.name !== formData["name"]) {
         formData["prototypeToken.name"] = formData["name"];
       }
     }
