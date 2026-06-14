@@ -95,7 +95,14 @@ export class LancerItemSheet<T extends LancerItemType> extends HandlebarsApplica
     formData: foundry.applications.ux.FormDataExtended
   ): Promise<void> {
     event.preventDefault();
-    await this.item.update(formData.object);
+    const updateData = foundry.utils.flattenObject(formData.object) as Record<string, unknown>;
+    for (const key of Object.keys(updateData)) {
+      const val = updateData[key];
+      if (typeof val === "string" && val.trim() !== "" && isFinite(Number(val))) {
+        updateData[key] = Number(val);
+      }
+    }
+    await this.item.update(updateData);
   }
 
   protected override _onRender(context: object, options: Record<string, unknown>): void {
