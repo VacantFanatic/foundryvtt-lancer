@@ -243,17 +243,11 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.35rem;
     padding: 0.2rem 0.45rem;
-    min-width: 7rem;
+    min-width: 5.5rem;
     flex: 1 1 auto;
     color: var(--dark-text);
-  }
-
-  .mech-combat-dock-stat-label {
-    font-size: 0.65rem;
-    opacity: 0.85;
-    min-width: 2.75rem;
   }
 
   .mech-combat-dock-stat-value {
@@ -264,7 +258,9 @@
     color: var(--dark-text);
 
     input.lancer-stat {
-      width: 3rem;
+      appearance: textfield;
+      -webkit-appearance: textfield;
+      width: 3.5rem;
       min-width: 2.5rem;
       padding: 0 0.15rem;
       text-align: center;

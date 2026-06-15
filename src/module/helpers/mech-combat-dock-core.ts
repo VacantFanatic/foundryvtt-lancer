@@ -29,11 +29,10 @@ export function buildCombatDockCoreToggleHtml(coreEnergy: number): string {
 export function buildCombatDockStatChipsHtml(stats: CombatDockStatSnapshot): string {
   const chip = (label: string, value: number, max: number, valuePath: string, icon: string) =>
     `
-    <div class="mech-combat-dock-stat card clipped" data-tooltip="${label}">
+    <div class="mech-combat-dock-stat card clipped" data-tooltip="${label}" aria-label="${label}">
       <i class="${icon} i--3" aria-hidden="true"></i>
-      <span class="mech-combat-dock-stat-label">${label}</span>
       <span class="mech-combat-dock-stat-value">
-        <input class="lancer-stat minor" type="number" name="${valuePath}" value="${value}" data-dtype="Number" />
+        <input class="lancer-stat minor" type="number" name="${valuePath}" value="${value}" data-dtype="Number" aria-label="${label} value" />
         /
         <span class="lancer-stat minor">${max}</span>
       </span>

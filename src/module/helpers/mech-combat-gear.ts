@@ -33,7 +33,7 @@ function weaponProfileStats(weapon: LancerMECH_WEAPON): string {
   const damages = (profile.damage ?? [])
     .map(
       d =>
-        `<a class="compact-damage roll-damage lancer-button" data-tooltip="Roll damage" style="max-width: min-content;"><i class="cci cci-${d.type.toLowerCase()} damage--${d.type.toLowerCase()}" aria-hidden="true"></i>${d.val}</a>`
+        `<a class="compact-damage roll-damage lancer-button" data-tooltip="Roll damage" data-uuid="${weapon.uuid}" style="max-width: min-content;"><i class="cci cci-${d.type.toLowerCase()} damage--${d.type.toLowerCase()}" aria-hidden="true"></i>${d.val}</a>`
     )
     .join("");
   if (!ranges && !damages) return "";
@@ -57,7 +57,7 @@ function renderWeaponCards(mech: LancerMECH, options: HelperOptions): string {
             <span class="mech-combat-gear-name minor">${weapon.name}</span>
             ${stats}
           </div>
-          <button type="button" class="roll-attack lancer-button lancer-secondary mech-combat-action-button" data-tooltip="Roll attack">
+          <button type="button" class="roll-attack lancer-button lancer-secondary mech-combat-action-button" data-tooltip="Roll attack" data-uuid="${weapon.uuid}">
             <i class="cci cci-weapon" aria-hidden="true"></i>
           </button>
         </div>`);
@@ -76,7 +76,7 @@ function renderSystemCards(mech: LancerMECH): string {
       <div class="mech-combat-gear-card card clipped ref set" ${ref_params(system, systemPath)}>
         <img class="mech-combat-gear-thumb" src="${system.img || "systems/lancer/assets/icons/mech_system.svg"}" alt="" width="32" height="32" />
         <span class="mech-combat-gear-name minor">${system.name}</span>
-        <a class="chat-flow-button lancer-button lancer-secondary mech-combat-action-button" data-tooltip="Use system">
+        <a class="chat-flow-button lancer-button lancer-secondary mech-combat-action-button" data-tooltip="Use system" data-uuid="${system.uuid}">
           <i class="cci cci-activate" aria-hidden="true"></i>
         </a>
       </div>`);
