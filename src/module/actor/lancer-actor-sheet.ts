@@ -113,18 +113,20 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     if ("system.core_energy" in updateData) {
       updateData["system.core_energy"] = normalizeCoreEnergyFormValue(updateData["system.core_energy"]);
     }
-    // ApplicationV2's FormDataExtended does not coerce type="number" inputs to
-    // numbers. Convert any string leaf that parses as a finite number.
-    // Empty strings are dropped entirely — passing "" for a numeric schema field
-    // causes a DataModelValidationError ("must be a number").
+    // FormDataExtended in Foundry v14 uses valueAsNumber for type="number" inputs,
+    // returning NaN for empty/invalid fields. Convert valid numeric strings to numbers,
+    // and drop any value that cannot be stored in a NumberField (NaN, Infinity,
+    // null, undefined, empty strings, non-numeric strings).
     for (const key of Object.keys(updateData)) {
       const val = updateData[key];
       if (typeof val === "string") {
         if (val.trim() !== "" && isFinite(Number(val))) {
           updateData[key] = Number(val);
-        } else if (val.trim() === "") {
+        } else {
           delete updateData[key];
         }
+      } else if (val == null || (typeof val === "number" && !isFinite(val))) {
+        delete updateData[key];
       }
     }
     this._propagateData(updateData);

@@ -611,6 +611,9 @@
       "fullRepair": {
         "title": "Full Repair — {name}",
         "prompt": "Fully repair the {type} \"{name}\"?"
+      },
+      "cascade": {
+        "no-ai-systems": "No cascadeable AI systems — this mech has no NHP or AI gear that can cascade."
       }
     },
     "sheet-controls": {

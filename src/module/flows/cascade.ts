@@ -70,7 +70,10 @@ export async function initCascadeData(state: FlowState<LancerFlowState.CascadeRo
       })
       .map(i => i.id!)
   );
-  if (state.data.ai_systems.length === 0) return false;
+  if (state.data.ai_systems.length === 0) {
+    ui.notifications!.info(game.i18n.localize("lancer.flow.cascade.no-ai-systems"));
+    return false;
+  }
   return true;
 }
 

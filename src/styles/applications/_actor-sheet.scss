@@ -783,12 +783,13 @@
   .lancer.sheet header.sheet-header.lancer-mech-sheet-header {
     min-height: 9rem;
     padding: 0.35em 0.5em 0.35em 0.75em;
-    grid-template-rows: minmax(3.25rem, auto) auto minmax(8rem, auto);
+    grid-template-rows: minmax(3.25rem, auto) auto minmax(8rem, auto) auto;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(160px, 240px);
     grid-template-areas:
       "name name name img"
       "details details details img"
-      "pilot pilot pilot img";
+      "pilot pilot pilot img"
+      "macros macros macros img";
 
     .header-details {
       grid-area: details;
@@ -807,6 +808,24 @@
       width: 100%;
       min-width: 0;
       align-items: flex-start;
+    }
+
+    .mech-header-macro-row {
+      grid-area: macros;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      padding-top: 0.35rem;
+      align-items: center;
+
+      .lancer-flow-button {
+        flex: 0 0 auto;
+      }
+
+      .flow-button-sep {
+        flex: 0 0 0.5rem;
+      }
     }
 
     .portrait-img-container {
