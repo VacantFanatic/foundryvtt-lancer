@@ -25,13 +25,15 @@ function weaponProfileStats(weapon: LancerMECH_WEAPON): string {
   const ranges = profile.range
     .map(
       r =>
-        `<span data-tooltip="${r.type}"><i class="cci cci-${r.type.toLowerCase()}" aria-hidden="true"></i>${r.val}</span>`
+        `<span class="compact-range" data-tooltip="${r.type}"><i class="cci cci-${r.type.toLowerCase()}" aria-hidden="true"></i>${r.val}</span>`
     )
     .join("");
+  // Render each damage entry as a roll-damage button so clicking it starts a
+  // standalone damage roll without requiring an attack roll first.
   const damages = (profile.damage ?? [])
     .map(
       d =>
-        `<span data-tooltip="${d.type}"><i class="cci cci-${d.type.toLowerCase()} damage--${d.type.toLowerCase()}" aria-hidden="true"></i>${d.val}</span>`
+        `<a class="compact-damage roll-damage lancer-button" data-tooltip="Roll damage" style="max-width: min-content;"><i class="cci cci-${d.type.toLowerCase()} damage--${d.type.toLowerCase()}" aria-hidden="true"></i>${d.val}</a>`
     )
     .join("");
   if (!ranges && !damages) return "";

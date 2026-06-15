@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "foundryvtt-lancer",
-  "version": "3.1.16-rc.4",
+  "version": "3.1.16-rc.5",
   "description": "",
   "sideEffects": [
     "src/lancer.scss",

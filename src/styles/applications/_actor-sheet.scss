@@ -245,7 +245,7 @@
     align-items: center;
     gap: 0.25rem;
     padding: 0.2rem 0.45rem;
-    min-width: 5.5rem;
+    min-width: 7rem;
     flex: 1 1 auto;
     color: var(--dark-text);
   }
@@ -264,8 +264,8 @@
     color: var(--dark-text);
 
     input.lancer-stat {
-      width: 2.25rem;
-      min-width: 2rem;
+      width: 3rem;
+      min-width: 2.5rem;
       padding: 0 0.15rem;
       text-align: center;
       color: var(--dark-text);
