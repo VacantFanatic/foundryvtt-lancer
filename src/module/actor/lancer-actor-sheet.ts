@@ -107,16 +107,43 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     formData: foundry.applications.ux.FormDataExtended
   ): Promise<void> {
     event.preventDefault();
-    // formData.object returns a nested object in ApplicationV2; flatten to dotted
-    // paths so the coercion pass below can reach every leaf value.
-    const updateData = foundry.utils.flattenObject(formData.object) as Record<string, unknown>;
+    // formData.object returns a nested object in ApplicationV2. Some stat fields
+    // (HP, HEAT, STRUCTURE, STRESS) have two <input> elements with the same name:
+    // one in the always-visible combat dock and one in the combat-tab stat grid.
+    // Foundry v14 FormDataExtended produces an Array for duplicate-named inputs.
+    // flattenObject then expands that array into indexed sub-keys (e.g.
+    // "system.hp.value.0", ".1") which fail NumberField validation. Fix: collapse
+    // arrays to their first element before flattening (dock inputs precede stat-
+    // grid inputs in DOM order), then pin the actually-changed field from
+    // event.target so the user's edit always wins.
+    const rawObject = LancerActorSheet.#collapseFormArrays(
+      formData.object as Record<string, unknown>
+    );
+    const updateData = foundry.utils.flattenObject(rawObject) as Record<string, unknown>;
+
+    // When submitOnChange fires from an individual input, trust that element's
+    // value — it is what the user actually typed, regardless of which duplicate
+    // the array-collapse chose.
+    if (event.target instanceof HTMLInputElement && event.target.name) {
+      const changedKey = event.target.name;
+      const rawVal =
+        event.target.type === "number" ? event.target.valueAsNumber : event.target.value;
+      if (typeof rawVal === "number" && isFinite(rawVal)) {
+        updateData[changedKey] = rawVal;
+      } else if (typeof rawVal === "string" && rawVal.trim() !== "" && isFinite(Number(rawVal))) {
+        updateData[changedKey] = Number(rawVal);
+      } else {
+        delete updateData[changedKey];
+      }
+    }
+
     if ("system.core_energy" in updateData) {
       updateData["system.core_energy"] = normalizeCoreEnergyFormValue(updateData["system.core_energy"]);
     }
-    // FormDataExtended in Foundry v14 uses valueAsNumber for type="number" inputs,
-    // returning NaN for empty/invalid fields. Convert valid numeric strings to numbers,
-    // and drop any value that cannot be stored in a NumberField (NaN, Infinity,
-    // null, undefined, empty strings, non-numeric strings).
+    // Convert valid numeric strings to numbers and drop values that cannot be
+    // stored in a NumberField (NaN, Infinity, null, undefined, empty/non-numeric
+    // strings). Arrays were already collapsed above; plain objects are left alone
+    // so SchemaField sub-objects pass through to actor.update() unchanged.
     for (const key of Object.keys(updateData)) {
       const val = updateData[key];
       if (typeof val === "string") {
@@ -131,6 +158,25 @@ export class LancerActorSheet<T extends LancerActorType> extends HandlebarsAppli
     }
     this._propagateData(updateData);
     await this.actor.update(updateData);
+  }
+
+  /**
+   * Recursively collapse Array values produced by duplicate-named form inputs
+   * into their first element. Non-array, non-object values are returned as-is.
+   */
+  static #collapseFormArrays(obj: Record<string, unknown>): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(obj)) {
+      if (Array.isArray(val)) {
+        // Duplicate inputs — keep the first entry (dock precedes stat grid in DOM)
+        result[key] = val[0];
+      } else if (val !== null && typeof val === "object") {
+        result[key] = LancerActorSheet.#collapseFormArrays(val as Record<string, unknown>);
+      } else {
+        result[key] = val;
+      }
+    }
+    return result;
   }
 
   protected override _onRender(context: object, options: Record<string, unknown>): void {
