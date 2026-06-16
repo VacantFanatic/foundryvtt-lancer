@@ -75,8 +75,8 @@ describe("mech combat dock helpers", () => {
       [{ name: "<b>Evil</b>", rank: 1, terse: "<script>alert(1)</script>" }],
       "Talents"
     );
-    assert.doesNotMatch(html, /<b>Evil<\/b>/);
-    assert.doesNotMatch(html, /<script>/);
+    assert.doesNotMatch(html, /<b>Evil<\/b>/i);
+    assert.doesNotMatch(html, /<script>/i);
     assert.match(html, /&lt;b&gt;Evil&lt;\/b&gt;/);
   });
 });
