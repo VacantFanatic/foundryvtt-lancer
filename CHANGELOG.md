@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Mech sheet header** — collapsed the name/pilot/frame block into a single compact left-aligned group (pilot and frame details now sit directly under the name instead of right-aligned against empty space), shrinking the header's overall height.
+
+### Added
+
+- **Combat dock talent reminders** — the persistent combat dock now shows a quick-reference strip of the pilot's talents using each talent's terse summary, so passive/triggered abilities are visible during combat without switching to the Abilities tab.
+
 ## [3.1.16-rc.1] - 2026-06-14
 
 ### Fixed

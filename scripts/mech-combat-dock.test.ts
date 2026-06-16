@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   buildCombatDockCoreToggleHtml,
   buildCombatDockStatChipsHtml,
+  buildCombatDockTalentsHtml,
   COMBAT_DOCK_ATTACK_FLOW_TYPES,
   normalizeCoreEnergyFormValue,
 } from "../src/module/helpers/mech-combat-dock-core.ts";
@@ -47,5 +48,35 @@ describe("mech combat dock helpers", () => {
     assert.equal(normalizeCoreEnergyFormValue(0), 0);
     assert.equal(normalizeCoreEnergyFormValue("1"), 1);
     assert.equal(normalizeCoreEnergyFormValue("0"), 0);
+  });
+
+  it("buildCombatDockTalentsHtml renders a terse reminder per talent", () => {
+    const html = buildCombatDockTalentsHtml(
+      [
+        { name: "Brawler", rank: 2, terse: "Melee attacks vs. engaged targets gain +1 ACC, +2 dmg." },
+        { name: "Walking Armory", rank: 1, terse: "Once/turn, swap an equipped weapon as a quick action." },
+      ],
+      "Talents — quick reference"
+    );
+    assert.match(html, /mech-combat-dock-talents/);
+    assert.match(html, /Brawler 2/);
+    assert.match(html, /Walking Armory 1/);
+    assert.match(html, /Melee attacks vs\. engaged targets/);
+    assert.match(html, /Talents — quick reference/);
+  });
+
+  it("buildCombatDockTalentsHtml omits talents with no terse summary", () => {
+    const html = buildCombatDockTalentsHtml([{ name: "Untagged", rank: 1, terse: "" }], "Talents");
+    assert.equal(html, "");
+  });
+
+  it("buildCombatDockTalentsHtml escapes talent name and terse text", () => {
+    const html = buildCombatDockTalentsHtml(
+      [{ name: "<b>Evil</b>", rank: 1, terse: "<script>alert(1)</script>" }],
+      "Talents"
+    );
+    assert.doesNotMatch(html, /<b>Evil<\/b>/);
+    assert.doesNotMatch(html, /<script>/);
+    assert.match(html, /&lt;b&gt;Evil&lt;\/b&gt;/);
   });
 });
