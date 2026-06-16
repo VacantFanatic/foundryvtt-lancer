@@ -10,12 +10,12 @@ function mechHeaderBlock(): string {
 }
 
 describe("mech sheet header layout", () => {
-  it("right-aligns pilot and frame details in the header", () => {
+  it("left-aligns pilot and frame details directly under the name", () => {
     const block = mechHeaderBlock();
     const details = block.match(/\.header-details\s*\{[\s\S]*?\}/);
     assert.ok(details, "expected .header-details override in mech header");
-    assert.match(details[0], /text-align:\s*right/);
-    assert.match(details[0], /justify-content:\s*flex-end/);
+    assert.match(details[0], /text-align:\s*left/);
+    assert.match(details[0], /justify-content:\s*flex-start/);
   });
 
   it("uses a much larger pilot portrait in the header row", () => {

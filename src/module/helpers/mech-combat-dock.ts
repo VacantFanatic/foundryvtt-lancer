@@ -1,21 +1,24 @@
 import type { HelperOptions } from "handlebars";
-import type { LancerMECH } from "../actor/lancer-actor";
+import type { LancerMECH, LancerPILOT } from "../actor/lancer-actor";
 import { LancerFlowState } from "../flows/interfaces";
 import { resolveHelperDotpath } from "./commons";
 import { action_button, actor_flow_button, is_combatant } from "./actor";
 import {
   buildCombatDockCoreToggleHtml,
   buildCombatDockStatChipsHtml,
+  buildCombatDockTalentsHtml,
   COMBAT_DOCK_ATTACK_FLOW_TYPES,
+  type CombatDockTalentSnapshot,
 } from "./mech-combat-dock-core";
 
 export {
   buildCombatDockCoreToggleHtml,
   buildCombatDockStatChipsHtml,
+  buildCombatDockTalentsHtml,
   COMBAT_DOCK_ATTACK_FLOW_TYPES,
   normalizeCoreEnergyFormValue,
 } from "./mech-combat-dock-core";
-export type { CombatDockStatSnapshot } from "./mech-combat-dock-core";
+export type { CombatDockStatSnapshot, CombatDockTalentSnapshot } from "./mech-combat-dock-core";
 
 /** Attack utility buttons rendered in the persistent combat dock. */
 export function buildCombatDockAttackUtilitiesHtml(): string {
@@ -42,6 +45,20 @@ function compactOverchargeDock(actor: LancerMECH, overchargeLevel: number): stri
     </div>`;
 }
 
+function compactTalentReminders(pilot: LancerPILOT | undefined): string {
+  const talents = (pilot?.itemTypes.talent ?? []) as Array<{
+    name: string;
+    system: { curr_rank: number; terse: string };
+  }>;
+  const snapshots: CombatDockTalentSnapshot[] = talents.map(talent => ({
+    name: talent.name,
+    rank: talent.system.curr_rank,
+    terse: talent.system.terse,
+  }));
+  const headerLabel = game.i18n.localize("lancer.mech-sheet.combat-dock.talents");
+  return buildCombatDockTalentsHtml(snapshots, headerLabel);
+}
+
 function compactActionTracker(actor: LancerMECH, options: HelperOptions): string {
   if (!is_combatant(actor)) return "";
   const buttons = [
@@ -59,6 +76,7 @@ export function mechCombatDock(options: HelperOptions): string {
   const actor = (options.data?.root?.actor ?? resolveHelperDotpath(options, "actor")) as LancerMECH | undefined;
   if (!actor?.is_mech()) return "";
 
+  const pilot = options.data?.root?.pilot as LancerPILOT | undefined;
   const system = actor.system;
   const statChips = buildCombatDockStatChipsHtml({
     hp: system.hp,
@@ -70,6 +88,7 @@ export function mechCombatDock(options: HelperOptions): string {
   const core = buildCombatDockCoreToggleHtml(system.core_energy);
   const actions = compactActionTracker(actor, options);
   const attacks = buildCombatDockAttackUtilitiesHtml();
+  const talents = compactTalentReminders(pilot);
 
   return `
     <aside class="mech-combat-dock card clipped" aria-label="${game.i18n.localize("lancer.mech-sheet.combat-dock.label")}">
@@ -80,5 +99,6 @@ export function mechCombatDock(options: HelperOptions): string {
         ${actions}
         ${attacks}
       </div>
+      ${talents}
     </aside>`;
 }

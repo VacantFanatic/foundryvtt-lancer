@@ -5,7 +5,21 @@ export interface CombatDockStatSnapshot {
   stress: { value: number; max: number };
 }
 
+export interface CombatDockTalentSnapshot {
+  name: string;
+  rank: number;
+  terse: string;
+}
+
 export const COMBAT_DOCK_ATTACK_FLOW_TYPES = ["BasicAttack", "Damage", "TechAttack"] as const;
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
 /** Coerce form values for `system.core_energy` (NumberField 0|1). */
 export function normalizeCoreEnergyFormValue(value: unknown): number {
@@ -45,4 +59,26 @@ export function buildCombatDockStatChipsHtml(stats: CombatDockStatSnapshot): str
     ${chip("STRUCT", stats.structure.value, stats.structure.max, "system.structure.value", "cci cci-structure")}
     ${chip("STRESS", stats.stress.value, stats.stress.max, "system.stress.value", "cci cci-reactor")}
   </div>`;
+}
+
+/** Quick-reference strip of pilot talent summaries (`terse`) for use during combat. */
+export function buildCombatDockTalentsHtml(talents: CombatDockTalentSnapshot[], headerLabel: string): string {
+  const rows = talents
+    .filter(talent => talent.terse)
+    .map(
+      talent => `
+      <div class="mech-combat-dock-talent" data-tooltip="${escapeHtml(talent.name)}">
+        <span class="mech-combat-dock-talent-name">${escapeHtml(talent.name)} ${talent.rank}</span>
+        <span class="mech-combat-dock-talent-terse">${escapeHtml(talent.terse)}</span>
+      </div>`
+    )
+    .join("");
+
+  if (!rows) return "";
+
+  return `
+    <div class="mech-combat-dock-talents">
+      <div class="mech-combat-dock-talents-header">${escapeHtml(headerLabel)}</div>
+      ${rows}
+    </div>`;
 }

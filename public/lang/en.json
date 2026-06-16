@@ -141,7 +141,8 @@
         "systems": "SYSTEMS"
       },
       "combat-dock": {
-        "label": "Combat quick controls"
+        "label": "Combat quick controls",
+        "talents": "Talents — quick reference"
       },
       "combat-gear": {
         "weapons": "WEAPONS",
